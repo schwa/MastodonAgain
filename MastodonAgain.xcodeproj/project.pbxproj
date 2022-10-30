@@ -173,6 +173,7 @@
 				455AC87A290D96F600137415 /* Sources */,
 				455AC87B290D96F600137415 /* Frameworks */,
 				455AC87C290D96F600137415 /* Resources */,
+				4520200C290F179800469569 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -234,6 +235,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		4520200C290F179800469569 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export PATH=$PATH:/opt/homebrew/bin\nif which -s swiftlint;\nthen\n    swiftlint lint --quiet\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		455AC87A290D96F600137415 /* Sources */ = {

@@ -39,7 +39,7 @@ only_rules:
     - discouraged_direct_init
     # - discouraged_none_name
     - discouraged_object_literal
-    - discouraged_optional_boolean
+    # - discouraged_optional_boolean
     # - discouraged_optional_collection
     - duplicate_enum_cases
     - duplicate_imports
@@ -55,7 +55,7 @@ only_rules:
     - enum_case_associated_values_count
     - expiring_todo
     # - explicit_acl
-    - explicit_enum_raw_value
+    # - explicit_enum_raw_value
     - explicit_init
     # - explicit_top_level_acl
     # - explicit_type_interface

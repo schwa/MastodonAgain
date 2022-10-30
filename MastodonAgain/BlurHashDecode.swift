@@ -1,7 +1,9 @@
 import CoreGraphics
 
 func decodedBlurHash(blurHash: String, size: CGSize, punch: Float = 1) -> CGImage? {
-    guard blurHash.count >= 6 else { return nil }
+    guard blurHash.count >= 6 else {
+        return nil
+    }
 
     let sizeFlag = String(blurHash[0]).decode83()
     let numY = (sizeFlag / 9) + 1
@@ -10,7 +12,9 @@ func decodedBlurHash(blurHash: String, size: CGSize, punch: Float = 1) -> CGImag
     let quantisedMaximumValue = String(blurHash[1]).decode83()
     let maximumValue = Float(quantisedMaximumValue + 1) / 166
 
-    guard blurHash.count == 4 + 2 * numX * numY else { return nil }
+    guard blurHash.count == 4 + 2 * numX * numY else {
+        return nil
+    }
 
     let colours: [(Float, Float, Float)] = (0 ..< numX * numY).map { i in
         if i == 0 {
@@ -26,9 +30,13 @@ func decodedBlurHash(blurHash: String, size: CGSize, punch: Float = 1) -> CGImag
     let width = Int(size.width)
     let height = Int(size.height)
     let bytesPerRow = width * 3
-    guard let data = CFDataCreateMutable(kCFAllocatorDefault, bytesPerRow * height) else { return nil }
+    guard let data = CFDataCreateMutable(kCFAllocatorDefault, bytesPerRow * height) else {
+        return nil
+    }
     CFDataSetLength(data, bytesPerRow * height)
-    guard let pixels = CFDataGetMutableBytePtr(data) else { return nil }
+    guard let pixels = CFDataGetMutableBytePtr(data) else {
+        return nil
+    }
 
     for y in 0 ..< height {
         for x in 0 ..< width {
@@ -61,8 +69,9 @@ func decodedBlurHash(blurHash: String, size: CGSize, punch: Float = 1) -> CGImag
     guard let provider = CGDataProvider(data: data) else {
         return nil
     }
-    guard let cgImage = CGImage(width: width, height: height, bitsPerComponent: 8, bitsPerPixel: 24, bytesPerRow: bytesPerRow,
-                                space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: bitmapInfo, provider: provider, decode: nil, shouldInterpolate: true, intent: .defaultIntent) else { return nil }
+    guard let cgImage = CGImage(width: width, height: height, bitsPerComponent: 8, bitsPerPixel: 24, bytesPerRow: bytesPerRow, space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: bitmapInfo, provider: provider, decode: nil, shouldInterpolate: true, intent: .defaultIntent) else {
+        return nil
+    }
 
     return cgImage
 }
@@ -100,8 +109,12 @@ private func linearTosRGB(_ value: Float) -> Int {
 
 private func sRGBToLinear(_ value: some BinaryInteger) -> Float {
     let v = Float(Int64(value)) / 255
-    if v <= 0.04045 { return v / 12.92 }
-    else { return pow((v + 0.055) / 1.055, 2.4) }
+    if v <= 0.04045 {
+        return v / 12.92
+    }
+    else {
+        return pow((v + 0.055) / 1.055, 2.4)        
+    }
 }
 
 private let encodeCharacters: [String] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#$%*+,-.:;=?@[]^_{|}~".map { String($0) }
