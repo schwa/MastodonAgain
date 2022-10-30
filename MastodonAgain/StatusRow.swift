@@ -86,14 +86,18 @@ struct ImageAttachmentView: View {
         if let smallSize = attachment.meta?.small?.cgSize {
             CachedAsyncImage(url: attachment.previewURL) { image in
                 image.resizable().scaledToFill()
+                .accessibilityLabel("TODO (Loaded)")
             }
             placeholder: {
-                if let blurHash = attachment.blurHash, let image = Image(blurHash: blurHash, size: smallSize) {
-                    image.accessibilityLabel("TODO")
+                Group {
+                    if let blurHash = attachment.blurHash, let image = Image(blurHash: blurHash, size: smallSize) {
+                        image
+                    }
+                    else {
+                        LinearGradient(colors: [.cyan, .purple], startPoint: .topLeading, endPoint: .bottomTrailing)
+                    }
                 }
-                else {
-                    LinearGradient(colors: [.cyan, .purple], startPoint: .topLeading, endPoint: .bottomTrailing)
-                }
+                .accessibilityLabel("TODO (Loading)")
             }
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .frame(width: smallSize.width, height: smallSize.height, alignment: .center)
