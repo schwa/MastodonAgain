@@ -19,7 +19,7 @@ extension MiniKeychain {
             switch status {
             case errSecSuccess:
                 return
-            case Int32(errKCDuplicateItem):
+            case errSecDuplicateItem:
                 logger?.log("Duplicate - maybe an error?")
                 return
             default:
@@ -62,7 +62,7 @@ extension MiniKeychain {
             switch status {
             case errSecSuccess:
                 return
-            case Int32(errKCDuplicateItem):
+            case errSecDuplicateItem:
                 logger?.log("Duplicate - maybe an error?")
                 return
             default:

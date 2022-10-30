@@ -215,12 +215,12 @@ public extension URLSession {
 
 public extension Status {
     var attributedContent: AttributedString {
+        #if os(macOS)
         let header = #"<meta charset="UTF-8">"#
-
         let html = header + content
         let htmlData = html.data(using: .utf8)!
-
-        var attributedContent = AttributedString(NSAttributedString(html: htmlData, documentAttributes: nil)!)
+        let nsAttributedContent = NSAttributedString(html: htmlData, documentAttributes: nil)!
+        var attributedContent = AttributedString(nsAttributedContent)
         var container = AttributeContainer()
         container[AttributeScopes.SwiftUIAttributes.FontAttribute.self] = .body
         attributedContent.mergeAttributes(container, mergePolicy: .keepNew)
@@ -229,6 +229,9 @@ public extension Status {
             attributedContent.characters.removeLast()
         }
         return attributedContent
+        #elseif os(iOS)
+        return AttributedString() // TODO: Placeholder
+        #endif
     }
 }
 

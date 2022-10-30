@@ -31,7 +31,9 @@ struct StatusRow: View {
                     } label: {
                         Text(status.created, style: .relative).foregroundColor(.secondary)
                     }
+                    #if os(macOS)
                     .buttonStyle(.link)
+                    #endif
                     .fixedSize()
                 }
                 Text(status.attributedContent)

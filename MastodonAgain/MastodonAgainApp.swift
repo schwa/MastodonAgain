@@ -13,10 +13,12 @@ struct MastodonAgainApp: App {
             ContentView()
             .environmentObject(appModel)
         }
+        #if os(macOS)
         Settings {
             AppSettings()
             .environmentObject(appModel)
         }
+        #endif
     }
 }
 
