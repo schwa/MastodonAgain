@@ -35,6 +35,7 @@
 		45202003290F164800469569 /* MastodonAgain-Shared.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "MastodonAgain-Shared.xcconfig"; sourceTree = "<group>"; };
 		45202004290F164800469569 /* Project-Shared.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "Project-Shared.xcconfig"; sourceTree = "<group>"; };
 		45202005290F164800469569 /* Project-Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "Project-Debug.xcconfig"; sourceTree = "<group>"; };
+		4520200D290F273400469569 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		455AC87E290D96F600137415 /* MastodonAgain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MastodonAgain.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		455AC881290D96F600137415 /* MastodonAgainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonAgainApp.swift; sourceTree = "<group>"; };
 		455AC883290D96F600137415 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -122,6 +123,7 @@
 		455AC880290D96F600137415 /* MastodonAgain */ = {
 			isa = PBXGroup;
 			children = (
+				4520200D290F273400469569 /* Info.plist */,
 				455AC881290D96F600137415 /* MastodonAgainApp.swift */,
 				45F1A2C0290E4FEE0093A8AC /* AppModel.swift */,
 				45F1A2C2290E4FF60093A8AC /* AppSettings.swift */,
@@ -297,6 +299,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 45202002290F164800469569 /* MastodonAgain-Debug.xcconfig */;
 			buildSettings = {
+				INFOPLIST_FILE = MastodonAgain/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 			};
 			name = Debug;
 		};
@@ -304,6 +310,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 45202000290F164800469569 /* MastodonAgain-Release.xcconfig */;
 			buildSettings = {
+				INFOPLIST_FILE = MastodonAgain/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 			};
 			name = Release;
 		};
