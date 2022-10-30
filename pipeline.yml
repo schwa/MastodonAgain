@@ -1,0 +1,5 @@
+steps:
+    - commands:
+          - "xcodebuild -scheme 'MastodonAgain' -allowProvisioningUpdates -destination 'generic/platform=macOS'"
+          - "xcodebuild -scheme 'MastodonAgain' -allowProvisioningUpdates -destination 'generic/platform=iOS'"
+          - "swiftlint lint --quiet"
