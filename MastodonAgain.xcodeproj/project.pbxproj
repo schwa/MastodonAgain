@@ -24,6 +24,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		45201FF9290F150100469569 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
+		45201FFA290F150100469569 /* .swiftformat */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swiftformat; sourceTree = "<group>"; };
+		45201FFB290F150100469569 /* .swift-version */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".swift-version"; sourceTree = "<group>"; };
+		45201FFC290F150100469569 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		45201FFE290F152000469569 /* pipeline.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = pipeline.yml; sourceTree = "<group>"; };
 		455AC87E290D96F600137415 /* MastodonAgain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MastodonAgain.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		455AC881290D96F600137415 /* MastodonAgainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonAgainApp.swift; sourceTree = "<group>"; };
 		455AC883290D96F600137415 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -55,9 +60,30 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		45201FF8290F14E800469569 /* DotFiles */ = {
+			isa = PBXGroup;
+			children = (
+				45201FFC290F150100469569 /* .gitignore */,
+				45201FFB290F150100469569 /* .swift-version */,
+				45201FFA290F150100469569 /* .swiftformat */,
+				45201FF9290F150100469569 /* .swiftlint.yml */,
+				45201FFD290F152000469569 /* buildkite */,
+			);
+			name = DotFiles;
+			sourceTree = "<group>";
+		};
+		45201FFD290F152000469569 /* buildkite */ = {
+			isa = PBXGroup;
+			children = (
+				45201FFE290F152000469569 /* pipeline.yml */,
+			);
+			path = buildkite;
+			sourceTree = "<group>";
+		};
 		455AC875290D96F600137415 = {
 			isa = PBXGroup;
 			children = (
+				45201FF8290F14E800469569 /* DotFiles */,
 				455AC891290D981A00137415 /* Packages */,
 				455AC880290D96F600137415 /* MastodonAgain */,
 				455AC87F290D96F600137415 /* Products */,
