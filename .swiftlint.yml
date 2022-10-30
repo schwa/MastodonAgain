@@ -214,4 +214,3 @@ only_rules:
     # - xct_specific_matcher
     - xctfail_message
     - yoda_condition
-line_length: 240

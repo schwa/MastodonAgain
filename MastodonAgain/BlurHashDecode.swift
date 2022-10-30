@@ -1,5 +1,7 @@
 import CoreGraphics
 
+// swiftlint:disable cyclomatic_complexity
+// swiftlint:disable function_body_length
 func decodedBlurHash(blurHash: String, size: CGSize, punch: Float = 1) -> CGImage? {
     guard blurHash.count >= 6 else {
         return nil

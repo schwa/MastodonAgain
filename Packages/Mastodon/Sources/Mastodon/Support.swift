@@ -53,7 +53,7 @@ extension Dated: Decodable where Content: Decodable {
 
 public func validate<T>(_ item: (T, URLResponse)) throws -> (T, URLResponse) {
     guard let (result, response) = item as? (T, HTTPURLResponse) else {
-        fatalError()
+        fatalError("Response is not a HTTPURLResponse")
     }
 
     switch response.statusCode {

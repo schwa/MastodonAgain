@@ -25,7 +25,7 @@ public actor Service {
             if let date = formatter.date(from: string) {
                 return date
             }
-            fatalError()
+            fatalError("Failed to decode date \(string)")
         })
     }
 
@@ -36,7 +36,7 @@ public actor Service {
 
     public func favorite(status: Status) async throws {
         guard let host, let token else {
-            fatalError()
+            fatalError("No host or token.")
         }
         let url = URL(string: "https://\(host)/api/v1/statuses/\(status.id)/favourite")!
         let request = URLRequest.post(url).headers(token.headers)
@@ -49,7 +49,7 @@ public actor Service {
 
     public func timelime(_ timeline: Timeline, direction: Timeline.Direction? = nil) async throws -> Timeline {
         guard let host, let token else {
-            fatalError()
+            fatalError("No host or token.")
         }
 
         let url: URL

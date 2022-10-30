@@ -23,8 +23,7 @@ extension MiniKeychain {
                 logger?.log("Duplicate - maybe an error?")
                 return
             default:
-                logger?.log("Could not read from keychain")
-                fatalError()
+                fatalError("Could not read from keychain")
             }
         }
     }
@@ -45,8 +44,7 @@ extension MiniKeychain {
         case errSecItemNotFound:
             return false
         default:
-            logger?.log("Could not read from keychain")
-            fatalError()
+            fatalError("Could not read from keychain")
         }
     }
 
@@ -66,8 +64,7 @@ extension MiniKeychain {
                 logger?.log("Duplicate - maybe an error?")
                 return
             default:
-                logger?.log("Could not read from keychain")
-                fatalError()
+                fatalError("Could not read from keychain")
             }
         }
     }
@@ -89,7 +86,7 @@ extension MiniKeychain {
             case errSecSuccess, errSecItemNotFound:
                 return
             default:
-                fatalError()
+                fatalError("Could not delete from keychain")
             }
         }
     }
@@ -120,8 +117,7 @@ extension MiniKeychain {
         case errSecItemNotFound:
             return nil
         default:
-            logger?.log("Could not read from keychain")
-            fatalError()
+            fatalError("Could not read from keychain")
         }
     }
 }
@@ -137,8 +133,7 @@ class SecureStorage<Value> {
                 return reverse(password)
             }
             catch {
-                logger?.log("Could not read keychain")
-                fatalError()
+                fatalError("Could not read keychain")
             }
         }
         set {
@@ -152,8 +147,7 @@ class SecureStorage<Value> {
                 }
             }
             catch {
-                logger?.log("Could not write/delete keychain")
-                fatalError()
+                fatalError("Could not write/delete keychain")
             }
         }
     }
