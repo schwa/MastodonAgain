@@ -1,9 +1,8 @@
-import SwiftUI
 import Everything
 import Mastodon
+import SwiftUI
 
 struct ContentView: View {
-
     @EnvironmentObject
     var appModel: AppModel
 

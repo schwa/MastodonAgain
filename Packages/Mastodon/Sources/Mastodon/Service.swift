@@ -1,10 +1,9 @@
-import Foundation
 import AsyncAlgorithms
-import RegexBuilder
 import Everything
+import Foundation
+import RegexBuilder
 
 public actor Service {
-
     private var host: String?
     private var token: Token?
     private let session = URLSession.shared
@@ -42,7 +41,7 @@ public actor Service {
         let url = URL(string: "https://\(host)/api/v1/statuses/\(status.id)/favourite")!
         let request = URLRequest.post(url).headers(token.headers)
         let (status, response) = try await session.json(Status.self, decoder: decoder, for: request)
-        //print(try JSONSerialization.jsonObject(with: data))
+        // print(try JSONSerialization.jsonObject(with: data))
 //        print(status)
 //        print(response)
         update(status)
@@ -104,14 +103,13 @@ public actor Service {
         let now = Date.now
         let other = other.map { Dated($0, date: now) }.map { ($0.content.id, $0) }
         datedStatuses.merge(other) { _, rhs in
-            return rhs
+            rhs
         }
     }
 
     public func update(_ value: Account) {
         datedAccounts[value.id] = .init(value)
     }
-
 }
 
 extension URLSession {
@@ -119,16 +117,15 @@ extension URLSession {
         let (data, response) = try await data(for: request)
         let httpResponse = response as! HTTPURLResponse
         switch httpResponse.statusCode {
-        case 200..<299:
+        case 200 ..< 299:
             return (data, httpResponse)
-            //    case 401:
-            //        throw HTTPError(statusCode: .init(response.statusCode))
+        //    case 401:
+        //        throw HTTPError(statusCode: .init(response.statusCode))
         default:
             print(response)
             throw HTTPError(statusCode: .init(httpResponse.statusCode))
         }
     }
-
 }
 
 public struct Timeline: Equatable {
@@ -164,7 +161,7 @@ public struct Timeline: Equatable {
 
     public init(timelineType: Timeline.TimelineType, stasuses: [Status] = [], previous: URL? = nil, next: URL? = nil) {
         self.timelineType = timelineType
-        self.statuses = stasuses
+        statuses = stasuses
         self.previous = previous
         self.next = next
     }
@@ -177,7 +174,7 @@ extension Timeline: CustomStringConvertible {
 }
 
 func processLinks(string: String) throws -> [String: URL] {
-    let pattern = #/<(.+?)>;\s*rel="(.+?)",?/#
+    let pattern = #/<(.+?)>;\s*rel="(.+?)", ?/#
 
     let s = try string.matches(of: pattern).map { match in
         let (_, url, rel) = match.output
@@ -185,4 +182,3 @@ func processLinks(string: String) throws -> [String: URL] {
     }
     return Dictionary(uniqueKeysWithValues: s)
 }
-

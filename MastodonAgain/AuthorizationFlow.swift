@@ -1,10 +1,9 @@
-import SwiftUI
-import Mastodon
 import Everything
+import Mastodon
+import SwiftUI
 import WebKit
 
 struct AuthorizationFlow: View {
-
     @EnvironmentObject
     var appModel: AppModel
 
@@ -43,17 +42,17 @@ struct AuthorizationFlow: View {
                 let view = WKWebView(frame: .zero, configuration: webConfiguration)
                 view.load(request)
                 return view
-            } update: { view in
+            } update: { _ in
             }
             Image(systemName: "arrow.down").font(.largeTitle).foregroundColor(.red)
-            .padding()
+                .padding()
             TextField("Authorisation Code", text: $authorizationCode)
                 .onSubmit {
                     Task {
                         try await getToken(with: application)
                     }
                 }
-            .padding()
+                .padding()
         default:
             Text("Already authorized!")
         }
@@ -65,11 +64,11 @@ struct AuthorizationFlow: View {
             "client_name": clientName,
             "redirect_uris": "urn:ietf:wg:oauth:2.0:oob",
             "scopes": "read write follow push",
-            "website": website
+            "website": website,
         ])
 
         let (application, _) = try await URLSession.shared.json(RegisteredApplication.self, for: request)
-        self.appModel.authorization = .registered(application)
+        appModel.authorization = .registered(application)
     }
 
     func getToken(with application: RegisteredApplication) async throws {
@@ -81,11 +80,8 @@ struct AuthorizationFlow: View {
             "grant_type": "authorization_code",
             "code": authorizationCode,
             "scope": "read write follow push",
-
         ])
         let (token, _) = try await URLSession.shared.json(Token.self, for: request)
-        self.appModel.authorization = .authorized(application, token)
+        appModel.authorization = .authorized(application, token)
     }
-
 }
-

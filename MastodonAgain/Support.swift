@@ -1,8 +1,8 @@
-import SwiftUI
-import Mastodon
-import Everything
 import CachedAsyncImage
+import Everything
+import Mastodon
 import RegexBuilder
+import SwiftUI
 
 struct RedlineModifier: ViewModifier {
     func body(content: Content) -> some View {
@@ -31,25 +31,23 @@ struct RedlineModifier: ViewModifier {
                         }
                     }
                 symbols: {
-                    Text(verbatim: "\(proxy.size.width, format: .number)")
-                        .padding(1)
-                        .background(.thickMaterial)
-                        .tag("width")
-                    Text(verbatim: "\(proxy.size.height, format: .number)")
-                        .padding(1)
-                        .background(.thickMaterial)
-                        .tag("height")
-                }
+                        Text(verbatim: "\(proxy.size.width, format: .number)")
+                            .padding(1)
+                            .background(.thickMaterial)
+                            .tag("width")
+                        Text(verbatim: "\(proxy.size.height, format: .number)")
+                            .padding(1)
+                            .background(.thickMaterial)
+                            .tag("height")
+                    }
                 }
             }
-
     }
 }
 
-
 extension View {
     func redlined() -> some View {
-        self.modifier(RedlineModifier())
+        modifier(RedlineModifier())
     }
 }
 
@@ -78,14 +76,10 @@ struct Avatar: View {
             Image(systemName: "person.circle.fill")
         }
     }
-
 }
 
-
-
-extension ErrorHandler {
-
-    public func handle(_ block: () async throws -> Void) async {
+public extension ErrorHandler {
+    func handle(_ block: () async throws -> Void) async {
         do {
             try await block()
         }

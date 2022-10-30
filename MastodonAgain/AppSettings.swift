@@ -1,8 +1,7 @@
-import SwiftUI
 import Mastodon
+import SwiftUI
 
 struct AppSettings: View {
-
     @EnvironmentObject
     var appModel: AppModel
 
@@ -36,7 +35,4 @@ struct AppSettings: View {
         .frame(minWidth: 640, minHeight: 480)
         .padding()
     }
-
-
-
 }

@@ -1,6 +1,6 @@
 import Foundation
-import Security
 import os
+import Security
 
 private let logger: Logger? = Logger()
 
@@ -12,7 +12,7 @@ extension MiniKeychain {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: account,
-            kSecValueData as String: password
+            kSecValueData as String: password,
         ]
         DispatchQueue(label: "keychain-write", qos: .default).async {
             let status = SecItemAdd(query as CFDictionary, nil)
@@ -36,7 +36,7 @@ extension MiniKeychain {
             kSecClass as String: kSecClassInternetPassword,
             kSecAttrServer as String: server,
             kSecMatchLimit as String: kSecMatchLimitOne,
-            kSecAttrAccount as String: account
+            kSecAttrAccount as String: account,
         ]
         let status = SecItemCopyMatching(query as CFDictionary, nil)
         switch status {
@@ -55,7 +55,7 @@ extension MiniKeychain {
             kSecClass as String: kSecClassInternetPassword,
             kSecAttrAccount as String: account,
             kSecAttrServer as String: server,
-            kSecValueData as String: password
+            kSecValueData as String: password,
         ]
         DispatchQueue(label: "keychain-write", qos: .default).async {
             let status = SecItemAdd(query as CFDictionary, nil)
@@ -78,7 +78,7 @@ extension MiniKeychain {
             kSecAttrServer as String: server,
             kSecMatchLimit as String: kSecMatchLimitOne,
             kSecReturnAttributes as String: true,
-            kSecReturnData as String: true
+            kSecReturnData as String: true,
         ]
         if let account {
             query[kSecAttrAccount as String] = account
@@ -100,7 +100,7 @@ extension MiniKeychain {
             kSecAttrServer as String: server,
             kSecMatchLimit as String: kSecMatchLimitOne,
             kSecReturnAttributes as String: true,
-            kSecReturnData as String: true
+            kSecReturnData as String: true,
         ]
         if let account {
             query[kSecAttrAccount as String] = account
@@ -109,7 +109,7 @@ extension MiniKeychain {
         let status = SecItemCopyMatching(query as CFDictionary, &item)
         switch status {
         case errSecSuccess:
-            guard let existingItem = item as? [String : Any],
+            guard let existingItem = item as? [String: Any],
                   let passwordData = existingItem[kSecValueData as String] as? Data,
                   let password = String(data: passwordData, encoding: String.Encoding.utf8),
                   let account = existingItem[kSecAttrAccount as String] as? String
@@ -127,8 +127,8 @@ extension MiniKeychain {
 }
 
 @propertyWrapper
-class SecureStorage <Value> {
-    var wrappedValue: Optional<Value> {
+class SecureStorage<Value> {
+    var wrappedValue: Value? {
         get {
             do {
                 guard let (_, password) = try MiniKeychain().internetPassword(forServer: key) else {
@@ -171,7 +171,7 @@ class SecureStorage <Value> {
 
 extension SecureStorage where Value: Codable {
     convenience init(_ key: String) {
-        self.init(key, converter: { return try! JSONEncoder().encode($0).base64EncodedString() }, reverse: {
+        self.init(key, converter: { try! JSONEncoder().encode($0).base64EncodedString() }, reverse: {
             try! JSONDecoder().decode(Value.self, from: Data(base64Encoded: $0)!)
         })
     }

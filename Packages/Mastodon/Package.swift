@@ -7,7 +7,7 @@ let package = Package(
     name: "Mastodon",
     platforms: [
         .macOS(.v13),
-        .iOS(.v16)
+        .iOS(.v16),
     ],
     products: [
         .library(name: "Mastodon", targets: ["Mastodon"]),
@@ -17,15 +17,16 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-async-algorithms", from: "0.0.3"),
     ],
     targets: [
-
         .target(
             name: "Mastodon",
             dependencies: [
                 "Everything",
                 .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"),
-            ]),
+            ]
+        ),
         .testTarget(
             name: "MastodonTests",
-            dependencies: ["Mastodon"]),
+            dependencies: ["Mastodon"]
+        ),
     ]
 )

@@ -1,8 +1,7 @@
-import Foundation
 import Everything
+import Foundation
 
 public class Storage {
-
     public static let shared = Storage()
 
     public var items: [String: Data] = [:]
@@ -15,7 +14,7 @@ public class Storage {
 
     public subscript(key: String) -> Data? {
         get {
-            return items[key]
+            items[key]
         }
         set {
             if newValue == nil {
@@ -44,7 +43,7 @@ public class Storage {
 }
 
 public extension Storage {
-    subscript <T>(key: String) -> T? where T: Codable {
+    subscript<T>(key: String) -> T? where T: Codable {
         get {
             guard let data = self[key] else {
                 return nil
@@ -60,9 +59,6 @@ public extension Storage {
             else {
                 self[key] = nil
             }
-
-
         }
     }
-
 }

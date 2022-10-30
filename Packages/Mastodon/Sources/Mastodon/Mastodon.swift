@@ -1,5 +1,5 @@
-import Foundation
 import Everything
+import Foundation
 
 public struct Poll: Codable, Equatable {
 }
@@ -34,7 +34,6 @@ public struct Emoji: Codable, Equatable {
 }
 
 public struct Account: Identifiable, Codable, Equatable {
-
     public enum CodingKeys: String, CodingKey {
         case id
         case username
@@ -104,6 +103,7 @@ public struct RegisteredApplication: Identifiable, Codable, Equatable {
         case clientSecret = "client_secret"
         case vapidKey = "vapid_key"
     }
+
     public let id: Tagged<RegisteredApplication, String>
     public let name: String
     public let website: String
@@ -142,6 +142,7 @@ public struct MediaAttachment: Identifiable, Codable, Equatable {
             public let size: String?
             public let aspect: Double?
         }
+
         public let original: Size?
         public let small: Size?
     }
@@ -173,7 +174,6 @@ public struct Mention: Identifiable, Codable, Equatable {
 }
 
 public struct Status: Identifiable, Codable, Equatable {
-
     public enum CodingKeys: String, CodingKey {
         case id
         case created = "created_at"
@@ -189,7 +189,7 @@ public struct Status: Identifiable, Codable, Equatable {
         case reblogsCount = "reblogs_count"
         case favouritesCount = "favourites_count"
         case editedAt = "edited_at"
-        case content = "content"
+        case content
         case reblog
         case application
         case account
@@ -238,7 +238,6 @@ public struct Status: Identifiable, Codable, Equatable {
 }
 
 public struct PlaceholderCodable: Codable, Equatable {
-
 }
 
 public struct Token: Codable, Equatable {

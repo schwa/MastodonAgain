@@ -1,7 +1,7 @@
-import Mastodon
-import SwiftUI
 import AVKit
 import CachedAsyncImage
+import Mastodon
+import SwiftUI
 
 struct StatusRow: View {
     let status: Status
@@ -11,7 +11,6 @@ struct StatusRow: View {
 
     @EnvironmentObject
     var appModel: AppModel
-
 
     var body: some View {
         HStack(alignment: .top) {
@@ -38,7 +37,7 @@ struct StatusRow: View {
                 }
                 Text(status.attributedContent)
                     .textSelection(.enabled)
-                if status.mediaAttachments.count > 0 {
+                if !status.mediaAttachments.isEmpty {
                     MediaStack(attachments: status.mediaAttachments)
                 }
                 HStack(spacing: 32) {
@@ -56,12 +55,10 @@ struct StatusRow: View {
                 .buttonStyle(.borderless)
             }
         }
-
     }
 }
 
 struct MediaStack: View {
-
     let attachments: [MediaAttachment]
 
     var body: some View {
@@ -78,12 +75,9 @@ struct MediaStack: View {
                     Text("Unknown attachment")
                 }
             }
-
         }
-
     }
 }
-
 
 struct ImageAttachmentView: View {
     let attachment: MediaAttachment
@@ -109,8 +103,5 @@ struct ImageAttachmentView: View {
         else {
             Text("NO SIZE").foregroundColor(.red)
         }
-
-
     }
 }
-

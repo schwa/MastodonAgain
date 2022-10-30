@@ -7,7 +7,7 @@ public enum MastodonError {
 
 public extension Token {
     var headers: [String: String] {
-        return ["Authorization":"Bearer \(accessToken)"]
+        ["Authorization": "Bearer \(accessToken)"]
     }
 }
 
@@ -21,7 +21,7 @@ public extension URLRequest {
     func headers(_ headers: [String: String]) -> URLRequest {
         var copy = self
         var original = copy.allHTTPHeaderFields ?? [:]
-        original.merge(headers) { lhs, rhs in
+        original.merge(headers) { _, rhs in
             rhs
         }
         copy.allHTTPHeaderFields = original
@@ -29,9 +29,7 @@ public extension URLRequest {
     }
 }
 
-
-public struct Dated <Content> {
-
+public struct Dated<Content> {
     public let content: Content
     public let date: Date
 
@@ -59,10 +57,10 @@ public func validate<T>(_ item: (T, URLResponse)) throws -> (T, URLResponse) {
     }
 
     switch response.statusCode {
-    case 200..<299:
+    case 200 ..< 299:
         break
-        //    case 401:
-        //        throw HTTPError(statusCode: .init(response.statusCode))
+    //    case 401:
+    //        throw HTTPError(statusCode: .init(response.statusCode))
     default:
         print(response)
         throw HTTPError(statusCode: .init(response.statusCode))
@@ -75,12 +73,11 @@ public struct URLPath {
 }
 
 extension URLPath: Hashable {
-
 }
 
 extension URLPath: Comparable {
     public static func < (lhs: URLPath, rhs: URLPath) -> Bool {
-        return lhs.rawValue < rhs.rawValue
+        lhs.rawValue < rhs.rawValue
     }
 }
 
@@ -102,12 +99,11 @@ extension URLPath: CustomStringConvertible {
     }
 }
 
-
-public extension Dictionary where Key == String, Value == String {
+public extension [String: String] {
     var formEncoded: Data {
         //             client_name=Test+Application&redirect_uris=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&scopes=read+write+follow+push&website=https%3A%2F%2Fmyapp.example
 
-        let bodyString = map { (key, value) in
+        let bodyString = map { key, value in
             let key = key
                 .replacing(" ", with: "+")
                 .addingPercentEncoding(withAllowedCharacters: .alphanumerics + .punctuationCharacters + "+")!
@@ -116,7 +112,7 @@ public extension Dictionary where Key == String, Value == String {
                 .addingPercentEncoding(withAllowedCharacters: .alphanumerics + .punctuationCharacters + "+")!
             return "\(key)=\(value)"
         }
-            .joined(separator: "&")
+        .joined(separator: "&")
 
         return bodyString.data(using: .utf8)!
     }
@@ -130,12 +126,12 @@ extension CharacterSet: ExpressibleByStringLiteral {
 
 public extension CharacterSet {
     static func + (lhs: CharacterSet, rhs: CharacterSet) -> CharacterSet {
-        return lhs.union(rhs)
+        lhs.union(rhs)
     }
 }
 
 public extension URLRequest {
-    init(url: URL, formParameters form: Dictionary<String, String>) {
+    init(url: URL, formParameters form: [String: String]) {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
@@ -144,7 +140,7 @@ public extension URLRequest {
     }
 }
 
-public enum Uncertain <Known, Unknown> where Known: RawRepresentable, Unknown == Known.RawValue {
+public enum Uncertain<Known, Unknown> where Known: RawRepresentable, Unknown == Known.RawValue {
     case known(Known)
     case unknown(Unknown)
 
@@ -164,7 +160,6 @@ public enum Uncertain <Known, Unknown> where Known: RawRepresentable, Unknown ==
         case .unknown(let value):
             return value
         }
-
     }
 }
 
@@ -179,34 +174,28 @@ extension Uncertain: CustomStringConvertible {
     }
 }
 
-
 public struct HTTPError: Error {
-
     public enum StatusCode: Int {
         case unauthorized = 401
     }
 
     public let statusCode: Uncertain<StatusCode, Int>
-
 }
 
 extension HTTPError: CustomStringConvertible {
     public var description: String {
-        return statusCode.description
+        statusCode.description
     }
 }
 
-
 public extension URLSession {
-
     func string(for request: URLRequest) async throws -> (String, URLResponse) {
         let (data, response) = try await data(for: request)
         let string = String(data: data, encoding: .utf8)!
         return (string, response)
     }
 
-
-    func json <T>(_ type: T.Type, decoder: JSONDecoder = JSONDecoder(), for request: URLRequest) async throws -> (T, URLResponse) where T: Decodable {
+    func json<T>(_ type: T.Type, decoder: JSONDecoder = JSONDecoder(), for request: URLRequest) async throws -> (T, URLResponse) where T: Decodable {
         let (data, response) = try await data(for: request)
         let json = try decoder.decode(type, from: data)
         return (json, response)
@@ -216,39 +205,37 @@ public extension URLSession {
 public extension Status {
     var attributedContent: AttributedString {
         #if os(macOS)
-        let header = #"<meta charset="UTF-8">"#
-        let html = header + content
-        let htmlData = html.data(using: .utf8)!
-        let nsAttributedContent = NSAttributedString(html: htmlData, documentAttributes: nil)!
-        var attributedContent = AttributedString(nsAttributedContent)
-        var container = AttributeContainer()
-        container[AttributeScopes.SwiftUIAttributes.FontAttribute.self] = .body
-        attributedContent.mergeAttributes(container, mergePolicy: .keepNew)
-        // Remove trailing newline caused by <p>…</p>
-        if !attributedContent.characters.isEmpty {
-            attributedContent.characters.removeLast()
-        }
-        return attributedContent
+            let header = #"<meta charset="UTF-8">"#
+            let html = header + content
+            let htmlData = html.data(using: .utf8)!
+            let nsAttributedContent = NSAttributedString(html: htmlData, documentAttributes: nil)!
+            var attributedContent = AttributedString(nsAttributedContent)
+            var container = AttributeContainer()
+            container[AttributeScopes.SwiftUIAttributes.FontAttribute.self] = .body
+            attributedContent.mergeAttributes(container, mergePolicy: .keepNew)
+            // Remove trailing newline caused by <p>…</p>
+            if !attributedContent.characters.isEmpty {
+                attributedContent.characters.removeLast()
+            }
+            return attributedContent
         #elseif os(iOS)
-        return AttributedString() // TODO: Placeholder
+            return AttributedString() // TODO: Placeholder
         #endif
     }
 }
 
-
-
 public extension MediaAttachment.Meta.Size {
     var cgSize: CGSize? {
-        if let width = width, let height = height {
+        if let width, let height {
             return CGSize(width: width, height: height)
         }
-        else if let width = width, let aspect = aspect, aspect > 0 {
+        else if let width, let aspect, aspect > 0 {
             return CGSize(width: width, height: width * aspect)
         }
-        else if let height = height, let aspect = aspect, aspect > 0 {
+        else if let height, let aspect, aspect > 0 {
             return CGSize(width: height / aspect, height: height)
         }
-        else if let size = size {
+        else if let size {
             let regex = Regex {
                 Capture {
                     OneOrMore(.digit)

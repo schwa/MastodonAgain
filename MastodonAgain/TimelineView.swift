@@ -1,9 +1,8 @@
+import Everything
 import Mastodon
 import SwiftUI
-import Everything
 
 struct TimelineView: View {
-
     @Environment(\.errorHandler)
     var errorHandler
 
@@ -17,7 +16,6 @@ struct TimelineView: View {
     var refreshing = false
 
     var body: some View {
-
         let statuses = timeline.statuses
 
         List() {
@@ -72,6 +70,4 @@ struct TimelineView: View {
     func refresh(direction: Timeline.Direction? = nil) async throws {
         timeline = try await appModel.service.timelime(timeline, direction: direction)
     }
-
 }
-
