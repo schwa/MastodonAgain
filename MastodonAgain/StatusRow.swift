@@ -85,12 +85,11 @@ struct ImageAttachmentView: View {
     var body: some View {
         if let smallSize = attachment.meta?.small?.cgSize {
             CachedAsyncImage(url: attachment.previewURL) { image in
-                image
-                    .resizable()
-                    .scaledToFill()
-            } placeholder: {
+                image.resizable().scaledToFill()
+            }
+            placeholder: {
                 if let blurHash = attachment.blurHash, let image = Image(blurHash: blurHash, size: smallSize) {
-                    image
+                    image.accessibilityLabel("TODO")
                 }
                 else {
                     LinearGradient(colors: [.cyan, .purple], startPoint: .topLeading, endPoint: .bottomTrailing)

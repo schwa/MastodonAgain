@@ -44,7 +44,8 @@ struct AuthorizationFlow: View {
                 return view
             } update: { _ in
             }
-            Image(systemName: "arrow.down").font(.largeTitle).foregroundColor(.red)
+            Image(systemName: "arrow.down").font(.largeTitle)
+                .foregroundColor(.red)
                 .padding()
             TextField("Authorisation Code", text: $authorizationCode)
                 .onSubmit {
