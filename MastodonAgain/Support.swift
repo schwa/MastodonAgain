@@ -136,12 +136,6 @@ struct RequestDebugView: View {
     }
 }
 
-func jsonTidy(data: Data) throws -> String {
-    let json = try JSONSerialization.jsonObject(with: data)
-    let data = try JSONSerialization.data(withJSONObject: json, options: [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes])
-    return String(data: data, encoding: .utf8)!
-}
-
 public extension Button {
     init(title: String, systemImage systemName: String, action: @escaping () async -> Void) where Label == SwiftUI.Label<Text, Image> {
         self = Button(action: {

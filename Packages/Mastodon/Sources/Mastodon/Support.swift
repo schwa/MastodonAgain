@@ -286,3 +286,67 @@ func processLinks(string: String) throws -> [String: URL] {
     }
     return Dictionary(uniqueKeysWithValues: s)
 }
+
+public enum FormValue {
+    case value(_ name: String, _ value: String)
+    case file(_ name: String, _ filename: String, _ mimeType: String, _ data: Data)
+}
+
+public extension Sequence where Element == FormValue {
+    func data(boundary: String) -> Data {
+        let chunks = map { value in
+            switch value {
+            case .value(let name, let value):
+                let lines = [
+                    "Content-Disposition: form-data; name=\"\(name)\"",
+                    "",
+                    value,
+                    "",
+                ]
+                return Data(lines.joined(separator: "\r\n").utf8)
+            case .file(let name, let filename, let mimetype, let data):
+                let lines = [
+                    "Content-Disposition: form-data; name=\"\(name)\"; filename=\"\(filename)\"",
+                    "Content-Type: \(mimetype)",
+                    "",
+                    "",
+                ]
+                let header = Data(lines.joined(separator: "\r\n").utf8)
+                return header + data + Data("\r\n".utf8)
+            }
+        }
+        return Data([
+            Data("--\(boundary)\r\n".utf8),
+            Data(chunks.joined(separator: Data("--\(boundary)\r\n".utf8))),
+            Data("--\(boundary)--".utf8),
+        ].joined())
+    }
+}
+
+public extension URLRequest {
+    func form(_ form: [String: String]) -> URLRequest {
+        var copy = self
+        copy.httpMethod = "POST"
+        copy.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
+        copy.httpBody = form.formEncoded
+        let data = form.formEncoded
+        copy.httpBody = data
+        return copy
+    }
+
+    func multipartForm(_ values: [FormValue]) -> URLRequest {
+        var copy = self
+        copy.httpMethod = "POST"
+        let boundary = "__X_BOUNDARY__"
+        copy.setValue("multipart/form-data; charset=utf-8; boundary=\(boundary)}", forHTTPHeaderField: "Content-Type")
+        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types#multipartform-data
+        copy.httpBody = values.data(boundary: boundary)
+        return copy
+    }
+}
+
+public func jsonTidy(data: Data) throws -> String {
+    let json = try JSONSerialization.jsonObject(with: data)
+    let data = try JSONSerialization.data(withJSONObject: json, options: [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes])
+    return String(data: data, encoding: .utf8)!
+}

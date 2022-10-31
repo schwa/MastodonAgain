@@ -2,10 +2,7 @@
 import XCTest
 
 final class MastodonTests: XCTestCase {
-
-
     func testMultipartForm() throws {
-
         let expected = """
             -----------------------------8721656041911415653955004498
             Content-Disposition: form-data; name="myTextField"

@@ -152,7 +152,7 @@ public extension Service {
 
 public extension Service {
     // https://mastodon.example/api/v1/statuses
-    func postStatus(text: String, inReplyTo: Status.ID?, images: [URL]? = nil) async throws -> Status {
+    func postStatus(text: String, inReplyTo: Status.ID?) async throws -> Status {
         guard let host, let token else {
             fatalError("No host or token.")
         }
@@ -166,16 +166,9 @@ public extension Service {
             form["in_reply_to_id"] = inReplyTo.rawValue
         }
 
-//        var files: [(String, String, UTType, Data)] = []
-//        if let images {
-//            files = images.map { url in
-//
-//            }
-//        }
-
         let request = URLRequest.post(url)
             .headers(token.headers)
-//            .multipartForm(form, files: files)
+            .form(form)
 
         let (data, _) = try await session.validatedData(for: request)
         let status = try decoder.decode(Status.self, from: data)
@@ -183,62 +176,28 @@ public extension Service {
         logger?.log("Posted: \(String(describing: status))")
         return status
     }
-}
 
-public enum FormValue {
-    case value(_ name: String, _ value: String)
-    case file(_ name: String, _ filename: String, _ mimeType: String, _ data: Data)
-}
-
-public extension Sequence where Element == FormValue {
-    func data(boundary: String) -> Data {
-        let chunks = map { value in
-            switch value {
-            case .value(let name, let value):
-                let lines = [
-                    "Content-Disposition: form-data; name=\"\(name)\"",
-                    "",
-                    value,
-                    "",
-                ]
-                return Data(lines.joined(separator: "\r\n").utf8)
-            case .file(let name, let filename, let mimetype, let data):
-                let lines = [
-                    "Content-Disposition: form-data; name=\"\(name)\"; filename=\"\(filename)\"",
-                    "Content-Type: \(mimetype)",
-                    "",
-                    "",
-                ]
-                let header = Data(lines.joined(separator: "\r\n").utf8)
-                return header + data + Data("\r\n".utf8)
-            }
+    func uploadAttachment(file: URL, description: String) async throws -> Any {
+        guard let host, let token else {
+            fatalError("No host or token.")
         }
-        return Data([
-            Data("--\(boundary)\r\n".utf8),
-            Data(chunks.joined(separator: Data("--\(boundary)\r\n".utf8))),
-            Data("--\(boundary)--".utf8),
-        ].joined())
-    }
-}
+        logger?.log("Posting")
 
-public extension URLRequest {
-    func form(_ form: [String: String]) -> URLRequest {
-        var copy = self
-        copy.httpMethod = "POST"
-        copy.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
-        copy.httpBody = form.formEncoded
-        let data = form.formEncoded
-        copy.httpBody = data
-        return copy
-    }
+        let fileData = try Data(contentsOf: file)
 
-    func multipartForm(_ values: [FormValue]) -> URLRequest {
-        var copy = self
-        copy.httpMethod = "POST"
-        let boundary = "__X_BOUNDARY__"
-        copy.setValue("multipart/form-data; charset=utf-8; boundary=\(boundary)}", forHTTPHeaderField: "Content-Type")
-        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types#multipartform-data
-        copy.httpBody = values.data(boundary: boundary)
-        return copy
+        let formValues: [FormValue] = [
+            .value("description", description),
+            .file("image", file.lastPathComponent, "image/png", fileData) // TODO
+        ]
+
+        let url = URL(string: "https://\(host)/api/v1/media")!
+        let request = URLRequest.post(url)
+            .headers(token.headers)
+            .multipartForm(formValues)
+
+        let (data, _) = try await session.validatedData(for: request)
+
+        print(try jsonTidy(data: data))
+        return status
     }
 }

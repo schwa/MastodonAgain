@@ -18,6 +18,9 @@ struct NewPostView: View {
     var image: Image?
 
     @State
+    var imageURL: URL?
+
+    @State
     var imageDescription: String = ""
 
     var body: some View {
@@ -29,13 +32,18 @@ struct NewPostView: View {
             }
             TextEditor(text: $text)
             HStack {
-                ImageWell(image: $image).frame(width: 128, height: 128)
+                ImageWell(image: $image, imageURL: $imageURL).frame(width: 128, height: 128)
                 if image != nil {
                     TextField("Image description", text: $imageDescription)
                 }
             }
             Button("Reply") {
                 Task {
+//                    if let imageURL = imageURL, !imageDescription.isEmpty {
+//                        let status = try await appModel.service.uploadAttachment(file: imageURL, description: imageDescription)
+//                        print(status)
+//                    }
+
                     let status = try await appModel.service.postStatus(text: text, inReplyTo: inResponseTo?.id)
                     print(status)
                     text = ""
@@ -55,6 +63,9 @@ struct NewPostView: View {
 struct ImageWell: View {
     @Binding
     var image: Image?
+
+    @Binding
+    var imageURL: URL?
 
     @State
     var isTargeted = false
@@ -81,6 +92,7 @@ struct ImageWell: View {
                         guard let nsImage = NSImage(contentsOf: url) else {
                             fatalError("Could not create image")
                         }
+                        self.imageURL = url
                         self.image = Image(nsImage: nsImage)
                     }
                     return true
@@ -93,5 +105,4 @@ enum NewPost: Codable, Hashable {
     case empty
     case reply(Status.ID)
 }
-
 
