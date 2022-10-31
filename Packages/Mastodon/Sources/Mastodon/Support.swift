@@ -350,3 +350,22 @@ public func jsonTidy(data: Data) throws -> String {
     let data = try JSONSerialization.data(withJSONObject: json, options: [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes])
     return String(data: data, encoding: .utf8)!
 }
+
+public extension Optional where Wrapped: Collection {
+    func nilify() -> Wrapped? {
+        switch self {
+        case .some(let value):
+            if value.isEmpty {
+                return nil
+            }
+            else {
+                return value
+            }
+        case .none:
+            return nil
+        }
+    }
+}
+
+public struct PlaceholderCodable: Codable {
+}

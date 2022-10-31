@@ -3,7 +3,59 @@ import Foundation
 
 // swiftlint:disable file_length
 
-public struct Poll: Codable {
+public struct Account: Identifiable, Codable {
+    public enum CodingKeys: String, CodingKey {
+        case id
+        case username
+        case acct
+        case displayName = "display_name"
+        case locked
+        case bot
+        case discoverable
+        case group
+        case created = "created_at"
+        case note
+        case url
+        case avatar
+        case avatarStatic = "avatar_static"
+        case header
+        case headerStatic = "header_static"
+        case followersCount = "followers_count"
+        case followingCount = "following_count"
+        case statusesCount = "statuses_count"
+        case lastStatusAt = "last_status_at"
+        case noindex
+        case emojis
+        case fields
+    }
+
+    public let id: Tagged<Account, String>
+    public let username: String
+    public let acct: String
+    public let displayName: String
+    public let locked: Bool
+    public let bot: Bool
+    public let discoverable: Bool?
+    public let group: Bool
+    public let created: Date
+    public let note: String
+    public let url: String?
+    public let avatar: URL
+    public let avatarStatic: URL
+    public let header: String
+    public let headerStatic: String
+    public let followersCount: Int
+    public let followingCount: Int
+    public let statusesCount: Int
+    public let lastStatusAt: Date
+    public let noindex: Bool?
+    public let emojis: [Emoji]
+    public let fields: [Field]
+}
+
+public struct Application: Codable {
+    public let name: String
+    public let website: String?
 }
 
 public struct Card: Codable {
@@ -65,34 +117,6 @@ public struct Card: Codable {
     }
 }
 
-public extension Optional where Wrapped: Collection {
-    func nilify() -> Wrapped? {
-        switch self {
-        case .some(let value):
-            if value.isEmpty {
-                return nil
-            }
-            else {
-                return value
-            }
-        case .none:
-            return nil
-        }
-    }
-}
-
-public struct Field: Codable {
-    public enum CodingKeys: String, CodingKey {
-        case name
-        case value
-        case verifiedAt = "verified_at"
-    }
-
-    public let name: String
-    public let value: String
-    public let verifiedAt: String?
-}
-
 public struct Emoji: Codable {
     public enum CodingKeys: String, CodingKey {
         case shortCode
@@ -107,84 +131,16 @@ public struct Emoji: Codable {
     public let visibleInPic: Bool?
 }
 
-public struct Account: Identifiable, Codable {
+public struct Field: Codable {
     public enum CodingKeys: String, CodingKey {
-        case id
-        case username
-        case acct
-        case displayName = "display_name"
-        case locked
-        case bot
-        case discoverable
-        case group
-        case created = "created_at"
-        case note
-        case url
-        case avatar
-        case avatarStatic = "avatar_static"
-        case header
-        case headerStatic = "header_static"
-        case followersCount = "followers_count"
-        case followingCount = "following_count"
-        case statusesCount = "statuses_count"
-        case lastStatusAt = "last_status_at"
-        case noindex
-        case emojis
-        case fields
-    }
-
-    public let id: Tagged<Account, String>
-    public let username: String
-    public let acct: String
-    public let displayName: String
-    public let locked: Bool
-    public let bot: Bool
-    public let discoverable: Bool?
-    public let group: Bool
-    public let created: Date
-    public let note: String
-    public let url: String?
-    public let avatar: URL
-    public let avatarStatic: URL
-    public let header: String
-    public let headerStatic: String
-    public let followersCount: Int
-    public let followingCount: Int
-    public let statusesCount: Int
-    public let lastStatusAt: Date
-    public let noindex: Bool?
-    public let emojis: [Emoji]
-    public let fields: [Field]
-}
-
-public struct Tag: Codable {
-    public let name: String
-    public let url: URL
-}
-
-public struct Application: Codable {
-    public let name: String
-    public let website: String?
-}
-
-public struct RegisteredApplication: Identifiable, Codable, Equatable {
-    public enum CodingKeys: String, CodingKey {
-        case id
         case name
-        case website
-        case redirectURI = "redirect_uri"
-        case clientID = "client_id"
-        case clientSecret = "client_secret"
-        case vapidKey = "vapid_key"
+        case value
+        case verifiedAt = "verified_at"
     }
 
-    public let id: Tagged<RegisteredApplication, String>
     public let name: String
-    public let website: String
-    public let redirectURI: String
-    public let clientID: String
-    public let clientSecret: String
-    public let vapidKey: String
+    public let value: String
+    public let verifiedAt: String?
 }
 
 public struct MediaAttachment: Identifiable, Codable {
@@ -245,6 +201,9 @@ public struct Mention: Identifiable, Codable {
     public let username: String
     public let url: URL
     public let acct: String
+}
+
+public struct Poll: Codable {
 }
 
 public protocol StatusProtocol {
@@ -411,19 +370,8 @@ public struct ReblogStatus: StatusProtocol, Identifiable, Codable {
     public let bookmarked: Bool?
 }
 
-public struct PlaceholderCodable: Codable {
+public struct Tag: Codable {
+    public let name: String
+    public let url: URL
 }
 
-public struct Token: Codable, Equatable {
-    public enum CodingKeys: String, CodingKey {
-        case accessToken = "access_token"
-        case tokenType = "token_type"
-        case scope
-        case created = "created_at"
-    }
-
-    public let accessToken: String
-    public let tokenType: String
-    public let scope: String
-    public let created: Date
-}

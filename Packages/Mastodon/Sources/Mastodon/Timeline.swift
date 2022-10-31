@@ -50,9 +50,28 @@ public enum TimelineType: Codable, Equatable {
 
 // MARK: -
 
-public enum PagingDirection {
-    case previous
-    case next
+public struct TimelinePage: Identifiable, Codable {
+    public let id: String
+    public let url: URL
+    public var statuses: [Status] {
+        didSet {
+            // Make sure any changes to status only change content of statuses and doesn't change order or ids
+            assert(oldValue.map(\.id) == statuses.map(\.id))
+        }
+    }
+    public let previous: URL?
+    public let next: URL?
+    public let data: Data?
+
+    init(url: URL, statuses: [Status] = [], previous: URL? = nil, next: URL? = nil, data: Data? = nil) {
+        assert(statuses.first!.id >= statuses.last!.id)
+        self.id = "\(url) | \(statuses.count)\(statuses.first!.id) -> \(statuses.last!.id)"
+        self.url = url
+        self.statuses = statuses
+        self.previous = previous
+        self.next = next
+        self.data = data
+    }
 }
 
 public struct Timeline: Codable {
@@ -111,27 +130,3 @@ public extension Timeline {
 }
 
 // MARK: -
-
-public struct TimelinePage: Identifiable, Codable {
-    public let id: String
-    public let url: URL
-    public var statuses: [Status] {
-        didSet {
-            // Make sure any changes to status only change content of statuses and doesn't change order or ids
-            assert(oldValue.map(\.id) == statuses.map(\.id))
-        }
-    }
-    public let previous: URL?
-    public let next: URL?
-    public let data: Data?
-
-    init(url: URL, statuses: [Status] = [], previous: URL? = nil, next: URL? = nil, data: Data? = nil) {
-        assert(statuses.first!.id >= statuses.last!.id)
-        self.id = "\(url) | \(statuses.count)\(statuses.first!.id) -> \(statuses.last!.id)"
-        self.url = url
-        self.statuses = statuses
-        self.previous = previous
-        self.next = next
-        self.data = data
-    }
-}
