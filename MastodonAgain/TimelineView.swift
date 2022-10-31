@@ -75,7 +75,7 @@ struct TimelineView: View {
     }
 
     func refreshTask(direction: Timeline.Direction? = nil) {
-        guard timeline.canned == false else {
+        guard timeline.timelineType != .canned else {
             return
         }
         refreshing = true

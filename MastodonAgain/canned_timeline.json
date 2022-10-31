@@ -1,6 +1,7 @@
 {
     "title": "Canned Timeline",
     "canned": true,
+    "host": "mastodon.social",
     "url": "https:\/\/mastodon.social\/api\/v1\/timelines\/home",
     "timelineType": {
         "home": {}

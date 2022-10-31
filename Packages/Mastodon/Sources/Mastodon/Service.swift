@@ -111,7 +111,7 @@ public extension Service {
         let url: URL
         switch direction {
         case nil:
-            url = timeline.url
+            url = timeline.url! // TODO
         case .previous:
             guard let previous = timeline.previousURL else {
                 print("NO PREVIOUS")
@@ -149,7 +149,7 @@ public extension Service {
         let page = Timeline.Page(url: url, statuses: statuses, previous: previous, next: next, data: data)
 
         // TODO: Need to sort statuses (or rely on view to do it)
-        return Timeline(host: host, timelineType: timeline.timelineType, title: timeline.title, pages: timeline.pages + [page])
+        return Timeline(host: host, timelineType: timeline.timelineType, pages: timeline.pages + [page])
     }
 
     func favorite(status: Status.ID) async throws -> Status {

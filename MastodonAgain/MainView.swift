@@ -12,43 +12,33 @@ struct MainView: View {
     var body: some View {
         NavigationSplitView {
             List(selection: $selection) {
-                Label("Home", systemImage: "house").tag(MainTabs.home)
-                Label("Public", systemImage: "person.3").tag(MainTabs.public)
-                Label("Federated", systemImage: "person.3").tag(MainTabs.federated)
-                Label("Local", systemImage: "person.3").tag(MainTabs.local)
-                Label("Direct Messages", systemImage: "bubble.left").tag(MainTabs.directMessages)
-                Label("Search", systemImage: "magnifyingglass").tag(MainTabs.search)
-                Label("Me", systemImage: "person.text.rectangle").badge(1).tag(MainTabs.me)
-                Label("Canned Timeline", systemImage: "oilcan").tag(MainTabs.cannedTimeline)
+                ForEach(MainTabs.allCases, id: \.self) { tab in
+                    Label(tab.title, systemImage: tab.systemImage).tag(tab)
+                }
             }
         } detail: {
-            switch selection {
-            case .home:
-                TimelineStack(timeline: Timeline(host: appModel.host, timelineType: .home, title: "Home"))
-            case .federated:
-                TimelineStack(timeline: Timeline(host: appModel.host, timelineType: .federated, title: "Federated"))
-            case .local:
-                TimelineStack(timeline: Timeline(host: appModel.host, timelineType: .local, title: "Local"))
-            case .public:
-                TimelineStack(timeline: Timeline(host: appModel.host, timelineType: .public, title: "Public"))
-            case .directMessages:
+            if let timelineType = selection.timelineType {
+                if timelineType == .canned {
+                    let url = Bundle.main.url(forResource: "canned_timeline", withExtension: "json")!
+                    let data = try! Data(contentsOf: url)
+                    // Do not use mastodon decoder for canned timeline
+                    let loadedTimeline = try! JSONDecoder().decode(Timeline.self, from: data)
+                    let timeline = Timeline(host: appModel.host, timelineType: timelineType, pages: loadedTimeline.pages)
+                    TimelineStack(timeline: timeline)
+                }
+                else {
+                    let timeline = Timeline(host: appModel.host, timelineType: timelineType)
+                    TimelineStack(timeline: timeline)
+                }
+            }
+            else {
                 WorkInProgressView().opacity(0.2)
-            case .search:
-                WorkInProgressView().opacity(0.2)
-            case .me:
-                WorkInProgressView().opacity(0.2)
-            case .cannedTimeline:
-                let url = Bundle.main.url(forResource: "canned_timeline", withExtension: "json")!
-                let data = try! Data(contentsOf: url)
-                // Do not use mastodon decoder for canned timeline
-                let timeline = try! JSONDecoder().decode(Timeline.self, from: data)
-                TimelineStack(timeline: timeline)
             }
         }
     }
 }
 
-enum MainTabs: String {
+enum MainTabs: String, CaseIterable {
     case home
     case `public`
     case federated
@@ -57,4 +47,50 @@ enum MainTabs: String {
     case search
     case me
     case cannedTimeline
+
+    var timelineType: TimelineType? {
+        switch self {
+        case .home:
+            return .home
+        case .public:
+            return .public
+        case .federated:
+            return .federated
+        case .local:
+            return .local
+        case .cannedTimeline:
+            return .canned
+        default:
+            return nil
+        }
+    }
+
+    var title: String {
+        switch (self, timelineType) {
+        case (_, .some(let timeline)):
+            return timeline.title
+        case (.directMessages, nil):
+            return "Direct Messages"
+        case (.search, nil):
+            return "Search"
+        case (.me, nil):
+            return "Me"
+        default:
+            fatalError("Fallthrough")
+        }
+    }
+
+    var systemImage: String {
+        return "gear"
+
+//        Label("Home", systemImage: "house").tag(MainTabs.home)
+//        Label("Public", systemImage: "person.3").tag(MainTabs.public)
+//        Label("Federated", systemImage: "person.3").tag(MainTabs.federated)
+//        Label("Local", systemImage: "person.3").tag(MainTabs.local)
+//        Label("Direct Messages", systemImage: "bubble.left").tag(MainTabs.directMessages)
+//        Label("Search", systemImage: "magnifyingglass").tag(MainTabs.search)
+//        Label("Me", systemImage: "person.text.rectangle").badge(1).tag(MainTabs.me)
+//        Label("Canned Timeline", systemImage: "oilcan").tag(MainTabs.cannedTimeline)
+
+    }
 }
