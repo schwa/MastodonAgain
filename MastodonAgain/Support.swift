@@ -51,15 +51,6 @@ extension View {
     }
 }
 
-extension Image {
-    init?(blurHash: String, size: CGSize) {
-        guard let cgImage = decodedBlurHash(blurHash: blurHash, size: size) else {
-            return nil
-        }
-        self = Image(cgImage: cgImage)
-    }
-}
-
 struct Avatar: View {
     let url: URL
 
@@ -188,6 +179,7 @@ struct ActionButtonLabelStyle: LabelStyle {
 struct WorkInProgressView: View {
     var body: some View {
         let tileSize = CGSize(16, 16)
+        // swiftlint:disable:next accessibility_label_for_image
         let tile = Image(size: tileSize) { context in
             context.fill(Path(tileSize), with: .color(.black))
             context.fill(Path(vertices: [[0.0, 0.0], [0.0, 0.5], [0.5, 0]].map { $0 * CGPoint(tileSize) }), with: .color(.yellow))
@@ -196,7 +188,6 @@ struct WorkInProgressView: View {
         Canvas { context, size in
             context.fill(Path(size), with: .tiledImage(tile, sourceRect: CGRect(size: tileSize)))
         }
-
     }
 }
 

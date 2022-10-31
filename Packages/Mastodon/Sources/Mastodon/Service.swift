@@ -7,17 +7,9 @@ import UniformTypeIdentifiers
 
 private let logger: Logger? = Logger()
 
-public actor Service {
-    private var host: String?
-    private var token: Token?
-    private let session = URLSession.shared
-    private let decoder: JSONDecoder
-
-    private var datedStatuses: [Status.ID: Dated<Status>] = [:]
-    private var datedAccounts: [Account.ID: Dated<Account>] = [:]
-
-    public init() {
-        decoder = JSONDecoder()
+public extension JSONDecoder {
+    static var mastodonDecoder: JSONDecoder {
+        let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .custom({ decoder in
             let string = try decoder.singleValueContainer().decode(String.self)
             let formatter = ISO8601DateFormatter()
@@ -31,6 +23,20 @@ public actor Service {
             }
             fatalError("Failed to decode date \(string)")
         })
+        return decoder
+    }
+}
+
+public actor Service {
+    private var host: String?
+    private var token: Token?
+    private let session = URLSession.shared
+    private let decoder = JSONDecoder.mastodonDecoder
+
+    private var datedStatuses: [Status.ID: Dated<Status>] = [:]
+    private var datedAccounts: [Account.ID: Dated<Account>] = [:]
+
+    public init() {
     }
 
     public func update(host: String?, token: Token?) {

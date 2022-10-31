@@ -73,7 +73,7 @@ struct StatusRow: View {
             Text("Poll: \(String(describing: poll))").debuggingInfo()
         }
         if let card = status.card {
-            Text("Card: \(String(describing: card))").debuggingInfo()
+            CardView(card: card)
         }
     }
 
@@ -200,5 +200,96 @@ struct AccountName: View {
         text = text + Text(" ") + Text("@\(account.acct)")
                 .foregroundColor(.secondary)
         return text
+    }
+}
+
+struct ContentImage: View {
+    let url: URL
+    let size: CGSize?
+    let blurhash: Blurhash?
+
+    var body: some View {
+        if let size {
+            image.frame(idealWidth: size.width, idealHeight: size.height)
+        }
+        else {
+            image
+        }
+    }
+
+    var image: some View {
+        CachedAsyncImage(url: url) { image in
+            image.resizable().scaledToFit()
+        }
+        placeholder: {
+            if let blurhash, let size {
+                blurhash.image(size: size)
+            }
+            else {
+                LinearGradient(colors: [.cyan, .purple], startPoint: .topLeading, endPoint: .bottomTrailing)
+            }
+        }
+    }
+}
+
+extension Card {
+    var size: CGSize? {
+        guard let width = width, let height = height else {
+            return nil
+        }
+        return CGSize(width: width, height: height)
+    }
+}
+
+struct CardView: View {
+    let card: Card
+
+    var body: some View {
+        switch card.type {
+        case .link:
+            Link(destination: card.url) {
+                HStack {
+                    if let image = card.image {
+                        ContentImage(url: image, size: card.size, blurhash: card.blurhash)
+                        .frame(maxWidth: 80, maxHeight: 80)
+                    }
+                    if let description = card.title ?? card.description {
+                        Label("\(description) (\(card.url.absoluteString))", systemImage: "link").symbolVariant(.circle)
+                    }
+                    else {
+                        Label(card.url.absoluteString, systemImage: "link").symbolVariant(.circle)
+                    }
+                }
+            }
+            .border(Color.red)
+//            if let width = card.width, let height = card.height, let blurHash = card.blurhash {
+//                Image(blurHash: blurHash, size: [width, height])
+//            }
+// {"url":"https://twitodon.com/","title":"Twitodon - Find your Twitter friends on Mastodon","description":"","type":"link","author_name":"","author_url":"","provider_name":"","provider_url":"","html":"","width":0,"height":0,"image":null,"embed_url":"","blurhash":null}
+
+//            "card" : {
+//                "author_name" : "",
+//                "author_url" : "",
+//                "blurhash" : "U009m+ayWBaxROj[ofj]ozayayayayj[f6j[",
+//                "description" : "“Riven.\n\nOfficially in development at Cyan.\n\nFAQ: https://t.co/6YeeamoJaq”",
+//                "embed_url" : "",
+//                "height" : 225,
+//                "html" : "",
+//                "image" : "https://files.mastodon.social/cache/preview_cards/images/046/839/502/original/d99d01f5953824cf.jpeg",
+//                "provider_name" : "Twitter",
+//                "provider_url" : "",
+//                "title" : "Cyan Inc. on Twitter",
+//                "type" : "link",
+//                "url" : "https://twitter.com/cyanworlds/status/1587065601339424770",
+//                "width" : 400
+//            },
+
+        case .photo:
+            Text("Photo Card: \(String(describing: card))").debuggingInfo()
+        case .video:
+            Text("Video Card: \(String(describing: card))").debuggingInfo()
+        case .rich:
+            Text("Video Card: \(String(describing: card))").debuggingInfo()
+        }
     }
 }

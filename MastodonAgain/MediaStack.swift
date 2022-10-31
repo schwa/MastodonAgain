@@ -35,12 +35,12 @@ struct ImageAttachmentView: View {
             }
             placeholder: {
                 Group {
-                    if let blurHash = attachment.blurHash, let image = Image(blurHash: blurHash, size: smallSize) {
-                        image
-                    }
-                    else {
+//                    if let blurHash = attachment.blurHash, let image = Image(blurHash: blurHash, size: smallSize) {
+//                        image
+//                    }
+//                    else {
                         LinearGradient(colors: [.cyan, .purple], startPoint: .topLeading, endPoint: .bottomTrailing)
-                    }
+//                    }
                 }
                 .accessibilityLabel("TODO (Loading)")
             }

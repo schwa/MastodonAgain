@@ -1,18 +1,19 @@
 import Everything
 import Foundation
 
+// swiftlint:disable file_length
+
 public struct Poll: Codable {
 }
 
-public struct Card_: Codable {
-
+public struct Card: Codable {
     public enum CodingKeys: String, CodingKey {
         case authorName = "author_name"
         case authorURL = "author_url"
         case blurhash
         case description
         case embedURL = "embed_url"
-//        case height
+        case height
         case html
         case image
         case providerName = "provider_name"
@@ -20,30 +21,65 @@ public struct Card_: Codable {
         case title
         case type
         case url
-//        case width
+        case width
     }
 
-//    enum CardType: String, Codable {
-//        case link
-//    }
+    public enum CardType: String, Codable {
+        case link
+        case photo
+        case video
+        case rich
+    }
 
-    let authorName: String?
-    let authorURL: String?
-    let blurhash: String?
-    let description: String?
-    let embedURL: String?
-//    let height: Double?
-    let html: String?
-    let image: String?
-    let providerName: String?
-    let providerURL: String?
-    let title: String?
-    let type: String?
-    let url: URL?
-//    let width: Double?
+    public let authorName: String?
+    public let authorURL: URL?
+    public let blurhash: Blurhash?
+    public let description: String?
+    public let embedURL: URL?
+    public let height: Double?
+    public let html: String?
+    public let image: URL?
+    public let providerName: String?
+    public let providerURL: URL?
+    public let title: String?
+    public let type: CardType
+    public let url: URL
+    public let width: Double?
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.authorName = try container.decodeIfPresent(String.self, forKey: .authorName).nilify()
+        self.authorURL = try container.decodeIfPresent(String.self, forKey: .authorURL).nilify().map { try URL(string: $0).safelyUnwrap(GeneralError.illegalValue) }
+        self.blurhash = try container.decodeIfPresent(Blurhash.self, forKey: .blurhash)
+        self.description = try container.decodeIfPresent(String.self, forKey: .description).nilify()
+        self.embedURL = try container.decodeIfPresent(String.self, forKey: .embedURL).nilify().map { try URL(string: $0).safelyUnwrap(GeneralError.illegalValue) }
+        self.height = try container.decodeIfPresent(Double.self, forKey: .height)
+        self.html = try container.decodeIfPresent(String.self, forKey: .html).nilify()
+        self.image = try container.decodeIfPresent(String.self, forKey: .image).nilify().map { try URL(string: $0).safelyUnwrap(GeneralError.illegalValue) }
+        self.providerName = try container.decodeIfPresent(String.self, forKey: .providerName).nilify()
+        self.providerURL = try container.decodeIfPresent(String.self, forKey: .providerURL).nilify().map { try URL(string: $0).safelyUnwrap(GeneralError.illegalValue) }
+        self.title = try container.decodeIfPresent(String.self, forKey: .title).nilify()
+        self.type = try container.decode(Card.CardType.self, forKey: .type)
+        self.url = try container.decode(URL.self, forKey: .url)
+        self.width = try container.decodeIfPresent(Double.self, forKey: .width)
+    }
 }
 
-public typealias Card = PlaceholderCodable
+public extension Optional where Wrapped: Collection {
+    func nilify() -> Wrapped? {
+        switch self {
+        case .some(let value):
+            if value.isEmpty {
+                return nil
+            }
+            else {
+                return value
+            }
+        case .none:
+            return nil
+        }
+    }
+}
 
 public struct Field: Codable {
     public enum CodingKeys: String, CodingKey {
@@ -194,7 +230,7 @@ public struct MediaAttachment: Identifiable, Codable {
     public let textURL: URL?
     public let meta: Meta?
     public let description: String?
-    public let blurHash: String?
+    public let blurHash: Blurhash?
 }
 
 public struct Mention: Identifiable, Codable {

@@ -1,4 +1,29 @@
 import CoreGraphics
+import SwiftUI
+
+public struct Blurhash: Codable {
+    let string: String
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        string = try container.decode(String.self)
+//        if string.isEmpty {
+//            throw GeneralError.missingValue
+//        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(string)
+    }
+
+    public func image(size: CGSize) -> Image {
+        guard let cgImage = decodedBlurHash(blurHash: string, size: size) else {
+            fatalError("Could not decode blurhash")
+        }
+        return Image(cgImage: cgImage)
+    }
+}
 
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length

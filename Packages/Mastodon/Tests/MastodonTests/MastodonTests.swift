@@ -31,4 +31,10 @@ final class MastodonTests: XCTestCase {
 
         XCTAssertEqual(Data(expected.utf8), data)
     }
+
+    func testStasusDecoding() throws {
+        let url = Bundle.module.url(forResource: "page", withExtension: "json")!
+        let data = try Data(contentsOf: url)
+        XCTAssertNoThrow(try JSONDecoder.mastodonDecoder.decode([Status].self, from: data))
+    }
 }

@@ -26,7 +26,8 @@ let package = Package(
         ),
         .testTarget(
             name: "MastodonTests",
-            dependencies: ["Mastodon"]
+            dependencies: ["Mastodon"],
+            resources: [.copy("page.json")]
         ),
     ]
 )
