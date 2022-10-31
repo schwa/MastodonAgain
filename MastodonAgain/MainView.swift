@@ -19,12 +19,13 @@ struct MainView: View {
         } detail: {
             if let timelineType = selection.timelineType {
                 if timelineType == .canned {
-                    let url = Bundle.main.url(forResource: "canned_timeline", withExtension: "json")!
-                    let data = try! Data(contentsOf: url)
-                    // Do not use mastodon decoder for canned timeline
-                    let loadedTimeline = try! JSONDecoder().decode(Timeline.self, from: data)
-                    let timeline = Timeline(instance: appModel.instance, timelineType: timelineType, pages: loadedTimeline.pages)
-                    TimelineStack(timeline: timeline)
+                    fatalError()
+//                    let url = Bundle.main.url(forResource: "canned_timeline", withExtension: "json")!
+//                    let data = try! Data(contentsOf: url)
+//                    // Do not use mastodon decoder for canned timeline
+//                    let loadedTimeline = try! JSONDecoder().decode(Timeline.self, from: data)
+//                    let timeline = Timeline(instance: appModel.instance, timelineType: timelineType)
+//                    TimelineStack(timeline: timeline)
                 }
                 else {
                     let timeline = Timeline(instance: appModel.instance, timelineType: timelineType)

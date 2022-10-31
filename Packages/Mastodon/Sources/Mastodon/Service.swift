@@ -101,7 +101,7 @@ public extension Service {
         return status
     }
 
-    func timelime(_ timeline: Timeline, direction: Timeline.Direction? = nil) async throws -> Timeline {
+    func timelime(_ timeline: Timeline, direction: PagingDirection? = nil) async throws -> StatusesPagedContent.Page {
 //    https://docs.joinmastodon.org/methods/timelines/
 
         guard let instance = instance, let token else {
@@ -109,22 +109,22 @@ public extension Service {
         }
 
         let url: URL
-        switch direction {
-        case nil:
+//        switch direction {
+//        case nil:
             url = timeline.url! // TODO
-        case .previous:
-            guard let previous = timeline.previousURL else {
-                print("NO PREVIOUS")
-                return timeline
-            }
-            url = previous
-        case .next:
-            guard let next = timeline.nextURL else {
-                print("NO NEXT")
-                return timeline
-            }
-            url = next
-        }
+//        case .previous:
+//            guard let previous = timeline.previousURL else {
+//                print("NO PREVIOUS")
+//                return timeline
+//            }
+//            url = previous
+//        case .next:
+//            guard let next = timeline.nextURL else {
+//                print("NO NEXT")
+//                return timeline
+//            }
+//            url = next
+//        }
 
         let request = URLRequest(url: url).headers(token.headers)
 
@@ -142,14 +142,16 @@ public extension Service {
 
         let statuses = try decoder.decode([Status].self, from: data)
         if statuses.isEmpty {
-            return timeline
+            fatalError()
         }
 
         update(statuses)
-        let page = Timeline.Page(url: url, statuses: statuses, previous: previous, next: next, data: data)
+
+        let page = StatusesPagedContent.Page(cursor: URLCursor(next: nil, previous: nil), elements: statuses)
 
         // TODO: Need to sort statuses (or rely on view to do it)
-        return Timeline(instance: instance, timelineType: timeline.timelineType, pages: timeline.pages + [page])
+//        return Timeline(instance: instance, timelineType: timeline.timelineType, pages: timeline.pages + [page])
+        return page
     }
 
     func favorite(status: Status.ID) async throws -> Status {

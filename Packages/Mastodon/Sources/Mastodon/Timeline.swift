@@ -50,34 +50,7 @@ public enum TimelineType: Codable, Equatable {
 
 // MARK: -
 
-public struct TimelinePage: Identifiable, Codable {
-    public let id: String
-    public let url: URL
-    public var statuses: [Status] {
-        didSet {
-            // Make sure any changes to status only change content of statuses and doesn't change order or ids
-            assert(oldValue.map(\.id) == statuses.map(\.id))
-        }
-    }
-    public let previous: URL?
-    public let next: URL?
-    public let data: Data?
-
-    init(url: URL, statuses: [Status] = [], previous: URL? = nil, next: URL? = nil, data: Data? = nil) {
-        assert(statuses.first!.id >= statuses.last!.id)
-        self.id = "\(url) | \(statuses.count)\(statuses.first!.id) -> \(statuses.last!.id)"
-        self.url = url
-        self.statuses = statuses
-        self.previous = previous
-        self.next = next
-        self.data = data
-    }
-}
-
 public struct Timeline: Codable {
-    public typealias Page = TimelinePage
-    public typealias Direction = PagingDirection
-
     public var url: URL? {
         timelineType.path.map { URL(string: "https://\(instance.host)\($0)")! }
     }
@@ -85,48 +58,40 @@ public struct Timeline: Codable {
     public let timelineType: TimelineType
     public var instance: Instance
 
-    // TODO: it is possible pages within timelimes can overlap - giving us duplicate statuses we need to guard against that.
-    public var pages: [Page] {
-        didSet {
-            assert(oldValue.map(\.id) == pages.map(\.id))
-        }
-    }
-
-    public init(instance: Instance, timelineType: TimelineType, canned: Bool = false, pages: [Page] = []) {
+    public init(instance: Instance, timelineType: TimelineType, canned: Bool = false) {
         self.instance = instance
         self.timelineType = timelineType
-        self.pages = pages
     }
 }
 
 extension Timeline: CustomStringConvertible {
     public var description: String {
-        String("Timeline(timelineType: \(timelineType), pages: \(pages.count)")
+        String("Timeline(timelineType: \(timelineType)")
     }
 }
 
-public extension Timeline {
-    var previousURL: URL? {
-        guard let first = pages.first else {
-            return nil
-        }
-
-        if let url = first.previous {
-            return url
-        }
-        else {
-            guard let url = url else {
-                return nil
-            }
-            return url.appending(queryItems: [
-                .init(name: "since_id", value: first.statuses.first!.id.rawValue)
-            ])
-        }
-    }
-
-    var nextURL: URL? {
-        pages.last?.next
-    }
-}
+//public extension Timeline {
+//    var previousURL: URL? {
+//        guard let first = pages.first else {
+//            return nil
+//        }
+//
+//        if let url = first.previous {
+//            return url
+//        }
+//        else {
+//            guard let url = url else {
+//                return nil
+//            }
+//            return url.appending(queryItems: [
+//                .init(name: "since_id", value: first.statuses.first!.id.rawValue)
+//            ])
+//        }
+//    }
+//
+//    var nextURL: URL? {
+//        pages.last?.next
+//    }
+//}
 
 // MARK: -

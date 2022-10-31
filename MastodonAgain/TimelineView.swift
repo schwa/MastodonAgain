@@ -13,6 +13,9 @@ struct TimelineView: View {
     var timeline: Timeline
 
     @State
+    var pages = StatusesPagedContent()
+
+    @State
     var refreshing = false
 
     init(timeline: Timeline) {
@@ -21,60 +24,47 @@ struct TimelineView: View {
 
     @ViewBuilder
     var body: some View {
-        Group {
-            if refreshing {
-                ProgressView()
-            }
-            else {
-                List() {
-                    Button("Newer") {
-                        refreshTask(direction: .previous)
-                    }
-                    ForEach(timeline.pages) { page in
-                        let id = page.id
-                        let binding = Binding {
-                            page
-                        } set: { newValue in
-                            guard let index = timeline.pages.firstIndex(where: { $0.id == id }) else {
-                                fatalError("Could not find a page in a timeline we were displaying it from...")
-                            }
-                            timeline.pages[index] = newValue
-                        }
-                        PageView(page: binding)
-                    }
-                    Button("Older") {
-                        refreshTask(direction: .next)
-                    }
-                }
-            }
-        }
-        .refreshable {
-            refreshTask()
-        }
-        .toolbar {
-            Button("Save") {
-                do {
-                    let data = try JSONEncoder().encode(timeline)
-                    let path = FSPath.temporaryDirectory / "timeline.json"
-                    try data.write(to: path.url)
-                    path.reveal()
-                }
-                catch {
-                    fatal(error: error)
-                }
-            }
-
-            Button("Refresh") {
-                refreshTask()
-            }
-            .disabled(refreshing)
-        }
-        .task {
-            refreshTask()
-        }
+        DescriptionView(timeline).debuggingInfo()
+        DescriptionView(pages).debuggingInfo()
+//        Group {
+//            if refreshing {
+//                ProgressView()
+//            }
+//            else {
+//                List() {
+//                    PagedContentView(content: $pages) { status in
+//                        StatusRow(status: status)
+//                    }
+//                }
+//            }
+//        }
+//        .refreshable {
+//            refreshTask()
+//        }
+//        .toolbar {
+//            Button("Save") {
+//                do {
+//                    let data = try JSONEncoder().encode(timeline)
+//                    let path = FSPath.temporaryDirectory / "timeline.json"
+//                    try data.write(to: path.url)
+//                    path.reveal()
+//                }
+//                catch {
+//                    fatal(error: error)
+//                }
+//            }
+//
+//            Button("Refresh") {
+//                refreshTask()
+//            }
+//            .disabled(refreshing)
+//        }
+//        .task {
+//            refreshTask()
+//        }
     }
 
-    func refreshTask(direction: Timeline.Direction? = nil) {
+    func refreshTask(direction: PagingDirection? = nil) {
         guard timeline.timelineType != .canned else {
             return
         }
@@ -87,54 +77,48 @@ struct TimelineView: View {
         }
     }
 
-    func refresh(direction: Timeline.Direction? = nil) async throws {
-        timeline = try await appModel.service.timelime(timeline, direction: direction)
+    func refresh(direction: PagingDirection? = nil) async throws {
+        //timeline = try await appModel.service.timelime(timeline, direction: direction)
     }
 }
 
-struct PageView: View {
-    @Binding
-    var page: Timeline.Page
-
-    var body: some View {
-        pageDebugInfo(page)
-        ForEach(page.statuses) { status in
-            let id = status.id
-            let binding = Binding {
-                status
-            } set: { newValue in
-                guard let index = page.statuses.firstIndex(where: { $0.id == id }) else {
-                    fatalError("Could not find a status in a page we were displaying it from...")
-                }
-                page.statuses[index] = newValue
-            }
-            StatusRow(status: binding)
-            Divider()
-        }
-    }
-
-    @ViewBuilder
-    func pageDebugInfo(_ page: Timeline.Page) -> some View {
-        HStack {
-            VStack {
-                Text(verbatim: "id: \(page.id)").frame(maxWidth: .infinity)
-                Text(verbatim: "previous: \(page.previous?.absoluteString ?? "<none>")")
-                Text(verbatim: "next: \(page.next?.absoluteString ?? "<none>")")
-            }
-            if let data = page.data {
-                Button("Save") {
-                    let path = FSPath.temporaryDirectory / "page.json"
-                    try! data.write(to: path.url)
-                    path.reveal()
-                }
-            }
-        }
-        .debuggingInfo()
-    }
-}
-
-extension FSPath {
-    func reveal() {
-        NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: "")
-    }
-}
+//struct PageView: View {
+//    @Binding
+//    var page: Timeline.Page
+//
+//    var body: some View {
+//        pageDebugInfo(page)
+//        ForEach(page.statuses) { status in
+//            let id = status.id
+//            let binding = Binding {
+//                status
+//            } set: { newValue in
+//                guard let index = page.statuses.firstIndex(where: { $0.id == id }) else {
+//                    fatalError("Could not find a status in a page we were displaying it from...")
+//                }
+//                page.statuses[index] = newValue
+//            }
+//            StatusRow(status: binding)
+//            Divider()
+//        }
+//    }
+//
+//    @ViewBuilder
+//    func pageDebugInfo(_ page: Timeline.Page) -> some View {
+//        HStack {
+//            VStack {
+//                Text(verbatim: "id: \(page.id)").frame(maxWidth: .infinity)
+//                Text(verbatim: "previous: \(page.previous?.absoluteString ?? "<none>")")
+//                Text(verbatim: "next: \(page.next?.absoluteString ?? "<none>")")
+//            }
+//            if let data = page.data {
+//                Button("Save") {
+//                    let path = FSPath.temporaryDirectory / "page.json"
+//                    try! data.write(to: path.url)
+//                    path.reveal()
+//                }
+//            }
+//        }
+//        .debuggingInfo()
+//    }
+//}

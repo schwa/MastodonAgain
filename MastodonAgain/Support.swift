@@ -226,3 +226,10 @@ extension Path {
         self = Path(CGRect(size: rectSize))
     }
 }
+
+
+extension FSPath {
+    func reveal() {
+        NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: "")
+    }
+}

@@ -30,6 +30,10 @@ public struct PagedContent <Element, Cursor>: Identifiable where Element: Identi
             // TODO: Make sure new content doesn't overlap old content and handle if it does.
         }
     }
+
+    public init() {
+        self.pages = []
+    }
 }
 
 public struct Page <Element, Cursor>: Identifiable where Element: Identifiable, Element.ID: Comparable, Cursor: PagedCursorProtocol {
