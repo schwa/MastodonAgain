@@ -24,13 +24,13 @@ struct MainView: View {
         } detail: {
             switch selection {
             case .home:
-                TimelineView(timeline: Timeline(host: appModel.host, timelineType: .home, title: "Home"))
+                TimelineStack(timeline: Timeline(host: appModel.host, timelineType: .home, title: "Home"))
             case .federated:
-                TimelineView(timeline: Timeline(host: appModel.host, timelineType: .federated, title: "Federated"))
+                TimelineStack(timeline: Timeline(host: appModel.host, timelineType: .federated, title: "Federated"))
             case .local:
-                TimelineView(timeline: Timeline(host: appModel.host, timelineType: .local, title: "Local"))
+                TimelineStack(timeline: Timeline(host: appModel.host, timelineType: .local, title: "Local"))
             case .public:
-                TimelineView(timeline: Timeline(host: appModel.host, timelineType: .public, title: "Public"))
+                TimelineStack(timeline: Timeline(host: appModel.host, timelineType: .public, title: "Public"))
             case .directMessages:
                 WorkInProgressView().opacity(0.2)
             case .search:
@@ -42,7 +42,7 @@ struct MainView: View {
                 let data = try! Data(contentsOf: url)
                 // Do not use mastodon decoder for canned timeline
                 let timeline = try! JSONDecoder().decode(Timeline.self, from: data)
-                TimelineView(timeline: timeline, allowRefresh: false)
+                TimelineStack(timeline: timeline)
             }
         }
     }
