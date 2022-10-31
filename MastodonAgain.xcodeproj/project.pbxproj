@@ -16,6 +16,7 @@
 		455AC886290D96F700137415 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 455AC885290D96F700137415 /* Assets.xcassets */; };
 		455AC88A290D96F700137415 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 455AC889290D96F700137415 /* Preview Assets.xcassets */; };
 		45A27F49291053FB00662B71 /* TimelineStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A27F48291053FB00662B71 /* TimelineStack.swift */; };
+		45B45CC2291065870070F1C5 /* PagedContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B45CC1291065870070F1C5 /* PagedContentView.swift */; };
 		45F1A2AF290DBB990093A8AC /* Mastodon in Frameworks */ = {isa = PBXBuildFile; productRef = 45F1A2AE290DBB990093A8AC /* Mastodon */; };
 		45F1A2B2290DD6AB0093A8AC /* CachedAsyncImage in Frameworks */ = {isa = PBXBuildFile; productRef = 45F1A2B1290DD6AB0093A8AC /* CachedAsyncImage */; };
 		45F1A2B6290E0F4B0093A8AC /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F1A2B5290E0F4B0093A8AC /* Support.swift */; };
@@ -51,6 +52,7 @@
 		455AC887290D96F700137415 /* MastodonAgain.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MastodonAgain.entitlements; sourceTree = "<group>"; };
 		455AC889290D96F700137415 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		45A27F48291053FB00662B71 /* TimelineStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineStack.swift; sourceTree = "<group>"; };
+		45B45CC1291065870070F1C5 /* PagedContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PagedContentView.swift; sourceTree = "<group>"; };
 		45F1A2B5290E0F4B0093A8AC /* Support.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Support.swift; sourceTree = "<group>"; };
 		45F1A2B7290E1B720093A8AC /* Mastodon */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Mastodon; sourceTree = "<group>"; };
 		45F1A2B8290E1FB60093A8AC /* TimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
@@ -139,6 +141,7 @@
 				45A27F48291053FB00662B71 /* TimelineStack.swift */,
 				45F1A2B8290E1FB60093A8AC /* TimelineView.swift */,
 				45F1A2BA290E1FE50093A8AC /* StatusRow.swift */,
+				45B45CC1291065870070F1C5 /* PagedContentView.swift */,
 				4520200E290F87A200469569 /* MediaStack.swift */,
 				45F1A2B5290E0F4B0093A8AC /* Support.swift */,
 				45F1A2BC290E31360093A8AC /* Minikeychain.swift */,
@@ -276,6 +279,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				45B45CC2291065870070F1C5 /* PagedContentView.swift in Sources */,
 				455AC884290D96F600137415 /* ContentView.swift in Sources */,
 				452020132910281300469569 /* MainView.swift in Sources */,
 				4520200F290F87A200469569 /* MediaStack.swift in Sources */,

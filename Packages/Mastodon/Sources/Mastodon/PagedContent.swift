@@ -18,6 +18,7 @@ public enum PagingDirection {
 // MARK: -
 
 public struct PagedContent <Element, Cursor>: Identifiable where Element: Identifiable, Element.ID: Comparable, Cursor: PagedCursorProtocol {
+    public typealias Element = Element
     public typealias Page = Mastodon.Page<Element, Cursor> // TODO: Gross.
 
     public var id: [ClosedRange<Element.ID>?] {
@@ -32,6 +33,8 @@ public struct PagedContent <Element, Cursor>: Identifiable where Element: Identi
 }
 
 public struct Page <Element, Cursor>: Identifiable where Element: Identifiable, Element.ID: Comparable, Cursor: PagedCursorProtocol {
+    public typealias Element = Element
+
     public var elements: [Element] {
         didSet {
             // Make sure any changes to status only change content of statuses and doesn't change order or ids
@@ -56,13 +59,13 @@ public struct Page <Element, Cursor>: Identifiable where Element: Identifiable, 
 
 // MARK: -
 
-struct URLCursor: PagedCursorProtocol {
-    typealias Next = URL
-    typealias Previous = URL
+public struct URLCursor: PagedCursorProtocol {
+    public typealias Next = URL
+    public typealias Previous = URL
 
-    let next: URL?
-    let previous: URL?
+    public let next: URL?
+    public let previous: URL?
 }
 
-typealias StatusesPagedContent = PagedContent<Status, URLCursor>
-typealias StatusPage = StatusesPagedContent.Page
+public typealias StatusesPagedContent = PagedContent<Status, URLCursor>
+public typealias StatusPage = StatusesPagedContent.Page
