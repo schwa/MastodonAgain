@@ -14,6 +14,12 @@ struct NewPostView: View {
     @State
     var text = ""
 
+    @State
+    var image: Image?
+
+    @State
+    var imageDescription: String = ""
+
     var body: some View {
         VStack {
             Text(verbatim: String(describing: newPost))
@@ -22,6 +28,12 @@ struct NewPostView: View {
                 Text("Replying to \(inResponseTo.account.acct)")
             }
             TextEditor(text: $text)
+            HStack {
+                ImageWell(image: $image).frame(width: 128, height: 128)
+                if image != nil {
+                    TextField("Image description", text: $imageDescription)
+                }
+            }
             Button("Reply") {
                 Task {
                     let status = try await appModel.service.postStatus(text: text, inReplyTo: inResponseTo?.id)
@@ -29,7 +41,7 @@ struct NewPostView: View {
                     text = ""
                 }
             }
-            .disabled(text.isEmpty)
+            .disabled(text.isEmpty || (image != nil && imageDescription.isEmpty))
         }
         .padding()
         .task {
@@ -40,8 +52,46 @@ struct NewPostView: View {
     }
 }
 
+struct ImageWell: View {
+    @Binding
+    var image: Image?
+
+    @State
+    var isTargeted = false
+
+    var body: some View {
+        if let image {
+            image.resizable().scaledToFit()
+        }
+        else {
+            Image(systemName: "photo").resizable().scaledToFit()
+                .padding()
+                .foregroundColor(isTargeted ? .accentColor : .secondary)
+                .onDrop(of: [.image], isTargeted: $isTargeted) { providers, _ in
+                    guard providers.count == 1 else {
+                        return false
+                    }
+                    guard let provider = providers.first else {
+                        fatalError("No provider")
+                    }
+                    Task {
+                        guard let url = try await provider.loadItem(forTypeIdentifier: "public.image") as? URL else {
+                            fatalError("No url")
+                        }
+                        guard let nsImage = NSImage(contentsOf: url) else {
+                            fatalError("Could not create image")
+                        }
+                        self.image = Image(nsImage: nsImage)
+                    }
+                    return true
+                }
+        }
+    }
+}
+
 enum NewPost: Codable, Hashable {
     case empty
     case reply(Status.ID)
 }
+
 

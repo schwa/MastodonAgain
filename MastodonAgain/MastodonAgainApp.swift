@@ -15,11 +15,13 @@ struct MastodonAgainApp: App {
             ContentView()
                 .environmentObject(appModel)
         }
+        .keyboardShortcut(.init("N", modifiers: .shift))
         #if os(macOS)
             WindowGroup("New Post", for: NewPost.self) { newPost in
                 NewPostView(newPost: newPost)
                     .environmentObject(appModel)
             }
+            .keyboardShortcut(.init("N"))
             Settings {
                 AppSettings()
                     .environmentObject(appModel)
