@@ -12,34 +12,60 @@ struct TimelineView: View {
     @State
     var timeline: Timeline
 
+    let load: Bool
+
     @State
     var refreshing = false
 
+    init(timeline: Timeline, load: Bool = true) {
+        self._timeline = State(initialValue: timeline)
+        self.load = load
+    }
+
     var body: some View {
-        List() {
-            Button("Newer") {
-                refreshTask(direction: .previous)
+        Group {
+            if refreshing {
+                ProgressView()
             }
-            ForEach(timeline.pages) { page in
-                let id = page.id
-                let binding = Binding {
-                    page
-                } set: { newValue in
-                    guard let index = timeline.pages.firstIndex(where: { $0.id == id }) else {
-                        fatalError("Could not find a page in a timeline we were displaying it from...")
+            else {
+                List() {
+                    Button("Newer") {
+                        refreshTask(direction: .previous)
                     }
-                    timeline.pages[index] = newValue
+                    ForEach(timeline.pages) { page in
+                        let id = page.id
+                        let binding = Binding {
+                            page
+                        } set: { newValue in
+                            guard let index = timeline.pages.firstIndex(where: { $0.id == id }) else {
+                                fatalError("Could not find a page in a timeline we were displaying it from...")
+                            }
+                            timeline.pages[index] = newValue
+                        }
+                        PageView(page: binding)
+                    }
+                    Button("Older") {
+                        refreshTask(direction: .next)
+                    }
                 }
-                PageView(page: binding)
-            }
-            Button("Older") {
-                refreshTask(direction: .next)
             }
         }
         .refreshable {
             refreshTask()
         }
         .toolbar {
+            Button("Save") {
+                do {
+                    let data = try JSONEncoder().encode(timeline)
+                    let path = FSPath.temporaryDirectory / "timeline.json"
+                    try data.write(to: path.url)
+                    path.reveal()
+                }
+                catch {
+                    fatal(error: error)
+                }
+            }
+
             Button("Refresh") {
                 refreshTask()
             }
@@ -51,13 +77,16 @@ struct TimelineView: View {
     }
 
     func refreshTask(direction: Timeline.Direction? = nil) {
+        guard load == true else {
+            return
+        }
         refreshing = true
         Task {
             await errorHandler.handle {
                 try await refresh(direction: direction)
             }
+            refreshing = false
         }
-        refreshing = false
     }
 
     func refresh(direction: Timeline.Direction? = nil) async throws {
@@ -98,10 +127,16 @@ struct PageView: View {
                 Button("Save") {
                     let path = FSPath.temporaryDirectory / "page.json"
                     try! data.write(to: path.url)
-                    NSWorkspace.shared.selectFile(path.path, inFileViewerRootedAtPath: "")
+                    path.reveal()
                 }
             }
         }
         .debuggingInfo()
+    }
+}
+
+extension FSPath {
+    func reveal() {
+        NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: "")
     }
 }

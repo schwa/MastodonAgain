@@ -10,6 +10,7 @@
 		4520200F290F87A200469569 /* MediaStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4520200E290F87A200469569 /* MediaStack.swift */; };
 		45202011290F8DC600469569 /* NewPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45202010290F8DC600469569 /* NewPost.swift */; };
 		452020132910281300469569 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452020122910281300469569 /* MainView.swift */; };
+		4520201529104D7D00469569 /* canned_timeline.json in Resources */ = {isa = PBXBuildFile; fileRef = 4520201429104D7D00469569 /* canned_timeline.json */; };
 		455AC882290D96F600137415 /* MastodonAgainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455AC881290D96F600137415 /* MastodonAgainApp.swift */; };
 		455AC884290D96F600137415 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455AC883290D96F600137415 /* ContentView.swift */; };
 		455AC886290D96F700137415 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 455AC885290D96F700137415 /* Assets.xcassets */; };
@@ -41,6 +42,7 @@
 		4520200E290F87A200469569 /* MediaStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaStack.swift; sourceTree = "<group>"; };
 		45202010290F8DC600469569 /* NewPost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPost.swift; sourceTree = "<group>"; };
 		452020122910281300469569 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		4520201429104D7D00469569 /* canned_timeline.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = canned_timeline.json; sourceTree = "<group>"; };
 		455AC87E290D96F600137415 /* MastodonAgain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MastodonAgain.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		455AC881290D96F600137415 /* MastodonAgainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonAgainApp.swift; sourceTree = "<group>"; };
 		455AC883290D96F600137415 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -139,6 +141,7 @@
 				45F1A2BC290E31360093A8AC /* Minikeychain.swift */,
 				45F1A2BE290E351B0093A8AC /* AuthorizationFlow.swift */,
 				45202010290F8DC600469569 /* NewPost.swift */,
+				4520201429104D7D00469569 /* canned_timeline.json */,
 				455AC885290D96F700137415 /* Assets.xcassets */,
 				455AC887290D96F700137415 /* MastodonAgain.entitlements */,
 				455AC888290D96F700137415 /* Preview Content */,
@@ -237,6 +240,7 @@
 			files = (
 				455AC88A290D96F700137415 /* Preview Assets.xcassets in Resources */,
 				455AC886290D96F700137415 /* Assets.xcassets in Resources */,
+				4520201529104D7D00469569 /* canned_timeline.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

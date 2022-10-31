@@ -1,7 +1,7 @@
 import Foundation
 
-public struct Timeline {
-    public enum TimelineType: Equatable {
+public struct Timeline: Codable {
+    public enum TimelineType: Codable, Equatable {
         case `public`
         case federated
         case local
@@ -27,24 +27,7 @@ public struct Timeline {
         }
     }
 
-    public struct Page: Identifiable {
-        public let id: AnyHashable
-        public let url: URL
-        public var statuses: [Status]
-        public let previous: URL?
-        public let next: URL?
-        public let data: Data?
-
-        init(url: URL, statuses: [Status] = [], previous: URL? = nil, next: URL? = nil, data: Data? = nil) {
-            assert(statuses.first!.id >= statuses.last!.id)
-            self.id = "\(url) | \(statuses.count)\(statuses.first!.id) -> \(statuses.last!.id)"
-            self.url = url
-            self.statuses = statuses
-            self.previous = previous
-            self.next = next
-            self.data = data
-        }
-    }
+    public typealias Page = TimelinePage
 
     public enum Direction {
         case previous
@@ -53,7 +36,12 @@ public struct Timeline {
 
     public let timelineType: TimelineType
     public let url: URL
-    public var pages: [Page] // TODO: it is possible pages within timelimes can overlap - giving us duplicate statuses we need to guard against that.
+    // TODO: it is possible pages within timelimes can overlap - giving us duplicate statuses we need to guard against that.
+    public var pages: [Page] {
+        didSet {
+            assert(oldValue.map(\.id) == pages.map(\.id))
+        }
+    }
 
     public init(host: String, timelineType: Timeline.TimelineType, pages: [Page] = []) {
         self.url = URL(string: "https://\(host)\(timelineType.path)")!
@@ -89,3 +77,28 @@ public extension Timeline {
     }
 }
 
+// MARK: -
+
+public struct TimelinePage: Identifiable, Codable {
+    public let id: String
+    public let url: URL
+    public var statuses: [Status] {
+        didSet {
+            // Make sure any changes to status only change content of statuses and doesn't change order or ids
+            assert(oldValue.map(\.id) == statuses.map(\.id))
+        }
+    }
+    public let previous: URL?
+    public let next: URL?
+    public let data: Data?
+
+    init(url: URL, statuses: [Status] = [], previous: URL? = nil, next: URL? = nil, data: Data? = nil) {
+        assert(statuses.first!.id >= statuses.last!.id)
+        self.id = "\(url) | \(statuses.count)\(statuses.first!.id) -> \(statuses.last!.id)"
+        self.url = url
+        self.statuses = statuses
+        self.previous = previous
+        self.next = next
+        self.data = data
+    }
+}

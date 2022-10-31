@@ -7,7 +7,7 @@ struct MediaStack: View {
     let attachments: [MediaAttachment]
 
     var body: some View {
-        LazyHStack {
+        HStack {
             ForEach(attachments) { attachment in
                 switch attachment.type {
                 case .image, .gifv:
@@ -21,6 +21,7 @@ struct MediaStack: View {
                 }
             }
         }
+        .frame(maxHeight: 180)
     }
 }
 
@@ -28,28 +29,12 @@ struct ImageAttachmentView: View {
     let attachment: MediaAttachment
 
     var body: some View {
-        if let smallSize = attachment.meta?.small?.cgSize {
-            CachedAsyncImage(url: attachment.previewURL) { image in
-                image.resizable().scaledToFill()
-                    .accessibilityLabel("TODO (Loaded)")
-            }
-            placeholder: {
-                Group {
-//                    if let blurHash = attachment.blurHash, let image = Image(blurHash: blurHash, size: smallSize) {
-//                        image
-//                    }
-//                    else {
-                        LinearGradient(colors: [.cyan, .purple], startPoint: .topLeading, endPoint: .bottomTrailing)
-//                    }
-                }
-                .accessibilityLabel("TODO (Loading)")
-            }
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .frame(width: smallSize.width, height: smallSize.height, alignment: .center)
-        .redlined()
+        if let url = attachment.previewURL, let smallSize = attachment.meta?.small?.cgSize {
+            ContentImage(url: url, size: smallSize, blurhash: attachment.blurHash, accessibilityLabel: Text("TODO"))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         else {
-            Text("NO SIZE").foregroundColor(.red)
+            Text("NO PREVIEW OR NO SIZE").debuggingInfo()
         }
     }
 }

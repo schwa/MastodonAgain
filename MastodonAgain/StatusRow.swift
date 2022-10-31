@@ -207,14 +207,22 @@ struct ContentImage: View {
     let url: URL
     let size: CGSize?
     let blurhash: Blurhash?
+    let sensitive: Bool
+    let accessibilityLabel: Text?
+
+    @State
+    var hover = false
+
+    init(url: URL, size: CGSize? = nil, blurhash: Blurhash? = nil, sensitive: Bool = false, accessibilityLabel: Text? = nil) {
+        self.url = url
+        self.size = size
+        self.blurhash = blurhash
+        self.sensitive = sensitive
+        self.accessibilityLabel = accessibilityLabel
+    }
 
     var body: some View {
-        if let size {
-            image.frame(idealWidth: size.width, idealHeight: size.height)
-        }
-        else {
-            image
-        }
+        image
     }
 
     var image: some View {
@@ -229,6 +237,23 @@ struct ContentImage: View {
                 LinearGradient(colors: [.cyan, .purple], startPoint: .topLeading, endPoint: .bottomTrailing)
             }
         }
+        .onHover { value in
+            hover = value
+        }
+        .redlined(hover)
+//        .overlay() {
+//            if hover {
+//                VStack {
+//                    Text("\(url, format: .url)").lineLimit(1)
+//                    if let size {
+//                        Text("\(size.width, format: .number), \(size.height, format: .number)")
+//                    }
+//                }
+//                .font(.caption2)
+//                .padding()
+//                .background(Capsule().fill(Color.white))
+//            }
+//        }
     }
 }
 
@@ -250,8 +275,9 @@ struct CardView: View {
             Link(destination: card.url) {
                 HStack {
                     if let image = card.image {
-                        ContentImage(url: image, size: card.size, blurhash: card.blurhash)
-                        .frame(maxWidth: 80, maxHeight: 80)
+                        ContentImage(url: image, size: card.size, blurhash: card.blurhash, accessibilityLabel: Text("TODO"))
+                        .frame(maxHeight: 80)
+                        .border(Color.purple)
                     }
                     if let description = card.title ?? card.description {
                         Label("\(description) (\(card.url.absoluteString))", systemImage: "link").symbolVariant(.circle)

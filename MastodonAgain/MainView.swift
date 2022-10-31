@@ -1,12 +1,13 @@
 import SwiftUI
 import Mastodon
+import Everything
 
 struct MainView: View {
     @EnvironmentObject
     var appModel: AppModel
 
-    @State
-    var selection = MainTabs.home
+    @SceneStorage("MainView.selection")
+    var selection = MainTabs.cannedTimeline
 
     var body: some View {
         NavigationSplitView {
@@ -18,6 +19,7 @@ struct MainView: View {
                 Label("Direct Messages", systemImage: "bubble.left").tag(MainTabs.directMessages)
                 Label("Search", systemImage: "magnifyingglass").tag(MainTabs.search)
                 Label("Me", systemImage: "person.text.rectangle").badge(1).tag(MainTabs.me)
+                Label("Canned Timeline", systemImage: "oilcan").badge(1).tag(MainTabs.cannedTimeline).debuggingInfo()
             }
         } detail: {
             switch selection {
@@ -35,12 +37,18 @@ struct MainView: View {
                 WorkInProgressView().opacity(0.2)
             case .me:
                 WorkInProgressView().opacity(0.2)
+            case .cannedTimeline:
+                let url = Bundle.main.url(forResource: "canned_timeline", withExtension: "json")!
+                let data = try! Data(contentsOf: url)
+                // Do not use mastodon decoder for canned timeline
+                let timeline = try! JSONDecoder().decode(Timeline.self, from: data)
+                TimelineView(timeline: timeline, load: false)
             }
         }
     }
 }
 
-enum MainTabs {
+enum MainTabs: String {
     case home
     case `public`
     case federated
@@ -48,4 +56,5 @@ enum MainTabs {
     case directMessages
     case search
     case me
+    case cannedTimeline
 }

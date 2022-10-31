@@ -46,8 +46,14 @@ struct RedlineModifier: ViewModifier {
 }
 
 extension View {
-    func redlined() -> some View {
-        modifier(RedlineModifier())
+    @ViewBuilder
+    func redlined(_ enabled: Bool = true) -> some View {
+        if enabled {
+            modifier(RedlineModifier())
+        }
+        else {
+            self
+        }
     }
 }
 
