@@ -33,14 +33,16 @@ public struct Timeline {
         public var statuses: [Status]
         public let previous: URL?
         public let next: URL?
+        public let data: Data?
 
-        init(url: URL, statuses: [Status] = [], previous: URL? = nil, next: URL? = nil) {
+        init(url: URL, statuses: [Status] = [], previous: URL? = nil, next: URL? = nil, data: Data? = nil) {
             assert(statuses.first!.id >= statuses.last!.id)
             self.id = "\(url) | \(statuses.count)\(statuses.first!.id) -> \(statuses.last!.id)"
             self.url = url
             self.statuses = statuses
             self.previous = previous
             self.next = next
+            self.data = data
         }
     }
 
@@ -51,7 +53,7 @@ public struct Timeline {
 
     public let timelineType: TimelineType
     public let url: URL
-    public var pages: [Page]
+    public var pages: [Page] // TODO: it is possible pages within timelimes can overlap - giving us duplicate statuses we need to guard against that.
 
     public init(host: String, timelineType: Timeline.TimelineType, pages: [Page] = []) {
         self.url = URL(string: "https://\(host)\(timelineType.path)")!

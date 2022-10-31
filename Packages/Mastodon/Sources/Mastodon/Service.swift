@@ -140,7 +140,7 @@ public extension Service {
         }
 
         update(statuses)
-        let page = Timeline.Page(url: url, statuses: statuses, previous: previous, next: next)
+        let page = Timeline.Page(url: url, statuses: statuses, previous: previous, next: next, data: data)
 
         // TODO: Need to sort statuses (or rely on view to do it)
         return Timeline(host: host, timelineType: timeline.timelineType, pages: timeline.pages + [page])

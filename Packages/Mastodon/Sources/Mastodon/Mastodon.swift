@@ -4,8 +4,46 @@ import Foundation
 public struct Poll: Codable {
 }
 
-public struct Card: Codable {
+public struct Card_: Codable {
+
+    public enum CodingKeys: String, CodingKey {
+        case authorName = "author_name"
+        case authorURL = "author_url"
+        case blurhash
+        case description
+        case embedURL = "embed_url"
+//        case height
+        case html
+        case image
+        case providerName = "provider_name"
+        case providerURL = "provider_url"
+        case title
+        case type
+        case url
+//        case width
+    }
+
+//    enum CardType: String, Codable {
+//        case link
+//    }
+
+    let authorName: String?
+    let authorURL: String?
+    let blurhash: String?
+    let description: String?
+    let embedURL: String?
+//    let height: Double?
+    let html: String?
+    let image: String?
+    let providerName: String?
+    let providerURL: String?
+    let title: String?
+    let type: String?
+    let url: URL?
+//    let width: Double?
 }
+
+public typealias Card = PlaceholderCodable
 
 public struct Field: Codable {
     public enum CodingKeys: String, CodingKey {

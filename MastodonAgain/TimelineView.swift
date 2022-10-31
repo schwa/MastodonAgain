@@ -88,10 +88,19 @@ struct PageView: View {
 
     @ViewBuilder
     func pageDebugInfo(_ page: Timeline.Page) -> some View {
-        VStack {
-            Text(verbatim: "id: \(page.id)").frame(maxWidth: .infinity)
-            Text(verbatim: "previous: \(page.previous?.absoluteString ?? "<none>")")
-            Text(verbatim: "next: \(page.next?.absoluteString ?? "<none>")")
+        HStack {
+            VStack {
+                Text(verbatim: "id: \(page.id)").frame(maxWidth: .infinity)
+                Text(verbatim: "previous: \(page.previous?.absoluteString ?? "<none>")")
+                Text(verbatim: "next: \(page.next?.absoluteString ?? "<none>")")
+            }
+            if let data = page.data {
+                Button("Save") {
+                    let path = FSPath.temporaryDirectory / "page.json"
+                    try! data.write(to: path.url)
+                    NSWorkspace.shared.selectFile(path.path, inFileViewerRootedAtPath: "")
+                }
+            }
         }
         .debuggingInfo()
     }
