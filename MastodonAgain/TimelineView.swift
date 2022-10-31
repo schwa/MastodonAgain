@@ -12,17 +12,28 @@ struct TimelineView: View {
     @State
     var timeline: Timeline
 
-    let load: Bool
+    let allowRefresh: Bool
 
     @State
     var refreshing = false
 
-    init(timeline: Timeline, load: Bool = true) {
+    @State
+    var navigation = NavigationPath()
+
+    init(timeline: Timeline, allowRefresh: Bool = true) {
         self._timeline = State(initialValue: timeline)
-        self.load = load
+        self.allowRefresh = allowRefresh
     }
 
     var body: some View {
+        NavigationStack(path: $navigation) {
+            timelineBody
+            .navigationTitle(timeline.title)
+        }
+    }
+
+    @ViewBuilder
+    var timelineBody: some View {
         Group {
             if refreshing {
                 ProgressView()
@@ -77,7 +88,7 @@ struct TimelineView: View {
     }
 
     func refreshTask(direction: Timeline.Direction? = nil) {
-        guard load == true else {
+        guard allowRefresh == true else {
             return
         }
         refreshing = true

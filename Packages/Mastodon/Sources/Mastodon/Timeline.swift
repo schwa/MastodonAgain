@@ -35,6 +35,8 @@ public struct Timeline: Codable {
     }
 
     public let timelineType: TimelineType
+    public let title: String
+
     public let url: URL
     // TODO: it is possible pages within timelimes can overlap - giving us duplicate statuses we need to guard against that.
     public var pages: [Page] {
@@ -43,10 +45,11 @@ public struct Timeline: Codable {
         }
     }
 
-    public init(host: String, timelineType: Timeline.TimelineType, pages: [Page] = []) {
+    public init(host: String, timelineType: Timeline.TimelineType, title: String, pages: [Page] = []) {
         self.url = URL(string: "https://\(host)\(timelineType.path)")!
         self.timelineType = timelineType
         self.pages = pages
+        self.title = title
     }
 }
 

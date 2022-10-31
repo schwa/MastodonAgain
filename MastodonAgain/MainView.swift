@@ -7,7 +7,7 @@ struct MainView: View {
     var appModel: AppModel
 
     @SceneStorage("MainView.selection")
-    var selection = MainTabs.cannedTimeline
+    var selection = MainTabs.home
 
     var body: some View {
         NavigationSplitView {
@@ -19,18 +19,18 @@ struct MainView: View {
                 Label("Direct Messages", systemImage: "bubble.left").tag(MainTabs.directMessages)
                 Label("Search", systemImage: "magnifyingglass").tag(MainTabs.search)
                 Label("Me", systemImage: "person.text.rectangle").badge(1).tag(MainTabs.me)
-                Label("Canned Timeline", systemImage: "oilcan").badge(1).tag(MainTabs.cannedTimeline).debuggingInfo()
+                Label("Canned Timeline", systemImage: "oilcan").tag(MainTabs.cannedTimeline)
             }
         } detail: {
             switch selection {
             case .home:
-                TimelineView(timeline: Timeline(host: appModel.host, timelineType: .home))
+                TimelineView(timeline: Timeline(host: appModel.host, timelineType: .home, title: "Home"))
             case .federated:
-                TimelineView(timeline: Timeline(host: appModel.host, timelineType: .federated))
+                TimelineView(timeline: Timeline(host: appModel.host, timelineType: .federated, title: "Federated"))
             case .local:
-                TimelineView(timeline: Timeline(host: appModel.host, timelineType: .local))
+                TimelineView(timeline: Timeline(host: appModel.host, timelineType: .local, title: "Local"))
             case .public:
-                TimelineView(timeline: Timeline(host: appModel.host, timelineType: .public))
+                TimelineView(timeline: Timeline(host: appModel.host, timelineType: .public, title: "Public"))
             case .directMessages:
                 WorkInProgressView().opacity(0.2)
             case .search:
@@ -42,7 +42,7 @@ struct MainView: View {
                 let data = try! Data(contentsOf: url)
                 // Do not use mastodon decoder for canned timeline
                 let timeline = try! JSONDecoder().decode(Timeline.self, from: data)
-                TimelineView(timeline: timeline, load: false)
+                TimelineView(timeline: timeline, allowRefresh: false)
             }
         }
     }
