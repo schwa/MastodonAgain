@@ -8,8 +8,8 @@ struct AuthorizationFlow: View {
     var appModel: AppModel
 
     let hosts = [
-        "mastodon.social",
-        "mastodon.online"
+        Instance("mastodon.social"),
+        Instance("mastodon.online")
     ]
 
     @State
@@ -40,12 +40,12 @@ struct AuthorizationFlow: View {
     @ViewBuilder
     var unauthorizedView: some View {
         GroupBox("Login") {
-            Picker("Host", selection: $appModel.host) {
-                ForEach(hosts, id: \.self) { host in
-                    Text(verbatim: host).tag(host)
+            Picker("Host", selection: $appModel.instance) {
+                ForEach(hosts, id: \.self) { instance in
+                    Text(verbatim: instance.host).tag(instance)
                 }
             }
-            TextField("Host", text: $appModel.host)
+//            TextField("Host", text: $appModel.instance.host)
             GroupBox("Application") {
                 Group {
                     TextField("Application Name", text: $clientName)
@@ -63,7 +63,7 @@ struct AuthorizationFlow: View {
 
     @ViewBuilder
     func registeredView(_ application: RegisteredApplication) -> some View {
-        let url = URL(string: "https://\(appModel.host)/oauth/authorize?client_id=\(application.clientID)&scope=read+write+follow+push&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code")!
+        let url = URL(string: "https://\(appModel.instance.host)/oauth/authorize?client_id=\(application.clientID)&scope=read+write+follow+push&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code")!
         let request = URLRequest(url: url)
         ViewAdaptor {
             let webConfiguration = WKWebViewConfiguration()
@@ -86,7 +86,7 @@ struct AuthorizationFlow: View {
 
     func register() async throws {
         appLogger?.log("Registering")
-        let url = URL(string: "https://\(appModel.host)/api/v1/apps")!
+        let url = URL(string: "https://\(appModel.instance.host)/api/v1/apps")!
         let request = URLRequest(url: url, formParameters: [
             "client_name": clientName,
             "redirect_uris": "urn:ietf:wg:oauth:2.0:oob",
@@ -100,7 +100,7 @@ struct AuthorizationFlow: View {
 
     func getToken(with application: RegisteredApplication) async throws {
         appLogger?.log("Getting Token")
-        let url = URL(string: "https://\(appModel.host)/oauth/token")!
+        let url = URL(string: "https://\(appModel.instance.host)/oauth/token")!
         let request = URLRequest(url: url, formParameters: [
             "client_id": application.clientID,
             "client_secret": application.clientSecret,

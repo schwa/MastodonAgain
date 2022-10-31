@@ -3,7 +3,7 @@ import SwiftUI
 
 class AppModel: ObservableObject {
     @Published
-    var host = "mastodon.social"
+    var instance = Instance("mastodon.social")
 
     @Published
     var authorization = Authorization.unauthorized {
@@ -11,10 +11,10 @@ class AppModel: ObservableObject {
             Storage.shared["authorization"] = authorization
             Task {
                 if case .authorized(_, let token) = authorization {
-                    await service.update(host: host, token: token)
+                    await service.update(instance: instance, token: token)
                 }
                 else {
-                    await service.update(host: nil, token: nil)
+                    await service.update(instance: nil, token: nil)
                 }
             }
         }

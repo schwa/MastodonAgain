@@ -102,7 +102,7 @@ struct StatusRow: View {
     @ViewBuilder
     var debugView: some View {
         // https://mastodon.example/api/v1/statuses/:id
-        let url = URL(string: "https://\(appModel.host)/api/v1/statuses/\(status.id.rawValue)")!
+        let url = URL(string: "https://\(appModel.instance.host)/api/v1/statuses/\(status.id.rawValue)")!
         let request = URLRequest(url: url)
         RequestDebugView(request: request).padding()
     }

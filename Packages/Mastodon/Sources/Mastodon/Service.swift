@@ -28,7 +28,7 @@ public extension JSONDecoder {
 }
 
 public actor Service {
-    private var host: String?
+    private var instance: Instance?
     private var token: Token?
     private let session = URLSession.shared
     private let decoder = JSONDecoder.mastodonDecoder
@@ -39,8 +39,8 @@ public actor Service {
     public init() {
     }
 
-    public func update(host: String?, token: Token?) {
-        self.host = host
+    public func update(instance: Instance?, token: Token?) {
+        self.instance = instance
         self.token = token
     }
 
@@ -71,7 +71,7 @@ public extension Service {
 
     // TODO: All this needs cleanup. Use URLPath to return a (pre-configured) URLRequest
     func fetchStatus(for id: Status.ID) async throws -> Status {
-        guard let host, let token else {
+        guard let host = instance?.host, let token else {
             fatalError("No host or token.")
         }
         // https://mastodon.example/api/v1/statuses/:id
@@ -89,7 +89,7 @@ public extension Service {
 
     // TODO: All this needs cleanup. Use URLPath to return a (pre-configured) URLRequest
     func fetchAccount(for id: Account.ID) async throws -> Account {
-        guard let host, let token else {
+        guard let host = instance?.host, let token else {
             fatalError("No host or token.")
         }
         // https://mastodon.example/api/v1/statuses/:id
@@ -104,8 +104,8 @@ public extension Service {
     func timelime(_ timeline: Timeline, direction: Timeline.Direction? = nil) async throws -> Timeline {
 //    https://docs.joinmastodon.org/methods/timelines/
 
-        guard let host, let token else {
-            fatalError("No host or token.")
+        guard let instance = instance, let token else {
+            fatalError("No instance or token.")
         }
 
         let url: URL
@@ -149,11 +149,11 @@ public extension Service {
         let page = Timeline.Page(url: url, statuses: statuses, previous: previous, next: next, data: data)
 
         // TODO: Need to sort statuses (or rely on view to do it)
-        return Timeline(host: host, timelineType: timeline.timelineType, pages: timeline.pages + [page])
+        return Timeline(instance: instance, timelineType: timeline.timelineType, pages: timeline.pages + [page])
     }
 
     func favorite(status: Status.ID) async throws -> Status {
-        guard let host, let token else {
+        guard let host = instance?.host, let token else {
             fatalError("No host or token.")
         }
         let url = URL(string: "https://\(host)/api/v1/statuses/\(status.rawValue)/favourite")!
@@ -165,7 +165,7 @@ public extension Service {
     }
 
     func reblog(status: Status.ID) async throws -> Status {
-        guard let host, let token else {
+        guard let host = instance?.host, let token else {
             fatalError("No host or token.")
         }
         let url = URL(string: "https://\(host)/api/v1/statuses/\(status.rawValue)/reblog")!
@@ -180,7 +180,7 @@ public extension Service {
 public extension Service {
     // https://mastodon.example/api/v1/statuses
     func postStatus(text: String, inReplyTo: Status.ID?) async throws -> Status {
-        guard let host, let token else {
+        guard let host = instance?.host, let token else {
             fatalError("No host or token.")
         }
         logger?.log("Posting")
@@ -205,7 +205,7 @@ public extension Service {
     }
 
     func uploadAttachment(file: URL, description: String) async throws -> Any {
-        guard let host, let token else {
+        guard let host = instance?.host, let token else {
             fatalError("No host or token.")
         }
         logger?.log("Posting")

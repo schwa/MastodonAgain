@@ -23,11 +23,11 @@ struct MainView: View {
                     let data = try! Data(contentsOf: url)
                     // Do not use mastodon decoder for canned timeline
                     let loadedTimeline = try! JSONDecoder().decode(Timeline.self, from: data)
-                    let timeline = Timeline(host: appModel.host, timelineType: timelineType, pages: loadedTimeline.pages)
+                    let timeline = Timeline(instance: appModel.instance, timelineType: timelineType, pages: loadedTimeline.pages)
                     TimelineStack(timeline: timeline)
                 }
                 else {
-                    let timeline = Timeline(host: appModel.host, timelineType: timelineType)
+                    let timeline = Timeline(instance: appModel.instance, timelineType: timelineType)
                     TimelineStack(timeline: timeline)
                 }
             }

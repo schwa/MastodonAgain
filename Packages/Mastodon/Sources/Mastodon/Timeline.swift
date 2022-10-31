@@ -79,11 +79,11 @@ public struct Timeline: Codable {
     public typealias Direction = PagingDirection
 
     public var url: URL? {
-        timelineType.path.map { URL(string: "https://\(host)\($0)")! }
+        timelineType.path.map { URL(string: "https://\(instance.host)\($0)")! }
     }
 
     public let timelineType: TimelineType
-    public var host: String
+    public var instance: Instance
 
     // TODO: it is possible pages within timelimes can overlap - giving us duplicate statuses we need to guard against that.
     public var pages: [Page] {
@@ -92,8 +92,8 @@ public struct Timeline: Codable {
         }
     }
 
-    public init(host: String, timelineType: TimelineType, canned: Bool = false, pages: [Page] = []) {
-        self.host = host
+    public init(instance: Instance, timelineType: TimelineType, canned: Bool = false, pages: [Page] = []) {
+        self.instance = instance
         self.timelineType = timelineType
         self.pages = pages
     }
