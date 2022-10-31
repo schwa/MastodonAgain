@@ -20,6 +20,9 @@ class AppModel: ObservableObject {
         }
     }
 
+    @Published
+    var showDebugInfo = true
+
     let service = Service()
 
     init() {
@@ -27,7 +30,7 @@ class AppModel: ObservableObject {
     }
 }
 
-enum Authorization: Codable {
+enum Authorization: Codable, Equatable {
     case unauthorized
     case registered(RegisteredApplication)
     case authorized(RegisteredApplication, Token)

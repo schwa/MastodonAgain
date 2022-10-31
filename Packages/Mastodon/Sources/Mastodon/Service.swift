@@ -2,6 +2,9 @@ import AsyncAlgorithms
 import Everything
 import Foundation
 import RegexBuilder
+import os
+
+private let logger: Logger? = Logger()
 
 public actor Service {
     private var host: String?
@@ -34,67 +37,6 @@ public actor Service {
         self.token = token
     }
 
-    public func favorite(status: Status) async throws {
-        guard let host, let token else {
-            fatalError("No host or token.")
-        }
-        let url = URL(string: "https://\(host)/api/v1/statuses/\(status.id)/favourite")!
-        let request = URLRequest.post(url).headers(token.headers)
-        let (status, response) = try await session.json(Status.self, decoder: decoder, for: request)
-        // print(try JSONSerialization.jsonObject(with: data))
-//        print(status)
-//        print(response)
-        update(status)
-    }
-
-    public func timelime(_ timeline: Timeline, direction: Timeline.Direction? = nil) async throws -> Timeline {
-        guard let host, let token else {
-            fatalError("No host or token.")
-        }
-
-        let url: URL
-        switch direction {
-        case nil:
-            url = URL(string: "https://\(host)/\(timeline.timelineType.path)")!
-        case .previous:
-            guard let previous = timeline.previous else {
-                print("NO PREVIOUS")
-                return timeline
-            }
-            url = previous
-        case .next:
-            guard let next = timeline.next else {
-                print("NO NEXT")
-                return timeline
-            }
-            url = next
-        }
-
-        let request = URLRequest(url: url).headers(token.headers)
-
-        let (data, response) = try await session.validatedData(for: request)
-
-        var previous: URL?
-        var next: URL?
-        if let link = response.allHeaderFields["Link"] {
-            let link = link as! String
-            let links = try processLinks(string: link)
-            previous = links["prev"]
-            next = links["next"]
-        }
-        else {
-            // TODO: Not sure if this is even correct
-            print("NO LINK - USING LAST TIMELINE'S")
-            previous = timeline.previous
-            next = timeline.next
-        }
-        let statuses = try decoder.decode([Status].self, from: data)
-        update(statuses)
-
-        // TODO: Need to sort statuses (or rely on view to do it)
-        return Timeline(timelineType: timeline.timelineType, stasuses: timeline.statuses + statuses, previous: previous, next: next)
-    }
-
     public func update(_ value: Status) {
         datedStatuses[value.id] = .init(value)
     }
@@ -112,73 +54,126 @@ public actor Service {
     }
 }
 
-extension URLSession {
-    func validatedData(for request: URLRequest) async throws -> (Data, HTTPURLResponse) {
-        let (data, response) = try await data(for: request)
-        let httpResponse = response as! HTTPURLResponse
-        switch httpResponse.statusCode {
-        case 200 ..< 299:
-            return (data, httpResponse)
-        //    case 401:
-        //        throw HTTPError(statusCode: .init(response.statusCode))
-        default:
-            print(response)
-            throw HTTPError(statusCode: .init(httpResponse.statusCode))
-        }
+public extension Service {
+    func status(for id: Status.ID) async -> Status? {
+        return datedStatuses[id]?.content
     }
-}
 
-public struct Timeline: Equatable {
-    public enum TimelineType: Equatable {
-        case `public`
-        case hashtag(String)
-        case home
-        case list(String) // List.ID
+    // TODO: All this needs cleanup. Use URLPath to return a (pre-configured) URLRequest
+    func fetchStatus(for id: Status.ID) async throws -> Status {
+        guard let host, let token else {
+            fatalError("No host or token.")
+        }
+        // https://mastodon.example/api/v1/statuses/:id
+        let url = URL(string: "https://\(host)/api/v1/statuses/\(id.rawValue)")!
+        let request = URLRequest(url: url).headers(token.headers)
+        let (data, _) = try await session.validatedData(for: request)
+        let status = try decoder.decode(Status.self, from: data)
+        update(status)
+        return status
+    }
 
-        public var path: URLPath {
-            switch self {
-            case .public:
-                return "/api/v1/timelines/public"
-            case .hashtag(let hashtag):
-                return "/api/v1/timelines/tag/\(hashtag)"
-            case .home:
-                return "/api/v1/timelines/home"
-            case .list(let list):
-                return "/api/v1/timelines/list/\(list)"
+    func timelime(_ timeline: Timeline, direction: Timeline.Direction? = nil) async throws -> Timeline {
+//    https://docs.joinmastodon.org/methods/timelines/
+
+        guard let host, let token else {
+            fatalError("No host or token.")
+        }
+
+        let url: URL
+        switch direction {
+        case nil:
+            url = timeline.url
+        case .previous:
+            guard let previous = timeline.previousURL else {
+                print("NO PREVIOUS")
+                return timeline
             }
+            url = previous
+        case .next:
+            guard let next = timeline.nextURL else {
+                print("NO NEXT")
+                return timeline
+            }
+            url = next
         }
+
+        let request = URLRequest(url: url).headers(token.headers)
+
+        let (data, response) = try await session.validatedData(for: request)
+
+        var previous: URL?
+        var next: URL?
+        if let link = response.allHeaderFields["Link"] {
+            let link = link as! String
+            let links = try processLinks(string: link)
+            print(links)
+            previous = links["prev"]
+            next = links["next"]
+        }
+
+        let statuses = try decoder.decode([Status].self, from: data)
+        if statuses.isEmpty {
+            return timeline
+        }
+
+        update(statuses)
+        let page = Timeline.Page(url: url, statuses: statuses, previous: previous, next: next)
+
+        // TODO: Need to sort statuses (or rely on view to do it)
+        return Timeline(host: host, timelineType: timeline.timelineType, pages: timeline.pages + [page])
     }
 
-    public enum Direction {
-        case previous
-        case next
+    func favorite(status: Status.ID) async throws -> Status {
+        guard let host, let token else {
+            fatalError("No host or token.")
+        }
+        let url = URL(string: "https://\(host)/api/v1/statuses/\(status.rawValue)/favourite")!
+        let request = URLRequest.post(url).headers(token.headers)
+        let (status, _) = try await session.json(Status.self, decoder: decoder, for: request)
+        // TODO: Check response
+        update(status)
+        return status
     }
 
-    public let timelineType: TimelineType
-    public let statuses: [Status]
-    public let previous: URL?
-    public let next: URL?
-
-    public init(timelineType: Timeline.TimelineType, stasuses: [Status] = [], previous: URL? = nil, next: URL? = nil) {
-        self.timelineType = timelineType
-        statuses = stasuses
-        self.previous = previous
-        self.next = next
+    func reblog(status: Status.ID) async throws -> Status {
+        guard let host, let token else {
+            fatalError("No host or token.")
+        }
+        let url = URL(string: "https://\(host)/api/v1/statuses/\(status.rawValue)/reblog")!
+        let request = URLRequest.post(url).headers(token.headers)
+        let (status, _) = try await session.json(Status.self, decoder: decoder, for: request)
+        // TODO: Check response
+        update(status)
+        return status
     }
 }
 
-extension Timeline: CustomStringConvertible {
-    public var description: String {
-        String("Timeline(timelineType: \(timelineType), statuses: \(statuses.count), previous: \(previous), next: \(next)")
+public extension Service {
+    // https://mastodon.example/api/v1/statuses
+    func postStatus(text: String, inReplyTo: Status.ID?) async throws -> Status {
+        guard let host, let token else {
+            fatalError("No host or token.")
+        }
+        logger?.log("Posting")
+        let url = URL(string: "https://\(host)/api/v1/statuses")!
+        let request = URLRequest.post(url).headers(token.headers).form([
+            "status": text,
+            "in_reply_to_id": inReplyTo!.rawValue // TODO
+        ])
+        let (data, _) = try await session.validatedData(for: request)
+        let status = try decoder.decode(Status.self, from: data)
+        update(status)
+        logger?.log("Posted: \(String(describing: status))")
+        return status
     }
 }
 
-func processLinks(string: String) throws -> [String: URL] {
-    let pattern = #/<(.+?)>;\s*rel="(.+?)", ?/#
-
-    let s = try string.matches(of: pattern).map { match in
-        let (_, url, rel) = match.output
-        return try (String(rel), URL(string: String(url)).safelyUnwrap(GeneralError.missingValue))
+public extension URLRequest {
+    func form(_ form: [String: String]) -> URLRequest {
+        var copy = self
+        let data = form.formEncoded
+        copy.httpBody = data
+        return copy
     }
-    return Dictionary(uniqueKeysWithValues: s)
 }

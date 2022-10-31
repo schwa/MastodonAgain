@@ -9,7 +9,7 @@ struct ContentView: View {
     var body: some View {
         Group {
             if case .authorized = appModel.authorization {
-                TimelineView(timeline: Timeline(timelineType: .home))
+                TimelineView(timeline: Timeline(host: appModel.host, timelineType: .home))
             }
             else {
                 AuthorizationFlow()

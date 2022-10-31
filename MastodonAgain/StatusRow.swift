@@ -4,7 +4,8 @@ import Mastodon
 import SwiftUI
 
 struct StatusRow: View {
-    let status: Status
+    @Binding
+    var status: Status
 
     @Environment(\.openURL)
     var openURL
@@ -12,99 +13,192 @@ struct StatusRow: View {
     @EnvironmentObject
     var appModel: AppModel
 
+    @Environment(\.openWindow)
+    var openWindow
+
     var body: some View {
         HStack(alignment: .top) {
-            Avatar(url: status.account.avatar)
-                .frame(width: 40, height: 40)
+            avatar
             VStack(alignment: .leading) {
-                HStack {
-                    if !status.account.displayName.isEmpty {
-                        Text("\(status.account.displayName)").bold().fixedSize()
-                    }
-                    Text("@\(status.account.acct)")
-                        .foregroundColor(.secondary).fixedSize()
-                    Spacer()
+                header
+                content
+                footer
+            }
+        }
+    }
 
-                    Button {
-                        openURL(status.url!)
-                    } label: {
-                        Text(status.created, style: .relative).foregroundColor(.secondary)
-                    }
-                    #if os(macOS)
-                    .buttonStyle(.link)
-                    #endif
-                    .fixedSize()
-                }
-                Text(status.attributedContent)
+    @State
+    var isDebugPopoverPresented = false
+
+    @ViewBuilder
+    var avatar: some View {
+        Avatar(url: status.account.avatar)
+            .frame(width: 40, height: 40)
+    }
+
+    @ViewBuilder
+    var header: some View {
+        HStack {
+            AccountName(account: status.account)
+            Spacer()
+            Button {
+                openURL(status.url!)
+            } label: {
+                Text(status.created, style: .relative).foregroundColor(.secondary)
+            }
+#if os(macOS)
+            .buttonStyle(.link)
+#endif
+            .fixedSize()
+        }    }
+
+    @ViewBuilder
+    var content: some View {
+        if let reblog = status.reblog {
+            VStack(alignment: .leading) {
+                AccountName(account: reblog.account)
+                Text(reblog.attributedContent)
                     .textSelection(.enabled)
-                if !status.mediaAttachments.isEmpty {
-                    MediaStack(attachments: status.mediaAttachments)
-                }
-                HStack(spacing: 32) {
-                    Button(systemImage: "arrowshape.turn.up.backward", action: {})
-                    Button(systemImage: "arrowshape.bounce.right", action: {})
-                    Button(systemImage: "star", action: {
-                        Task {
-                            try await appModel.service.favorite(status: status)
-                        }
-                    })
-                    Button(systemImage: "bookmark", action: {})
-                    Button(systemImage: "square.and.arrow.up", action: {})
-                    Button(systemImage: "ellipsis", action: {})
-                }
-                .buttonStyle(.borderless)
             }
-        }
-    }
-}
-
-struct MediaStack: View {
-    let attachments: [MediaAttachment]
-
-    var body: some View {
-        LazyHStack {
-            ForEach(attachments) { attachment in
-                switch attachment.type {
-                case .image, .gifv:
-                    ImageAttachmentView(attachment: attachment)
-                case .video:
-                    VideoPlayer(player: AVPlayer(url: attachment.url))
-                case .audio:
-                    VideoPlayer(player: AVPlayer(url: attachment.url))
-                case .unknown:
-                    Text("Unknown attachment")
-                }
-            }
-        }
-    }
-}
-
-struct ImageAttachmentView: View {
-    let attachment: MediaAttachment
-
-    var body: some View {
-        if let smallSize = attachment.meta?.small?.cgSize {
-            CachedAsyncImage(url: attachment.previewURL) { image in
-                image.resizable().scaledToFill()
-                .accessibilityLabel("TODO (Loaded)")
-            }
-            placeholder: {
-                Group {
-                    if let blurHash = attachment.blurHash, let image = Image(blurHash: blurHash, size: smallSize) {
-                        image
-                    }
-                    else {
-                        LinearGradient(colors: [.cyan, .purple], startPoint: .topLeading, endPoint: .bottomTrailing)
-                    }
-                }
-                .accessibilityLabel("TODO (Loading)")
-            }
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            .frame(width: smallSize.width, height: smallSize.height, alignment: .center)
-            .redlined()
+            .background(Color.blue.opacity(0.1))
         }
         else {
-            Text("NO SIZE").foregroundColor(.red)
+            Text(status.attributedContent)
+                .textSelection(.enabled)
+            if !status.mediaAttachments.isEmpty {
+                MediaStack(attachments: status.mediaAttachments)
+            }
         }
+        if let poll = status.poll {
+            Text("Poll: \(String(describing: poll))").debuggingInfo()
+        }
+        if let card = status.card {
+            Text("Card: \(String(describing: card))").debuggingInfo()
+        }
+    }
+
+    @ViewBuilder
+    var footer: some View {
+        HStack(alignment: .center, spacing: 32) {
+            replyButton
+            repostButton
+            favouriteButton
+            bookmarkButton
+            shareButton
+            moreButton
+            debugButton
+
+            HStack {
+                Text(verbatim: "ID: \(status.id)")
+                if let reblog = status.reblog {
+                    Text(verbatim: "(Reblogged ID: \(reblog.id))")
+                }
+            }
+            .debuggingInfo()
+        }
+        .buttonStyle(ActionButtonStyle())
+    }
+
+    @ViewBuilder
+    var debugView: some View {
+        // https://mastodon.example/api/v1/statuses/:id
+        let url = URL(string: "https://\(appModel.host)/api/v1/statuses/\(status.id.rawValue)")!
+        let request = URLRequest(url: url)
+        RequestDebugView(request: request).padding()
+    }
+
+    @ViewBuilder
+    var replyButton: some View {
+        Button(systemImage: "arrowshape.turn.up.backward", action: {
+            openWindow(value: NewPost.reply(status.id))
+        })
+    }
+
+    @ViewBuilder
+    var repostButton: some View {
+        let resolvedStatus: any StatusProtocol = status.reblog ?? status
+        actionButton(count: resolvedStatus.favouritesCount, label: "reblog", systemImage: "arrow.2.squarepath", selected: resolvedStatus.reblogged ?? false) {
+            // TODO: what status do we get back here?
+            try! await appModel.service.reblog(status: resolvedStatus.id)
+            // TODO: Because of uncertainty of previous TODO - fetch a fresh status
+            status = try! await appModel.service.fetchStatus(for: self.status.id)
+        }
+    }
+
+    @ViewBuilder
+    var favouriteButton: some View {
+        let resolvedStatus: any StatusProtocol = status.reblog ?? status
+        actionButton(count: resolvedStatus.favouritesCount, label: "Favourite", systemImage: "star", selected: resolvedStatus.favourited ?? false) {
+            // TODO: what status do we get back here?
+            try! await appModel.service.favorite(status: resolvedStatus.id)
+            // TODO: Because of uncertainty of previous TODO - fetch a fresh status
+            status = try! await appModel.service.fetchStatus(for: self.status.id)
+        }
+    }
+
+    @ViewBuilder
+    var bookmarkButton: some View {
+        Button(systemImage: "bookmark", action: {})
+    }
+
+    @ViewBuilder
+    var moreButton: some View {
+        Button(systemImage: "ellipsis", action: {})
+    }
+
+    @ViewBuilder
+    var shareButton: some View {
+        let status: any StatusProtocol = status.reblog ?? status
+        let url = status.url! // TODO
+        ShareLink(item: url, label: { Image(systemName: "square.and.arrow.up") })
+    }
+
+    @ViewBuilder
+    var debugButton: some View {
+        Button(systemImage: "ladybug", action: {
+            isDebugPopoverPresented = true
+        })
+        .popover(isPresented: $isDebugPopoverPresented) {
+            debugView
+        }
+    }
+
+    func actionButton(count: Int, label: String, systemImage systemName: String, selected: Bool, action: @escaping () async -> Void) -> some View {
+        Button {
+            Task {
+                await action()
+            }
+        } label: {
+            let image = Image(systemName: systemName)
+                .symbolVariant(selected ? .fill : .none)
+                .foregroundColor(selected ? .accentColor : nil)
+            // swiftlint:disable:next empty_count
+            if count > 0 {
+                Label {
+                    Text("\(count, format: .number)")
+                } icon: {
+                    image
+                }
+            }
+            else {
+                image
+            }
+        }
+    }
+}
+
+struct AccountName: View {
+    let account: Account
+
+    var body: some View {
+        // TODO: Dog's dinner.
+        var text = Text("")
+        if !account.displayName.isEmpty {
+            // swiftlint:disable shorthand_operator
+            text = text + Text("\(account.displayName)").bold()
+        }
+        text = text + Text(" ") + Text("@\(account.acct)")
+                .foregroundColor(.secondary)
+        return text
     }
 }

@@ -7,6 +7,11 @@ struct AuthorizationFlow: View {
     @EnvironmentObject
     var appModel: AppModel
 
+    let hosts = [
+        "mastodon.social",
+        "mastodon.online"
+    ]
+
     @State
     var authorizationCode: String = ""
 
@@ -17,49 +22,70 @@ struct AuthorizationFlow: View {
     var website = "https://schwa.io/MastodonAgain"
 
     var body: some View {
-        switch appModel.authorization {
-        case .unauthorized:
-            GroupBox("Login") {
-                TextField("Host", text: $appModel.host)
-                GroupBox("Application") {
-                    Group {
-                        TextField("Application Name", text: $clientName)
-                        TextField("Website", text: $website)
-                    }
-                    Button("Register Application") {
-                        Task {
-                            try await register()
-                        }
-                    }
-                }
+        Group {
+            switch appModel.authorization {
+            case .unauthorized:
+                unauthorizedView
+            case .registered(let application):
+                registeredView(application)
+            default:
+                Text("Already authorized!")
             }
-            .frame(maxWidth: 320)
-        case .registered(let application):
-            let url = URL(string: "https://\(appModel.host)/oauth/authorize?client_id=\(application.clientID)&scope=read+write+follow+push&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code")!
-            let request = URLRequest(url: url)
-            ViewAdaptor {
-                let webConfiguration = WKWebViewConfiguration()
-                let view = WKWebView(frame: .zero, configuration: webConfiguration)
-                view.load(request)
-                return view
-            } update: { _ in
-            }
-            Image(systemName: "arrow.down").font(.largeTitle)
-                .foregroundColor(.red)
-                .padding()
-            TextField("Authorisation Code", text: $authorizationCode)
-                .onSubmit {
-                    Task {
-                        try await getToken(with: application)
-                    }
-                }
-                .padding()
-        default:
-            Text("Already authorized!")
+        }
+        .onChange(of: appModel.authorization) { authorization in
+            appLogger?.log("Authorization changed: \(String(describing: authorization))")
         }
     }
 
+    @ViewBuilder
+    var unauthorizedView: some View {
+        GroupBox("Login") {
+            Picker("Host", selection: $appModel.host) {
+                ForEach(hosts, id: \.self) { host in
+                    Text(verbatim: host).tag(host)
+                }
+            }
+            TextField("Host", text: $appModel.host)
+            GroupBox("Application") {
+                Group {
+                    TextField("Application Name", text: $clientName)
+                    TextField("Website", text: $website)
+                }
+                Button("Register Application") {
+                    Task {
+                        try await register()
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: 320)
+    }
+
+    @ViewBuilder
+    func registeredView(_ application: RegisteredApplication) -> some View {
+        let url = URL(string: "https://\(appModel.host)/oauth/authorize?client_id=\(application.clientID)&scope=read+write+follow+push&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code")!
+        let request = URLRequest(url: url)
+        ViewAdaptor {
+            let webConfiguration = WKWebViewConfiguration()
+            let view = WKWebView(frame: .zero, configuration: webConfiguration)
+            view.load(request)
+            return view
+        } update: { _ in
+        }
+        Image(systemName: "arrow.down").font(.largeTitle)
+            .foregroundColor(.red)
+            .padding()
+        TextField("Authorisation Code", text: $authorizationCode)
+            .onSubmit {
+                Task {
+                    try await getToken(with: application)
+                }
+            }
+            .padding()
+    }
+
     func register() async throws {
+        appLogger?.log("Registering")
         let url = URL(string: "https://\(appModel.host)/api/v1/apps")!
         let request = URLRequest(url: url, formParameters: [
             "client_name": clientName,
@@ -73,6 +99,7 @@ struct AuthorizationFlow: View {
     }
 
     func getToken(with application: RegisteredApplication) async throws {
+        appLogger?.log("Getting Token")
         let url = URL(string: "https://\(appModel.host)/oauth/token")!
         let request = URLRequest(url: url, formParameters: [
             "client_id": application.clientID,

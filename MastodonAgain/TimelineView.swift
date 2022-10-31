@@ -16,28 +16,24 @@ struct TimelineView: View {
     var refreshing = false
 
     var body: some View {
-        let statuses = timeline.statuses
-
         List() {
-            HStack() {
-                Spacer()
-                Button("Newer") {
-                    refreshTask(direction: .previous)
-                }
-                .disabled(refreshing)
-                Spacer()
+            Button("Newer") {
+                refreshTask(direction: .previous)
             }
-            ForEach(statuses) { status in
-                StatusRow(status: status)
-                Divider()
-            }
-            HStack() {
-                Spacer()
-                Button("Older") {
-                    refreshTask(direction: .next)
+            ForEach(timeline.pages) { page in
+                let id = page.id
+                let binding = Binding {
+                    page
+                } set: { newValue in
+                    guard let index = timeline.pages.firstIndex(where: { $0.id == id }) else {
+                        fatalError("Could not find a page in a timeline we were displaying it from...")
+                    }
+                    timeline.pages[index] = newValue
                 }
-                .disabled(refreshing)
-                Spacer()
+                PageView(page: binding)
+            }
+            Button("Older") {
+                refreshTask(direction: .next)
             }
         }
         .refreshable {
@@ -51,9 +47,6 @@ struct TimelineView: View {
         }
         .task {
             refreshTask()
-        }
-        .onChange(of: timeline) { newValue in
-            print(newValue)
         }
     }
 
@@ -69,5 +62,37 @@ struct TimelineView: View {
 
     func refresh(direction: Timeline.Direction? = nil) async throws {
         timeline = try await appModel.service.timelime(timeline, direction: direction)
+    }
+}
+
+struct PageView: View {
+    @Binding
+    var page: Timeline.Page
+
+    var body: some View {
+        pageDebugInfo(page)
+        ForEach(page.statuses) { status in
+            let id = status.id
+            let binding = Binding {
+                status
+            } set: { newValue in
+                guard let index = page.statuses.firstIndex(where: { $0.id == id }) else {
+                    fatalError("Could not find a status in a page we were displaying it from...")
+                }
+                page.statuses[index] = newValue
+            }
+            StatusRow(status: binding)
+            Divider()
+        }
+    }
+
+    @ViewBuilder
+    func pageDebugInfo(_ page: Timeline.Page) -> some View {
+        VStack {
+            Text(verbatim: "id: \(page.id)").frame(maxWidth: .infinity)
+            Text(verbatim: "previous: \(page.previous?.absoluteString ?? "<none>")")
+            Text(verbatim: "next: \(page.next?.absoluteString ?? "<none>")")
+        }
+        .debuggingInfo()
     }
 }

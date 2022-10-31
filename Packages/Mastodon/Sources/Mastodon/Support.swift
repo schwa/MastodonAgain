@@ -1,3 +1,4 @@
+import Everything
 import Foundation
 import RegexBuilder
 
@@ -202,7 +203,7 @@ public extension URLSession {
     }
 }
 
-public extension Status {
+public extension StatusProtocol {
     var attributedContent: AttributedString {
         #if os(macOS)
             let header = #"<meta charset="UTF-8">"#
@@ -258,4 +259,30 @@ public extension MediaAttachment.Meta.Size {
             return nil
         }
     }
+}
+
+extension URLSession {
+    func validatedData(for request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+        let (data, response) = try await data(for: request)
+        let httpResponse = response as! HTTPURLResponse
+        switch httpResponse.statusCode {
+        case 200 ..< 299:
+            return (data, httpResponse)
+            //    case 401:
+            //        throw HTTPError(statusCode: .init(response.statusCode))
+        default:
+            print(response)
+            throw HTTPError(statusCode: .init(httpResponse.statusCode))
+        }
+    }
+}
+
+func processLinks(string: String) throws -> [String: URL] {
+    let pattern = #/<(.+?)>;\s*rel="(.+?)", ?/#
+
+    let s = try string.matches(of: pattern).map { match in
+        let (_, url, rel) = match.output
+        return try (String(rel), URL(string: String(url)).safelyUnwrap(GeneralError.missingValue))
+    }
+    return Dictionary(uniqueKeysWithValues: s)
 }

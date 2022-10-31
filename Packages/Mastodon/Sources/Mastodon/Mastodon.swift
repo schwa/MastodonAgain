@@ -1,13 +1,13 @@
 import Everything
 import Foundation
 
-public struct Poll: Codable, Equatable {
+public struct Poll: Codable {
 }
 
-public struct Card: Codable, Equatable {
+public struct Card: Codable {
 }
 
-public struct Field: Codable, Equatable {
+public struct Field: Codable {
     public enum CodingKeys: String, CodingKey {
         case name
         case value
@@ -19,7 +19,7 @@ public struct Field: Codable, Equatable {
     public let verifiedAt: String?
 }
 
-public struct Emoji: Codable, Equatable {
+public struct Emoji: Codable {
     public enum CodingKeys: String, CodingKey {
         case shortCode
         case url
@@ -33,7 +33,7 @@ public struct Emoji: Codable, Equatable {
     public let visibleInPic: Bool?
 }
 
-public struct Account: Identifiable, Codable, Equatable {
+public struct Account: Identifiable, Codable {
     public enum CodingKeys: String, CodingKey {
         case id
         case username
@@ -83,12 +83,12 @@ public struct Account: Identifiable, Codable, Equatable {
     public let fields: [Field]
 }
 
-public struct Tag: Codable, Equatable {
+public struct Tag: Codable {
     public let name: String
     public let url: URL
 }
 
-public struct Application: Codable, Equatable {
+public struct Application: Codable {
     public let name: String
     public let website: String?
 }
@@ -113,7 +113,7 @@ public struct RegisteredApplication: Identifiable, Codable, Equatable {
     public let vapidKey: String
 }
 
-public struct MediaAttachment: Identifiable, Codable, Equatable {
+public struct MediaAttachment: Identifiable, Codable {
     public enum CodingKeys: String, CodingKey {
         case id
         case type
@@ -135,8 +135,8 @@ public struct MediaAttachment: Identifiable, Codable, Equatable {
         case unknown
     }
 
-    public struct Meta: Codable, Equatable {
-        public struct Size: Codable, Equatable {
+    public struct Meta: Codable {
+        public struct Size: Codable {
             public let width: Double?
             public let height: Double?
             public let size: String?
@@ -159,7 +159,7 @@ public struct MediaAttachment: Identifiable, Codable, Equatable {
     public let blurHash: String?
 }
 
-public struct Mention: Identifiable, Codable, Equatable {
+public struct Mention: Identifiable, Codable {
     public enum CodingKeys: String, CodingKey {
         case id
         case username
@@ -173,7 +173,37 @@ public struct Mention: Identifiable, Codable, Equatable {
     public let acct: String
 }
 
-public struct Status: Identifiable, Codable, Equatable {
+public protocol StatusProtocol {
+    var id: Tagged<Status, String> { get }
+    var created: Date { get }
+    var inReplyToId: Status.ID? { get }
+    var inReplyToAccountId: Account.ID? { get }
+    var sensitive: Bool { get }
+    var spoilerText: String { get }
+    var visibility: Status.Visibility { get }
+    var language: String? { get }
+    var uri: String? { get }
+    var url: URL? { get }
+    var repliesCount: Int { get }
+    var reblogsCount: Int { get }
+    var favouritesCount: Int { get }
+    var editedAt: Date? { get }
+    var content: String { get }
+    var application: Application? { get }
+    var account: Account { get }
+    var mediaAttachments: [MediaAttachment] { get }
+    var mentions: [Mention] { get }
+    var tags: [Tag] { get }
+    var emojis: [Emoji] { get }
+    var card: Card? { get }
+    var poll: Poll? { get }
+    var favourited: Bool? { get }
+    var reblogged: Bool? { get }
+    var muted: Bool? { get }
+    var bookmarked: Bool? { get }
+}
+
+public struct Status: StatusProtocol, Identifiable, Codable {
     public enum CodingKeys: String, CodingKey {
         case id
         case created = "created_at"
@@ -200,6 +230,10 @@ public struct Status: Identifiable, Codable, Equatable {
         case card
         case poll
         case text
+        case favourited
+        case reblogged
+        case muted
+        case bookmarked
     }
 
     public enum Visibility: String, Codable {
@@ -224,7 +258,7 @@ public struct Status: Identifiable, Codable, Equatable {
     public let favouritesCount: Int
     public let editedAt: Date?
     public let content: String
-    public let reblog: PlaceholderCodable?
+    public let reblog: ReblogStatus?
     public let application: Application?
     public let account: Account
     public let mediaAttachments: [MediaAttachment]
@@ -235,9 +269,75 @@ public struct Status: Identifiable, Codable, Equatable {
     public let poll: Poll?
 
     public let text: String?
+    public let favourited: Bool?
+    public let reblogged: Bool?
+    public let muted: Bool?
+    public let bookmarked: Bool?
 }
 
-public struct PlaceholderCodable: Codable, Equatable {
+public struct ReblogStatus: StatusProtocol, Identifiable, Codable {
+    public enum CodingKeys: String, CodingKey {
+        case id
+        case created = "created_at"
+        case inReplyToId = "in_reply_to_id"
+        case inReplyToAccountId = "in_reply_to_account_id"
+        case sensitive
+        case spoilerText = "spoiler_text"
+        case visibility
+        case language
+        case uri
+        case url
+        case repliesCount = "replies_count"
+        case reblogsCount = "reblogs_count"
+        case favouritesCount = "favourites_count"
+        case editedAt = "edited_at"
+        case content
+        case reblog
+        case application
+        case account
+        case mediaAttachments = "media_attachments"
+        case mentions
+        case tags
+        case emojis
+        case card
+        case poll
+        case favourited
+        case reblogged
+        case muted
+        case bookmarked
+    }
+
+    public let id: Tagged<Status, String>
+    public let created: Date
+    public let inReplyToId: Status.ID?
+    public let inReplyToAccountId: Account.ID?
+    public let sensitive: Bool
+    public let spoilerText: String
+    public let visibility: Status.Visibility
+    public let language: String?
+    public let uri: String?
+    public let url: URL?
+    public let repliesCount: Int
+    public let reblogsCount: Int
+    public let favouritesCount: Int
+    public let editedAt: Date?
+    public let content: String
+    public let reblog: PlaceholderCodable?
+    public let application: Application?
+    public let account: Account
+    public let mediaAttachments: [MediaAttachment]
+    public let mentions: [Mention]
+    public let tags: [Tag]
+    public let emojis: [Emoji]
+    public let card: Card?
+    public let poll: Poll?
+    public let favourited: Bool?
+    public let reblogged: Bool?
+    public let muted: Bool?
+    public let bookmarked: Bool?
+}
+
+public struct PlaceholderCodable: Codable {
 }
 
 public struct Token: Codable, Equatable {
