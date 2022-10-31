@@ -16,6 +16,7 @@ struct TimelineView: View {
 
     @State
     var refreshing = false
+   
 
     init(timeline: Timeline) {
         self.timeline = timeline
@@ -23,6 +24,7 @@ struct TimelineView: View {
 
     @ViewBuilder
     var body: some View {
+        DebugDescriptionView(timeline.url).debuggingInfo()
         Group {
             List() {
                 if refreshing {

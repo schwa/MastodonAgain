@@ -39,6 +39,7 @@ public actor Service {
     }
 
     public func update(instance: Instance?) {
+        logger?.debug("Setting instance: \(instance?.id ?? "<nil>")")
         self.instance = instance
     }
 

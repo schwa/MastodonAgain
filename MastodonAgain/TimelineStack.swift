@@ -18,7 +18,7 @@ struct TimelineStack: View {
 
     var body: some View {
         NavigationStack {
-            TimelineView(timeline: timeline)
+            TimelineView(timeline: timeline).navigationTitle(timeline.timelineType.title)
         }
     }
 }

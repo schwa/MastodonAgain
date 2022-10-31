@@ -105,6 +105,8 @@ struct AuthorizationFlow: View {
 
     func register() async throws {
         appLogger?.log("Registering")
+        self.spinning = true
+        self.date = .now
         let url = URL(string: "https://\(appModel.instance.host)/api/v1/apps")!
         let request = URLRequest(url: url, formParameters: [
             "client_name": clientName,
@@ -115,6 +117,7 @@ struct AuthorizationFlow: View {
 
         let (application, _) = try await URLSession.shared.json(RegisteredApplication.self, for: request)
         appModel.instance.authorization = .registered(application)
+        self.spinning = false
     }
 
     func getToken(with application: RegisteredApplication) async throws {
@@ -132,5 +135,6 @@ struct AuthorizationFlow: View {
         ])
         let (token, _) = try await URLSession.shared.json(Token.self, for: request)
         appModel.instance.authorization = .authorized(application, token)
+        self.spinning = false
     }
 }

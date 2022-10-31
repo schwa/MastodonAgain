@@ -1,5 +1,8 @@
 import Everything
 import Foundation
+import os
+
+private let logger: Logger? = Logger()
 
 public class Storage {
     public static let shared = Storage()
@@ -14,14 +17,18 @@ public class Storage {
 
     public subscript(key: String) -> Data? {
         get {
-            items[key]
+            let data = items[key]
+            logger?.debug("Fetching data for key: \(key), \(data != nil ? "hit" : "miss")")
+            return data
         }
         set {
             if newValue == nil {
                 items[key] = nil
+                logger?.debug("Setting data for key: \(key)")
             }
             else {
                 items[key] = newValue
+                logger?.debug("Erasing data for key: \(key)")
             }
 
             try! save()
@@ -29,6 +36,7 @@ public class Storage {
     }
 
     public func load() throws {
+        logger?.debug("Storage.load")
         guard path.exists else {
             return
         }
@@ -37,6 +45,7 @@ public class Storage {
     }
 
     public func save() throws {
+        logger?.debug("Storage.save")
         let data = try! PropertyListEncoder().encode(items)
         try data.write(to: path.url)
     }

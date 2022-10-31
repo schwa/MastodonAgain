@@ -19,6 +19,9 @@ class AppModel: ObservableObject {
 
     init() {
         instance = Storage.shared["instance"] ?? Instance("mastodon.social")
+        Task {
+            await service.update(instance: instance)
+        }
     }
 }
 
