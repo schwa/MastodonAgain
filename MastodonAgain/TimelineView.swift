@@ -9,8 +9,7 @@ struct TimelineView: View {
     @EnvironmentObject
     var appModel: AppModel
 
-    @State
-    var timeline: Timeline
+    let timeline: Timeline
 
     @State
     var pages = StatusesPagedContent()
@@ -19,49 +18,51 @@ struct TimelineView: View {
     var refreshing = false
 
     init(timeline: Timeline) {
-        self._timeline = State(initialValue: timeline)
+        self.timeline = timeline
     }
 
     @ViewBuilder
     var body: some View {
-        DescriptionView(timeline).debuggingInfo()
-        DescriptionView(pages).debuggingInfo()
-//        Group {
-//            if refreshing {
-//                ProgressView()
-//            }
-//            else {
-//                List() {
-//                    PagedContentView(content: $pages) { status in
-//                        StatusRow(status: status)
-//                    }
-//                }
-//            }
-//        }
+        VStack {
+            DescriptionView(timeline)
+            DescriptionView(pages)
+        }
+        .debuggingInfo()
+        Group {
+            List() {
+                if refreshing {
+                    ProgressView()
+                }
+
+                PagedContentView(content: $pages) { status in
+                    StatusRow(status: status)
+                }
+            }
+        }
 //        .refreshable {
 //            refreshTask()
 //        }
-//        .toolbar {
-//            Button("Save") {
-//                do {
-//                    let data = try JSONEncoder().encode(timeline)
-//                    let path = FSPath.temporaryDirectory / "timeline.json"
-//                    try data.write(to: path.url)
-//                    path.reveal()
-//                }
-//                catch {
-//                    fatal(error: error)
-//                }
-//            }
-//
-//            Button("Refresh") {
-//                refreshTask()
-//            }
-//            .disabled(refreshing)
-//        }
-//        .task {
-//            refreshTask()
-//        }
+        .toolbar {
+            Button("Save") {
+                do {
+                    let data = try JSONEncoder().encode(timeline)
+                    let path = FSPath.temporaryDirectory / "timeline.json"
+                    try data.write(to: path.url)
+                    path.reveal()
+                }
+                catch {
+                    fatal(error: error)
+                }
+            }
+
+            Button("Refresh") {
+                refreshTask()
+            }
+            .disabled(refreshing)
+        }
+        .task {
+            refreshTask()
+        }
     }
 
     func refreshTask(direction: PagingDirection? = nil) {
@@ -71,14 +72,11 @@ struct TimelineView: View {
         refreshing = true
         Task {
             await errorHandler.handle {
-                try await refresh(direction: direction)
+                let page = try await appModel.service.timelime(timeline, direction: direction)
+                self.pages.pages.append(page)
             }
             refreshing = false
         }
-    }
-
-    func refresh(direction: PagingDirection? = nil) async throws {
-        //timeline = try await appModel.service.timelime(timeline, direction: direction)
     }
 }
 

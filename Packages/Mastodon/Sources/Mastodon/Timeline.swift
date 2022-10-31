@@ -64,12 +64,6 @@ public struct Timeline: Codable {
     }
 }
 
-extension Timeline: CustomStringConvertible {
-    public var description: String {
-        String("Timeline(timelineType: \(timelineType)")
-    }
-}
-
 //public extension Timeline {
 //    var previousURL: URL? {
 //        guard let first = pages.first else {
