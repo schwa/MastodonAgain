@@ -21,18 +21,20 @@ struct AuthorizationFlow: View {
     @State
     var website = "https://schwa.io/MastodonAgain"
 
-    @State
-    var spinning = false
+    struct Mode: Equatable {
+        let title: String
+        let started = Date()
+    }
 
     @State
-    var date: Date?
+    var mode: Mode?
 
     var body: some View {
         Group {
-            if spinning {
+            if let mode {
                 ProgressView()
-                if let date {
-                    Text("Waiting for token: ") + Text(date, style: .relative).monospacedDigit()
+                if let date = mode.started {
+                    Text("\(mode.title): ") + Text(date, style: .relative).monospacedDigit()
                 }
             }
             else {
@@ -46,13 +48,16 @@ struct AuthorizationFlow: View {
                 }
             }
         }
+//        .toolbar {
+//            Button("Cancel Authorization") {
+//                appModel.instance.authorization = .unauthorized
+//            }
+//        }
+        .onChange(of: mode, perform: { mode in
+            appLogger?.log("Mode changed: \(String(describing: mode))")
+        })
         .onChange(of: appModel.instance.authorization) { authorization in
             appLogger?.log("Authorization changed: \(String(describing: authorization))")
-        }
-        .toolbar {
-            Button("Cancel Authorization") {
-                appModel.instance.authorization = .unauthorized
-            }
         }
     }
 
@@ -104,9 +109,7 @@ struct AuthorizationFlow: View {
     }
 
     func register() async throws {
-        appLogger?.log("Registering")
-        self.spinning = true
-        self.date = .now
+        mode = Mode(title: "Registering Application")
         let url = URL(string: "https://\(appModel.instance.host)/api/v1/apps")!
         let request = URLRequest(url: url, formParameters: [
             "client_name": clientName,
@@ -117,13 +120,11 @@ struct AuthorizationFlow: View {
 
         let (application, _) = try await URLSession.shared.json(RegisteredApplication.self, for: request)
         appModel.instance.authorization = .registered(application)
-        self.spinning = false
+        mode = nil
     }
 
     func getToken(with application: RegisteredApplication) async throws {
-        self.spinning = true
-        self.date = .now
-        appLogger?.log("Getting Token")
+        mode = Mode(title: "Getting Token")
         let url = URL(string: "https://\(appModel.instance.host)/oauth/token")!
         let request = URLRequest(url: url, formParameters: [
             "client_id": application.clientID,
@@ -135,6 +136,6 @@ struct AuthorizationFlow: View {
         ])
         let (token, _) = try await URLSession.shared.json(Token.self, for: request)
         appModel.instance.authorization = .authorized(application, token)
-        self.spinning = false
+        mode = nil
     }
 }

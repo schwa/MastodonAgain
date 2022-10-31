@@ -13,6 +13,7 @@ struct PagedContentView <Row>: View where Row: View {
     @Environment(\.errorHandler)
     var errorHandler
 
+    @ViewBuilder
     let row: (Binding<Content.Element>) -> Row
 
     var body: some View {

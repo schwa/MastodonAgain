@@ -16,7 +16,6 @@ struct TimelineView: View {
 
     @State
     var refreshing = false
-   
 
     init(timeline: Timeline) {
         self.timeline = timeline
@@ -33,6 +32,7 @@ struct TimelineView: View {
 
                 PagedContentView(content: $pages, isFetching: $refreshing) { status in
                     StatusRow(status: status)
+                    Divider()
                 }
             }
         }
@@ -64,35 +64,14 @@ struct TimelineView: View {
         refreshing = true
         Task {
             await errorHandler.handle {
+                guard appModel.instance.token != nil else {
+                    return
+                }
                 let page = try await appModel.service.timelime(timeline)
                 self.pages.pages.append(page)
             }
             refreshing = false
         }
-    }
-}
-
-struct DebugDescriptionView <Value>: View {
-    let value: Value
-
-    init(_ value: Value) {
-        self.value = value
-    }
-
-    var body: some View {
-        Group {
-            if let value = value as? CustomDebugStringConvertible {
-                Text(verbatim: "\(value.debugDescription)")
-            }
-            else if let value = value as? CustomStringConvertible {
-                Text(verbatim: "\(value.description)")
-            }
-            else {
-                Text(verbatim: "\(String(describing: value))")
-            }
-        }
-        .textSelection(.enabled)
-        .font(.body.monospaced())
     }
 }
 

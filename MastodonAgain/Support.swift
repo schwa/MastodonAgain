@@ -232,3 +232,27 @@ extension FSPath {
         NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: "")
     }
 }
+
+struct DebugDescriptionView <Value>: View {
+    let value: Value
+
+    init(_ value: Value) {
+        self.value = value
+    }
+
+    var body: some View {
+        Group {
+            if let value = value as? CustomDebugStringConvertible {
+                Text(verbatim: "\(value.debugDescription)")
+            }
+            else if let value = value as? CustomStringConvertible {
+                Text(verbatim: "\(value.description)")
+            }
+            else {
+                Text(verbatim: "\(String(describing: value))")
+            }
+        }
+        .textSelection(.enabled)
+        .font(.body.monospaced())
+    }
+}

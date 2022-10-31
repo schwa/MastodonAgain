@@ -11,7 +11,7 @@ struct AppSettings: View {
     var body: some View {
         List {
             VStack {
-                DebugDescriptionView(appModel.instance)
+                DebugDescriptionView(appModel.instance).debuggingInfo()
                 Button("Log out") {
                     appModel.instance.authorization = .unauthorized
                 }

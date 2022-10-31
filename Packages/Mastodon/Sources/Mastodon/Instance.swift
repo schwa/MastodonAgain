@@ -18,7 +18,7 @@ public enum Authorization: Codable, Hashable {
     case authorized(RegisteredApplication, Token)
 }
 
-extension Instance {
+public extension Instance {
     var token: Token? {
         if case let .authorized(_, token) = authorization {
             return token
