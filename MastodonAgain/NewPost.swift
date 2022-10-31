@@ -89,11 +89,15 @@ struct ImageWell: View {
                         guard let url = try await provider.loadItem(forTypeIdentifier: "public.image") as? URL else {
                             fatalError("No url")
                         }
+                        #if os(macOS)
                         guard let nsImage = NSImage(contentsOf: url) else {
                             fatalError("Could not create image")
                         }
                         self.imageURL = url
                         self.image = Image(nsImage: nsImage)
+                        #else
+                        fatalError("TODO: No images yet on iOS")
+                        #endif
                     }
                     return true
                 }
