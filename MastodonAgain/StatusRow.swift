@@ -39,7 +39,10 @@ struct StatusRow: View {
     @ViewBuilder
     var header: some View {
         HStack {
-            AccountName(account: status.account)
+            Text(status.account)
+            if status.reblog != nil {
+                Text("reblogged")
+            }
             Spacer()
             Button {
                 openURL(status.url!)
@@ -50,31 +53,27 @@ struct StatusRow: View {
             .buttonStyle(.link)
 #endif
             .fixedSize()
-        }    }
+        }
+    }
 
     @ViewBuilder
     var content: some View {
         if let reblog = status.reblog {
             VStack(alignment: .leading) {
-                AccountName(account: reblog.account)
-                Text(reblog.attributedContent)
-                    .textSelection(.enabled)
+                Text(reblog.account)
+                StatusContent(status: reblog)
             }
-            .background(Color.blue.opacity(0.1))
+            .padding(4)
+            .background(Color.blue.opacity(0.1).cornerRadius(4))
         }
         else {
-            Text(status.attributedContent)
-                .textSelection(.enabled)
-            if !status.mediaAttachments.isEmpty {
-                MediaStack(attachments: status.mediaAttachments)
-            }
+            StatusContent(status: status)
         }
-        if let poll = status.poll {
-            Text("Poll: \(String(describing: poll))").debuggingInfo()
-        }
-        if let card = status.card {
-            CardView(card: card)
-        }
+    }
+
+    @ViewBuilder
+    func content(for status: any StatusProtocol) -> some View {
+
     }
 
     @ViewBuilder
@@ -88,10 +87,31 @@ struct StatusRow: View {
             moreButton
             debugButton
 
-            HStack {
+            HStack(spacing: 8) {
                 Text(verbatim: "ID: \(status.id)")
                 if let reblog = status.reblog {
                     Text(verbatim: "(Reblogged ID: \(reblog.id))")
+                }
+                if status.sensitive {
+                    Text("Sensitive")
+                }
+                if status.card != nil {
+                    Text("Card")
+                }
+                if status.poll != nil {
+                    Text("Card")
+                }
+                if !status.mediaAttachments.isEmpty {
+                    Text("\(status.mediaAttachments.count) attachments")
+                }
+                if status.bookmarked ?? false {
+                    Text("Bookmarked")
+                }
+                if status.favourited ?? false {
+                    Text("Favoured")
+                }
+                if let language = status.language {
+                    Text("\(language)")
                 }
             }
             .debuggingInfo()
@@ -187,135 +207,99 @@ struct StatusRow: View {
     }
 }
 
-struct AccountName: View {
-    let account: Account
-
-    var body: some View {
-        // TODO: Dog's dinner.
+extension Text {
+    init(_ account: Account) {
         var text = Text("")
         if !account.displayName.isEmpty {
             // swiftlint:disable shorthand_operator
             text = text + Text("\(account.displayName)").bold()
         }
-        text = text + Text(" ") + Text("@\(account.acct)")
+        self = text + Text(" ") + Text("@\(account.acct)")
                 .foregroundColor(.secondary)
-        return text
     }
 }
 
-struct ContentImage: View {
-    let url: URL
-    let size: CGSize?
-    let blurhash: Blurhash?
-    let sensitive: Bool
-    let accessibilityLabel: Text?
+struct StatusContent <Status>: View where Status: StatusProtocol {
+    let status: Status
+
+    @AppStorage("hideSensitiveContent")
+    var hideSensitiveContent = false
+
+    var sensitive: Bool {
+        return status.sensitive
+    }
+
+    var hideContent: Bool {
+        sensitive && !allowSensitive && hideSensitiveContent
+    }
 
     @State
-    var hover = false
-
-    init(url: URL, size: CGSize? = nil, blurhash: Blurhash? = nil, sensitive: Bool = false, accessibilityLabel: Text? = nil) {
-        self.url = url
-        self.size = size
-        self.blurhash = blurhash
-        self.sensitive = sensitive
-        self.accessibilityLabel = accessibilityLabel
-    }
+    var allowSensitive = false
 
     var body: some View {
-        image
-    }
-
-    var image: some View {
-        CachedAsyncImage(url: url) { image in
-            image.resizable().scaledToFit()
-        }
-        placeholder: {
-            if let blurhash, let size {
-                blurhash.image(size: size)
+        VStack(alignment: .leading) {
+            if sensitive && hideSensitiveContent == true {
+                HStack() {
+                    status.spoilerText.nilify().map(Text.init)
+                    Toggle("Show Sensitive Content", isOn: $allowSensitive)
+                }
+                .controlSize(.small)
             }
-            else {
-                LinearGradient(colors: [.cyan, .purple], startPoint: .topLeading, endPoint: .bottomTrailing)
-            }
-        }
-        .onHover { value in
-            hover = value
-        }
-        .redlined(hover)
-//        .overlay() {
-//            if hover {
-//                VStack {
-//                    Text("\(url, format: .url)").lineLimit(1)
-//                    if let size {
-//                        Text("\(size.width, format: .number), \(size.height, format: .number)")
-//                    }
-//                }
-//                .font(.caption2)
-//                .padding()
-//                .background(Capsule().fill(Color.white))
-//            }
-//        }
-    }
-}
-
-extension Card {
-    var size: CGSize? {
-        guard let width = width, let height = height else {
-            return nil
-        }
-        return CGSize(width: width, height: height)
-    }
-}
-
-struct CardView: View {
-    let card: Card
-
-    var body: some View {
-        switch card.type {
-        case .link:
-            Link(destination: card.url) {
-                HStack {
-                    if let image = card.image {
-                        ContentImage(url: image, size: card.size, blurhash: card.blurhash, accessibilityLabel: Text("TODO"))
-                        .frame(maxHeight: 80)
-                        .border(Color.purple)
-                    }
-                    if let description = card.title ?? card.description {
-                        Label("\(description) (\(card.url.absoluteString))", systemImage: "link").symbolVariant(.circle)
-                    }
-                    else {
-                        Label(card.url.absoluteString, systemImage: "link").symbolVariant(.circle)
-                    }
+            VStack(alignment: .leading) {
+                Text(status.attributedContent)
+                    .textSelection(.enabled)
+                if !status.mediaAttachments.isEmpty {
+                    MediaStack(attachments: status.mediaAttachments)
+                }
+                if let poll = status.poll {
+                    Text("Poll: \(String(describing: poll))").debuggingInfo()
+                }
+                if let card = status.card {
+                    CardView(card: card)
                 }
             }
-            .border(Color.red)
-//            if let width = card.width, let height = card.height, let blurHash = card.blurhash {
-//                Image(blurHash: blurHash, size: [width, height])
+            .sensitiveContent(hideContent)
+            .frame(maxWidth: .infinity, alignment: .leading)
+//            .overlay {
+//                if sensitive && !allowSensitive {
+//                    Color.red.opacity(1).backgroundStyle(.thickMaterial)
+//                }
 //            }
-// {"url":"https://twitodon.com/","title":"Twitodon - Find your Twitter friends on Mastodon","description":"","type":"link","author_name":"","author_url":"","provider_name":"","provider_url":"","html":"","width":0,"height":0,"image":null,"embed_url":"","blurhash":null}
+        }
+    }
+}
 
-//            "card" : {
-//                "author_name" : "",
-//                "author_url" : "",
-//                "blurhash" : "U009m+ayWBaxROj[ofj]ozayayayayj[f6j[",
-//                "description" : "“Riven.\n\nOfficially in development at Cyan.\n\nFAQ: https://t.co/6YeeamoJaq”",
-//                "embed_url" : "",
-//                "height" : 225,
-//                "html" : "",
-//                "image" : "https://files.mastodon.social/cache/preview_cards/images/046/839/502/original/d99d01f5953824cf.jpeg",
-//                "provider_name" : "Twitter",
-//                "provider_url" : "",
-//                "title" : "Cyan Inc. on Twitter",
-//                "type" : "link",
-//                "url" : "https://twitter.com/cyanworlds/status/1587065601339424770",
-//                "width" : 400
-//            },
+struct SensitiveContentModifier: ViewModifier {
 
-        case .photo:
-            Text("Photo Card: \(String(describing: card))").debuggingInfo()
-        case .video:
-            Text("Video Card: \(String(describing: card))").debuggingInfo()
-        case .rich:
-            Text("Video Card: \(String(describing: card))").debuggingInfo()
+    let sensitive: Bool
+
+    func body(content: Content) -> some View {
+        if sensitive {
+            content
+                .blur(radius: 20)
+                .clipped()
+                .cornerRadius(8)
+                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.red))
+        }
+        else {
+            content
+        }
+    }
+}
+
+extension View {
+    func sensitiveContent(_ sensitive: Bool) -> some View {
+        return self.modifier(SensitiveContentModifier(sensitive: sensitive))
+    }
+}
+
+extension Collection {
+    func nilify() -> Self? {
+        if isEmpty {
+            return nil
+        }
+        else {
+            return self
         }
     }
 }

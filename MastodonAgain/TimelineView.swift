@@ -23,9 +23,9 @@ struct TimelineView: View {
 
     @ViewBuilder
     var body: some View {
-        DebugDescriptionView(timeline.url).debuggingInfo()
         Group {
             List() {
+                DebugDescriptionView(timeline.url).debuggingInfo()
                 if refreshing {
                     ProgressView()
                 }
@@ -36,9 +36,10 @@ struct TimelineView: View {
                 }
             }
         }
-//        .refreshable {
-//            refreshTask()
-//        }
+        .refreshable {
+            // TODO: How to get this to work on macOS?
+            refreshTask()
+        }
         .toolbar {
             Button("Save") {
                 do {

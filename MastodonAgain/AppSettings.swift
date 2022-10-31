@@ -8,6 +8,9 @@ struct AppSettings: View {
     @AppStorage("showDebuggingInfo")
     var showDebuggingInfo = false
 
+    @AppStorage("hideSensitiveContent")
+    var hideSensitiveContent = false
+
     var body: some View {
         List {
             VStack {
@@ -15,6 +18,7 @@ struct AppSettings: View {
                 Button("Log out") {
                     appModel.instance.authorization = .unauthorized
                 }
+                Toggle("Hide Sensitive Content", isOn: $hideSensitiveContent)
                 Toggle("Show Debugging Info", isOn: $showDebuggingInfo)
             }
         }
