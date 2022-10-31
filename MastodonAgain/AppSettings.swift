@@ -10,15 +10,10 @@ struct AppSettings: View {
 
     var body: some View {
         List {
-            Form {
-
-
-
-                DebugDescriptionView(appModel.authorization)
-
-
+            VStack {
+                DebugDescriptionView(appModel.instance)
                 Button("Log out") {
-                    appModel.authorization = .unauthorized
+                    appModel.instance.authorization = .unauthorized
                 }
                 Toggle("Show Debugging Info", isOn: $showDebuggingInfo)
             }

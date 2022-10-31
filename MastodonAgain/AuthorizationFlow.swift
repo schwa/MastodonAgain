@@ -36,7 +36,7 @@ struct AuthorizationFlow: View {
                 }
             }
             else {
-                switch appModel.authorization {
+                switch appModel.instance.authorization {
                 case .unauthorized:
                     unauthorizedView
                 case .registered(let application):
@@ -46,12 +46,12 @@ struct AuthorizationFlow: View {
                 }
             }
         }
-        .onChange(of: appModel.authorization) { authorization in
+        .onChange(of: appModel.instance.authorization) { authorization in
             appLogger?.log("Authorization changed: \(String(describing: authorization))")
         }
         .toolbar {
             Button("Cancel Authorization") {
-                appModel.authorization = .unauthorized
+                appModel.instance.authorization = .unauthorized
             }
         }
     }
@@ -114,7 +114,7 @@ struct AuthorizationFlow: View {
         ])
 
         let (application, _) = try await URLSession.shared.json(RegisteredApplication.self, for: request)
-        appModel.authorization = .registered(application)
+        appModel.instance.authorization = .registered(application)
     }
 
     func getToken(with application: RegisteredApplication) async throws {
@@ -131,6 +131,6 @@ struct AuthorizationFlow: View {
             "scope": "read write follow push",
         ])
         let (token, _) = try await URLSession.shared.json(Token.self, for: request)
-        appModel.authorization = .authorized(application, token)
+        appModel.instance.authorization = .authorized(application, token)
     }
 }

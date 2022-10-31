@@ -3,19 +3,11 @@ import SwiftUI
 
 class AppModel: ObservableObject {
     @Published
-    var instance = Instance("mastodon.social")
-
-    @Published
-    var authorization = Authorization.unauthorized {
+    var instance: Instance {
         didSet {
-            Storage.shared["authorization"] = authorization
+            Storage.shared["instance"] = instance
             Task {
-                if case .authorized(_, let token) = authorization {
-                    await service.update(instance: instance, token: token)
-                }
-                else {
-                    await service.update(instance: nil, token: nil)
-                }
+                await service.update(instance: instance)
             }
         }
     }
@@ -26,12 +18,7 @@ class AppModel: ObservableObject {
     let service = Service()
 
     init() {
-        authorization = Storage.shared["authorization"] ?? .unauthorized
+        instance = Storage.shared["instance"] ?? Instance("mastodon.social")
     }
 }
 
-enum Authorization: Codable, Equatable {
-    case unauthorized
-    case registered(RegisteredApplication)
-    case authorized(RegisteredApplication, Token)
-}

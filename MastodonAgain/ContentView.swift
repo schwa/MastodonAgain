@@ -8,7 +8,7 @@ struct ContentView: View {
 
     var body: some View {
         Group {
-            if case .authorized = appModel.authorization {
+            if case .authorized = appModel.instance.authorization {
                 MainView()
             }
             else {

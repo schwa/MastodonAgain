@@ -2,7 +2,7 @@ import Foundation
 
 public extension Service {
     private func fetchStatusesPage(url: URL) async throws -> StatusesPagedContent.Page {
-        guard let instance = instance, let token else {
+        guard let instance = instance, let token = instance.token else {
             fatalError("No instance or token.")
         }
         assert(instance.host == url.host)

@@ -29,7 +29,6 @@ public extension JSONDecoder {
 
 public actor Service {
     internal var instance: Instance?
-    internal var token: Token?
     internal let session = URLSession.shared
     internal let decoder = JSONDecoder.mastodonDecoder
 
@@ -39,9 +38,8 @@ public actor Service {
     public init() {
     }
 
-    public func update(instance: Instance?, token: Token?) {
+    public func update(instance: Instance?) {
         self.instance = instance
-        self.token = token
     }
 
     public func update(_ value: Status) {
@@ -71,7 +69,7 @@ public extension Service {
 
     // TODO: All this needs cleanup. Use URLPath to return a (pre-configured) URLRequest
     func fetchStatus(for id: Status.ID) async throws -> Status {
-        guard let host = instance?.host, let token else {
+        guard let host = instance?.host, let token = instance?.token else {
             fatalError("No host or token.")
         }
         // https://mastodon.example/api/v1/statuses/:id
@@ -89,7 +87,7 @@ public extension Service {
 
     // TODO: All this needs cleanup. Use URLPath to return a (pre-configured) URLRequest
     func fetchAccount(for id: Account.ID) async throws -> Account {
-        guard let host = instance?.host, let token else {
+        guard let host = instance?.host, let token = instance?.token else {
             fatalError("No host or token.")
         }
         // https://mastodon.example/api/v1/statuses/:id
@@ -102,7 +100,7 @@ public extension Service {
     }
 
     func favorite(status: Status.ID) async throws -> Status {
-        guard let host = instance?.host, let token else {
+        guard let host = instance?.host, let token = instance?.token else {
             fatalError("No host or token.")
         }
         let url = URL(string: "https://\(host)/api/v1/statuses/\(status.rawValue)/favourite")!
@@ -114,7 +112,7 @@ public extension Service {
     }
 
     func reblog(status: Status.ID) async throws -> Status {
-        guard let host = instance?.host, let token else {
+        guard let host = instance?.host, let token = instance?.token else {
             fatalError("No host or token.")
         }
         let url = URL(string: "https://\(host)/api/v1/statuses/\(status.rawValue)/reblog")!
@@ -129,7 +127,7 @@ public extension Service {
 public extension Service {
     // https://mastodon.example/api/v1/statuses
     func postStatus(text: String, inReplyTo: Status.ID?) async throws -> Status {
-        guard let host = instance?.host, let token else {
+        guard let host = instance?.host, let token = instance?.token else {
             fatalError("No host or token.")
         }
         logger?.log("Posting")
@@ -154,7 +152,7 @@ public extension Service {
     }
 
     func uploadAttachment(file: URL, description: String) async throws -> Any {
-        guard let host = instance?.host, let token else {
+        guard let host = instance?.host, let token = instance?.token else {
             fatalError("No host or token.")
         }
         logger?.log("Posting")
