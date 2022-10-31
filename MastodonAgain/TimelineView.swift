@@ -23,18 +23,13 @@ struct TimelineView: View {
 
     @ViewBuilder
     var body: some View {
-        VStack {
-            DescriptionView(timeline)
-            DescriptionView(pages)
-        }
-        .debuggingInfo()
         Group {
             List() {
                 if refreshing {
                     ProgressView()
                 }
 
-                PagedContentView(content: $pages) { status in
+                PagedContentView(content: $pages, isFetching: $refreshing) { status in
                     StatusRow(status: status)
                 }
             }
@@ -54,11 +49,6 @@ struct TimelineView: View {
                     fatal(error: error)
                 }
             }
-
-            Button("Refresh") {
-                refreshTask()
-            }
-            .disabled(refreshing)
         }
         .task {
             refreshTask()
@@ -72,11 +62,35 @@ struct TimelineView: View {
         refreshing = true
         Task {
             await errorHandler.handle {
-                let page = try await appModel.service.timelime(timeline, direction: direction)
+                let page = try await appModel.service.timelime(timeline)
                 self.pages.pages.append(page)
             }
             refreshing = false
         }
+    }
+}
+
+struct DebugDescriptionView <Value>: View {
+    let value: Value
+
+    init(_ value: Value) {
+        self.value = value
+    }
+
+    var body: some View {
+        Group {
+            if let value = value as? CustomDebugStringConvertible {
+                Text(verbatim: "\(value.debugDescription)")
+            }
+            else if let value = value as? CustomStringConvertible {
+                Text(verbatim: "\(value.description)")
+            }
+            else {
+                Text(verbatim: "\(String(describing: value))")
+            }
+        }
+        .textSelection(.enabled)
+        .font(.body.monospaced())
     }
 }
 

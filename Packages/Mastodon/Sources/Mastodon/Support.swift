@@ -271,7 +271,6 @@ extension URLSession {
             //    case 401:
             //        throw HTTPError(statusCode: .init(response.statusCode))
         default:
-            print(response)
             throw HTTPError(statusCode: .init(httpResponse.statusCode))
         }
     }

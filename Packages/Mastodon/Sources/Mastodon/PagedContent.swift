@@ -1,13 +1,5 @@
 import Foundation
 
-public protocol PagedCursorProtocol {
-    associatedtype Next
-    associatedtype Previous
-
-    var next: Next? { get }
-    var previous: Next? { get }
-}
-
 // MARK: -
 
 public enum PagingDirection {
@@ -17,9 +9,10 @@ public enum PagingDirection {
 
 // MARK: -
 
-public struct PagedContent <Element, Cursor>: Identifiable where Element: Identifiable, Element.ID: Comparable, Cursor: PagedCursorProtocol {
+public struct PagedContent <Element>: Identifiable where Element: Identifiable, Element.ID: Comparable {
     public typealias Element = Element
-    public typealias Page = Mastodon.Page<Element, Cursor> // TODO: Gross.
+    public typealias Page = Mastodon.Page<Element> // TODO: Gross.
+    public typealias Cursor = Page.Cursor
 
     public var id: [ClosedRange<Element.ID>?] {
         return pages.map(\.id)
@@ -36,8 +29,23 @@ public struct PagedContent <Element, Cursor>: Identifiable where Element: Identi
     }
 }
 
-public struct Page <Element, Cursor>: Identifiable where Element: Identifiable, Element.ID: Comparable, Cursor: PagedCursorProtocol {
+public struct Page <Element>: Identifiable where Element: Identifiable, Element.ID: Comparable {
     public typealias Element = Element
+
+    public struct Cursor {
+        public typealias Fetch = () async throws -> Page
+
+        public var previous: Fetch?
+        public var next: Fetch?
+
+        public init(previous: Fetch? = nil, next: Fetch? = nil) {
+            self.previous = previous
+            self.next = next
+        }
+    }
+
+    public let id: ClosedRange<Element.ID>?
+    public let cursor: Cursor
 
     public var elements: [Element] {
         didSet {
@@ -45,9 +53,6 @@ public struct Page <Element, Cursor>: Identifiable where Element: Identifiable, 
             assert(oldValue.map(\.id) == elements.map(\.id))
         }
     }
-
-    public let id: ClosedRange<Element.ID>?
-    public let cursor: Cursor
 
     public init(cursor: Cursor, elements: [Element] = []) {
         if let first = elements.first, let last = elements.first {
@@ -61,15 +66,19 @@ public struct Page <Element, Cursor>: Identifiable where Element: Identifiable, 
     }
 }
 
-// MARK: -
-
-public struct URLCursor: PagedCursorProtocol {
-    public typealias Next = URL
-    public typealias Previous = URL
-
-    public let next: URL?
-    public let previous: URL?
+extension Page: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        return "Page <\(Element.self)> (id: \(id.map({ String(describing: $0) }) ?? "nil"), cursor: \(cursor), elements: \(elements.count)"
+    }
 }
 
-public typealias StatusesPagedContent = PagedContent<Status, URLCursor>
+extension Page.Cursor: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        return "Page <\(Element.self)>.Cursor()"
+    }
+}
+
+// MARK: -
+
+public typealias StatusesPagedContent = PagedContent<Status>
 public typealias StatusPage = StatusesPagedContent.Page

@@ -19,7 +19,7 @@ struct MainView: View {
         } detail: {
             if let timelineType = selection.timelineType {
                 if timelineType == .canned {
-                    fatalError()
+                    unimplemented()
 //                    let url = Bundle.main.url(forResource: "canned_timeline", withExtension: "json")!
 //                    let data = try! Data(contentsOf: url)
 //                    // Do not use mastodon decoder for canned timeline

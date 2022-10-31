@@ -227,7 +227,6 @@ extension Path {
     }
 }
 
-
 extension FSPath {
     func reveal() {
         NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: "")

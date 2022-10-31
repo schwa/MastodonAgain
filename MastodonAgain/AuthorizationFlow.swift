@@ -21,19 +21,38 @@ struct AuthorizationFlow: View {
     @State
     var website = "https://schwa.io/MastodonAgain"
 
+    @State
+    var spinning = false
+
+    @State
+    var date: Date?
+
     var body: some View {
         Group {
-            switch appModel.authorization {
-            case .unauthorized:
-                unauthorizedView
-            case .registered(let application):
-                registeredView(application)
-            default:
-                Text("Already authorized!")
+            if spinning {
+                ProgressView()
+                if let date {
+                    Text("Waiting for token: ") + Text(date, style: .relative).monospacedDigit()
+                }
+            }
+            else {
+                switch appModel.authorization {
+                case .unauthorized:
+                    unauthorizedView
+                case .registered(let application):
+                    registeredView(application)
+                default:
+                    Text("Already authorized!")
+                }
             }
         }
         .onChange(of: appModel.authorization) { authorization in
             appLogger?.log("Authorization changed: \(String(describing: authorization))")
+        }
+        .toolbar {
+            Button("Cancel Authorization") {
+                appModel.authorization = .unauthorized
+            }
         }
     }
 
@@ -99,6 +118,8 @@ struct AuthorizationFlow: View {
     }
 
     func getToken(with application: RegisteredApplication) async throws {
+        self.spinning = true
+        self.date = .now
         appLogger?.log("Getting Token")
         let url = URL(string: "https://\(appModel.instance.host)/oauth/token")!
         let request = URLRequest(url: url, formParameters: [

@@ -7,9 +7,19 @@ struct PagedContentView <Row>: View where Row: View {
     @Binding
     var content: Content
 
+    @Binding
+    var isFetching: Bool
+
+    @Environment(\.errorHandler)
+    var errorHandler
+
     let row: (Binding<Content.Element>) -> Row
 
     var body: some View {
+        Button("Newer") {
+            fetchNewest()
+        }
+        .disabled(content.pages.first?.cursor.next == nil)
         ForEach(content.pages) { page in
             let id = page.id
             let pageBinding = Binding {
@@ -22,6 +32,40 @@ struct PagedContentView <Row>: View where Row: View {
             }
             PageView(page: pageBinding, row: row)
         }
+        Button("Older") {
+            fetchOldest()
+        }
+        .disabled(content.pages.last?.cursor.previous == nil)
+    }
+
+    func fetchNewest() {
+        assert(isFetching == false)
+        isFetching = true
+        guard let fetch = content.pages.first?.cursor.next else {
+            fatalError("No page or not cursor")
+        }
+        Task {
+            await errorHandler.handle {
+                let newPage = try await fetch()
+                content.pages.insert(newPage, at: 0)
+                isFetching = false
+            }
+        }
+    }
+
+    func fetchOldest() {
+        assert(isFetching == false)
+        isFetching = true
+        guard let fetch = content.pages.last?.cursor.previous else {
+            fatalError("No page or not cursor")
+        }
+        Task {
+            await errorHandler.handle {
+                let newPage = try await fetch()
+                content.pages.append(newPage)
+                isFetching = false
+            }
+        }
     }
 
     struct PageView: View {
@@ -33,6 +77,10 @@ struct PagedContentView <Row>: View where Row: View {
         let row: (Binding<Page.Element>) -> Row
 
         var body: some View {
+            VStack {
+                DebugDescriptionView(page)
+            }
+            .debuggingInfo()
             ForEach(page.elements) { element in
                 let id = element.id
                 let binding = Binding {
