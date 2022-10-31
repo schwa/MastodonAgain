@@ -185,6 +185,21 @@ struct ActionButtonLabelStyle: LabelStyle {
     }
 }
 
+struct WorkInProgressView: View {
+    var body: some View {
+        let tileSize = CGSize(16, 16)
+        let tile = Image(size: tileSize) { context in
+            context.fill(Path(tileSize), with: .color(.black))
+            context.fill(Path(vertices: [[0.0, 0.0], [0.0, 0.5], [0.5, 0]].map { $0 * CGPoint(tileSize) }), with: .color(.yellow))
+            context.fill(Path(vertices: [[0.0, 1], [1.0, 0.0], [1, 0.5], [0.5, 1]].map { $0 * CGPoint(tileSize) }), with: .color(.yellow))
+        }
+        Canvas { context, size in
+            context.fill(Path(size), with: .tiledImage(tile, sourceRect: CGRect(size: tileSize)))
+        }
+
+    }
+}
+
 struct DebuggingInfoModifier: ViewModifier {
     @AppStorage("showDebuggingInfo")
     var showDebuggingInfo = false
@@ -196,15 +211,7 @@ struct DebuggingInfoModifier: ViewModifier {
                 .textSelection(.enabled)
                 .padding(4)
                 .background {
-                    let tileSize = CGSize(16, 16)
-                    let tile = Image(size: tileSize) { context in
-                        context.fill(Path(tileSize), with: .color(.black))
-                        context.fill(Path(vertices: [[0.0, 0.0], [0.0, 0.5], [0.5, 0]].map { $0 * CGPoint(tileSize) }), with: .color(.yellow))
-                        context.fill(Path(vertices: [[0.0, 1], [1.0, 0.0], [1, 0.5], [0.5, 1]].map { $0 * CGPoint(tileSize) }), with: .color(.yellow))
-                    }
-                    Canvas { context, size in
-                        context.fill(Path(size), with: .tiledImage(tile, sourceRect: CGRect(size: tileSize)))
-                    }
+                    WorkInProgressView()
                     .opacity(0.1)
                 }
         }

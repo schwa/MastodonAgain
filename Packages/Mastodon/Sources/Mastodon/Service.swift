@@ -39,10 +39,12 @@ public actor Service {
     }
 
     public func update(_ value: Status) {
+        // TODO: Insert by date
         datedStatuses[value.id] = .init(value)
     }
 
     public func update(_ other: some Collection<Status>) {
+        // TODO: Insert by date
         let now = Date.now
         let other = other.map { Dated($0, date: now) }.map { ($0.content.id, $0) }
         datedStatuses.merge(other) { _, rhs in
@@ -51,6 +53,7 @@ public actor Service {
     }
 
     public func update(_ value: Account) {
+        // TODO: Insert by date
         datedAccounts[value.id] = .init(value)
     }
 }
@@ -70,6 +73,24 @@ public extension Service {
         let request = URLRequest(url: url).headers(token.headers)
         let (data, _) = try await session.validatedData(for: request)
         let status = try decoder.decode(Status.self, from: data)
+        update(status)
+        return status
+    }
+
+    func account(for id: Account.ID) async -> Account? {
+        return datedAccounts[id]?.content
+    }
+
+    // TODO: All this needs cleanup. Use URLPath to return a (pre-configured) URLRequest
+    func fetchAccount(for id: Account.ID) async throws -> Account {
+        guard let host, let token else {
+            fatalError("No host or token.")
+        }
+        // https://mastodon.example/api/v1/statuses/:id
+        let url = URL(string: "https://\(host)/api/v1/accounts/\(id.rawValue)")!
+        let request = URLRequest(url: url).headers(token.headers)
+        let (data, _) = try await session.validatedData(for: request)
+        let status = try decoder.decode(Account.self, from: data)
         update(status)
         return status
     }

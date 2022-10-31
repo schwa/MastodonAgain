@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		4520200F290F87A200469569 /* MediaStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4520200E290F87A200469569 /* MediaStack.swift */; };
 		45202011290F8DC600469569 /* NewPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45202010290F8DC600469569 /* NewPost.swift */; };
+		452020132910281300469569 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452020122910281300469569 /* MainView.swift */; };
 		455AC882290D96F600137415 /* MastodonAgainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455AC881290D96F600137415 /* MastodonAgainApp.swift */; };
 		455AC884290D96F600137415 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455AC883290D96F600137415 /* ContentView.swift */; };
 		455AC886290D96F700137415 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 455AC885290D96F700137415 /* Assets.xcassets */; };
@@ -40,6 +41,7 @@
 		4520200D290F273400469569 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		4520200E290F87A200469569 /* MediaStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaStack.swift; sourceTree = "<group>"; };
 		45202010290F8DC600469569 /* NewPost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPost.swift; sourceTree = "<group>"; };
+		452020122910281300469569 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		455AC87E290D96F600137415 /* MastodonAgain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MastodonAgain.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		455AC881290D96F600137415 /* MastodonAgainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonAgainApp.swift; sourceTree = "<group>"; };
 		455AC883290D96F600137415 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -131,6 +133,7 @@
 				45F1A2C0290E4FEE0093A8AC /* AppModel.swift */,
 				45F1A2C2290E4FF60093A8AC /* AppSettings.swift */,
 				455AC883290D96F600137415 /* ContentView.swift */,
+				452020122910281300469569 /* MainView.swift */,
 				45F1A2B3290DDEA60093A8AC /* BlurHashDecode.swift */,
 				45F1A2B8290E1FB60093A8AC /* TimelineView.swift */,
 				45F1A2BA290E1FE50093A8AC /* StatusRow.swift */,
@@ -270,6 +273,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				455AC884290D96F600137415 /* ContentView.swift in Sources */,
+				452020132910281300469569 /* MainView.swift in Sources */,
 				45F1A2B4290DDEA60093A8AC /* BlurHashDecode.swift in Sources */,
 				4520200F290F87A200469569 /* MediaStack.swift in Sources */,
 				45F1A2BB290E1FE50093A8AC /* StatusRow.swift in Sources */,

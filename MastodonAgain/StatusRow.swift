@@ -81,7 +81,7 @@ struct StatusRow: View {
     var footer: some View {
         HStack(alignment: .center, spacing: 32) {
             replyButton
-            repostButton
+            reblogButton
             favouriteButton
             bookmarkButton
             shareButton
@@ -115,9 +115,9 @@ struct StatusRow: View {
     }
 
     @ViewBuilder
-    var repostButton: some View {
+    var reblogButton: some View {
         let resolvedStatus: any StatusProtocol = status.reblog ?? status
-        actionButton(count: resolvedStatus.favouritesCount, label: "reblog", systemImage: "arrow.2.squarepath", selected: resolvedStatus.reblogged ?? false) {
+        actionButton(count: resolvedStatus.reblogsCount, label: "reblog", systemImage: "arrow.2.squarepath", selected: resolvedStatus.reblogged ?? false) {
             // TODO: what status do we get back here?
             try! await appModel.service.reblog(status: resolvedStatus.id)
             // TODO: Because of uncertainty of previous TODO - fetch a fresh status
