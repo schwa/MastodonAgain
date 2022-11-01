@@ -204,6 +204,25 @@ public extension URLSession {
 }
 
 public extension StatusProtocol {
+    var markdownContent: AttributedString {
+        guard !content.isEmpty else {
+            return AttributedString()
+        }
+        let pattern = #/^<p>(.+)</p>$/#
+        let match = content.firstMatch(of: pattern)!
+        let (_, content) = match.output
+
+        var options = AttributedString.MarkdownParsingOptions()
+        options.languageCode = language.nilify()
+        options.allowsExtendedAttributes = true
+        options.appliesSourcePositionAttributes = true
+        options.failurePolicy = .throwError
+        options.interpretedSyntax = .full
+
+        // TODO: Danger danger
+        return try! AttributedString(markdown: String(content), options: options, baseURL: nil)
+    }
+
     var attributedContent: AttributedString {
         #if os(macOS)
             let header = #"<meta charset="UTF-8">"#

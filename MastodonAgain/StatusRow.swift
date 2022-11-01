@@ -72,11 +72,6 @@ struct StatusRow: View {
     }
 
     @ViewBuilder
-    func content(for status: any StatusProtocol) -> some View {
-
-    }
-
-    @ViewBuilder
     var footer: some View {
         HStack(alignment: .center, spacing: 32) {
             replyButton
@@ -91,6 +86,9 @@ struct StatusRow: View {
                 Text(verbatim: "ID: \(status.id)")
                 if let reblog = status.reblog {
                     Text(verbatim: "(Reblogged ID: \(reblog.id))")
+                }
+                if status.reblogged ?? false {
+                    Text("Reblogged")
                 }
                 if status.sensitive {
                     Text("Sensitive")
@@ -137,9 +135,10 @@ struct StatusRow: View {
     @ViewBuilder
     var reblogButton: some View {
         let resolvedStatus: any StatusProtocol = status.reblog ?? status
-        actionButton(count: resolvedStatus.reblogsCount, label: "reblog", systemImage: "arrow.2.squarepath", selected: resolvedStatus.reblogged ?? false) {
+        let reblogged = resolvedStatus.reblogged ?? false
+        StatusActionButton(count: resolvedStatus.reblogsCount, label: "reblog", systemImage: "arrow.2.squarepath", isOn: reblogged) {
             // TODO: what status do we get back here?
-            try! await appModel.service.reblog(status: resolvedStatus.id)
+            try! await appModel.service.reblog(status: resolvedStatus.id, set: !reblogged)
             // TODO: Because of uncertainty of previous TODO - fetch a fresh status
             status = try! await appModel.service.fetchStatus(for: self.status.id)
         }
@@ -148,9 +147,10 @@ struct StatusRow: View {
     @ViewBuilder
     var favouriteButton: some View {
         let resolvedStatus: any StatusProtocol = status.reblog ?? status
-        actionButton(count: resolvedStatus.favouritesCount, label: "Favourite", systemImage: "star", selected: resolvedStatus.favourited ?? false) {
+        let favourited = resolvedStatus.favourited ?? false
+        StatusActionButton(count: resolvedStatus.favouritesCount, label: "Favourite", systemImage: "star", isOn: favourited) {
             // TODO: what status do we get back here?
-            try! await appModel.service.favorite(status: resolvedStatus.id)
+            try! await appModel.service.favorite(status: resolvedStatus.id, set: !favourited)
             // TODO: Because of uncertainty of previous TODO - fetch a fresh status
             status = try! await appModel.service.fetchStatus(for: self.status.id)
         }
@@ -158,7 +158,14 @@ struct StatusRow: View {
 
     @ViewBuilder
     var bookmarkButton: some View {
-        Button(systemImage: "bookmark", action: {})
+        let resolvedStatus: any StatusProtocol = status.reblog ?? status
+        let bookmarked = resolvedStatus.bookmarked ?? false
+        StatusActionButton(label: "Bookmark", systemImage: "bookmark", isOn: bookmarked) {
+            // TODO: what status do we get back here?
+            try! await appModel.service.bookmark(status: resolvedStatus.id, set: !bookmarked)
+            // TODO: Because of uncertainty of previous TODO - fetch a fresh status
+            status = try! await appModel.service.fetchStatus(for: self.status.id)
+        }
     }
 
     @ViewBuilder
@@ -182,18 +189,49 @@ struct StatusRow: View {
             debugView
         }
     }
+}
 
-    func actionButton(count: Int, label: String, systemImage systemName: String, selected: Bool, action: @escaping () async -> Void) -> some View {
+struct StatusActionButton: View {
+    let count: Int?
+    let label: String
+    let systemName: String
+    let isOn: Bool
+    let action: () async throws -> Void
+
+    @Environment(\.errorHandler)
+    var errorHandler
+
+    @State
+    var inFlight = false
+
+    init(count: Int? = nil, label: String, systemImage systemName: String, isOn: Bool, action: @escaping () async throws -> Void) {
+        self.count = count
+        self.label = label
+        self.systemName = systemName
+        self.isOn = isOn
+        self.action = action
+    }
+
+    var body: some View {
         Button {
+            guard inFlight == false else {
+                appLogger?.debug("Task for \(label) is already in flight, dropping.")
+                return
+            }
             Task {
-                await action()
+                inFlight = true
+                await errorHandler.handle {
+                    try await action()
+                }
+                await try Task.sleep(nanoseconds: 500_000)
+                inFlight = false
             }
         } label: {
             let image = Image(systemName: systemName)
-                .symbolVariant(selected ? .fill : .none)
-                .foregroundColor(selected ? .accentColor : nil)
+                .symbolVariant(isOn ? .fill : .none)
+                .foregroundColor(isOn ? .accentColor : nil)
             // swiftlint:disable:next empty_count
-            if count > 0 {
+            if let count, count > 0 {
                 Label {
                     Text("\(count, format: .number)")
                 } icon: {
@@ -201,7 +239,12 @@ struct StatusRow: View {
                 }
             }
             else {
-                image
+                if inFlight {
+                    ProgressView().controlSize(.small)
+                }
+                else {
+                    image
+                }
             }
         }
     }
@@ -236,6 +279,9 @@ struct StatusContent <Status>: View where Status: StatusProtocol {
     @State
     var allowSensitive = false
 
+    @AppStorage("useMarkdownContent")
+    var useMarkdownContent = false
+
     var body: some View {
         VStack(alignment: .leading) {
             if sensitive && hideSensitiveContent == true {
@@ -246,7 +292,7 @@ struct StatusContent <Status>: View where Status: StatusProtocol {
                 .controlSize(.small)
             }
             VStack(alignment: .leading) {
-                Text(status.attributedContent)
+                Text(useMarkdownContent ? status.markdownContent : status.attributedContent)
                     .textSelection(.enabled)
                 if !status.mediaAttachments.isEmpty {
                     MediaStack(attachments: status.mediaAttachments)
@@ -270,7 +316,6 @@ struct StatusContent <Status>: View where Status: StatusProtocol {
 }
 
 struct SensitiveContentModifier: ViewModifier {
-
     let sensitive: Bool
 
     func body(content: Content) -> some View {

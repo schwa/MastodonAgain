@@ -100,11 +100,12 @@ public extension Service {
         return status
     }
 
-    func favorite(status: Status.ID) async throws -> Status {
+    func favorite(status: Status.ID, set: Bool = true) async throws -> Status {
         guard let host = instance?.host, let token = instance?.token else {
             fatalError("No host or token.")
         }
-        let url = URL(string: "https://\(host)/api/v1/statuses/\(status.rawValue)/favourite")!
+        let verb = set ? "favourite" : "unfavourite"
+        let url = URL(string: "https://\(host)/api/v1/statuses/\(status.rawValue)/\(verb)")!
         let request = URLRequest.post(url).headers(token.headers)
         let (status, _) = try await session.json(Status.self, decoder: decoder, for: request)
         // TODO: Check response
@@ -112,17 +113,32 @@ public extension Service {
         return status
     }
 
-    func reblog(status: Status.ID) async throws -> Status {
+    func reblog(status: Status.ID, set: Bool = true) async throws -> Status {
         guard let host = instance?.host, let token = instance?.token else {
             fatalError("No host or token.")
         }
-        let url = URL(string: "https://\(host)/api/v1/statuses/\(status.rawValue)/reblog")!
+        let verb = set ? "reblog" : "unreblog"
+        let url = URL(string: "https://\(host)/api/v1/statuses/\(status.rawValue)/\(verb)")!
         let request = URLRequest.post(url).headers(token.headers)
         let (status, _) = try await session.json(Status.self, decoder: decoder, for: request)
         // TODO: Check response
         update(status)
         return status
     }
+
+    func bookmark(status: Status.ID, set: Bool = true) async throws -> Status {
+        guard let host = instance?.host, let token = instance?.token else {
+            fatalError("No host or token.")
+        }
+        let verb = set ? "bookmark" : "unbookmark"
+        let url = URL(string: "https://\(host)/api/v1/statuses/\(status.rawValue)/\(verb)")!
+        let request = URLRequest.post(url).headers(token.headers)
+        let (status, _) = try await session.json(Status.self, decoder: decoder, for: request)
+        // TODO: Check response
+        update(status)
+        return status
+    }
+
 }
 
 public extension Service {

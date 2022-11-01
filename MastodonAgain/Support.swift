@@ -168,8 +168,11 @@ public extension Button {
 struct ActionButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .foregroundColor(configuration.isPressed ? Color.primary : Color.secondary)
             .labelStyle(ActionButtonLabelStyle())
+            .foregroundColor(configuration.isPressed ? Color.primary : Color.secondary)
+            .background((configuration.isPressed ? .thickMaterial : .bar))
+            .cornerRadius(2)
+
     }
 }
 
