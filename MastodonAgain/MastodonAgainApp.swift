@@ -19,8 +19,8 @@ struct MastodonAgainApp: App {
         .keyboardShortcut(.init("1"))
         #endif
         #if os(macOS)
-            WindowGroup("New Post", for: NewPost.self) { newPost in
-                NewPostView(newPost: newPost)
+            WindowGroup("New Post", for: NewPostWindow.self) { open in
+                NewPostView(open: open)
                     .environmentObject(appModel)
             }
             .keyboardShortcut(.init("N"))

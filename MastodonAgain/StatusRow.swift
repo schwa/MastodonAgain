@@ -128,7 +128,7 @@ struct StatusRow: View {
     @ViewBuilder
     var replyButton: some View {
         Button(systemImage: "arrowshape.turn.up.backward", action: {
-            openWindow(value: NewPost.reply(status.id))
+            openWindow(value: NewPostWindow.reply(status.id))
         })
     }
 

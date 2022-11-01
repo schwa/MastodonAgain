@@ -269,7 +269,7 @@ public struct Status: StatusProtocol, Identifiable, Codable {
         case bookmarked
     }
 
-    public enum Visibility: String, Codable {
+    public enum Visibility: String, Codable, CaseIterable {
         case `public`
         case unlisted
         case `private`

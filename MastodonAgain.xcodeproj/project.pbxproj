@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4520200F290F87A200469569 /* MediaStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4520200E290F87A200469569 /* MediaStack.swift */; };
-		45202011290F8DC600469569 /* NewPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45202010290F8DC600469569 /* NewPost.swift */; };
+		45202011290F8DC600469569 /* NewPostWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45202010290F8DC600469569 /* NewPostWindow.swift */; };
 		452020132910281300469569 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452020122910281300469569 /* MainView.swift */; };
 		4520201529104D7D00469569 /* canned_timeline.json in Resources */ = {isa = PBXBuildFile; fileRef = 4520201429104D7D00469569 /* canned_timeline.json */; };
 		455AC882290D96F600137415 /* MastodonAgainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455AC881290D96F600137415 /* MastodonAgainApp.swift */; };
@@ -43,7 +43,7 @@
 		45202005290F164800469569 /* Project-Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "Project-Debug.xcconfig"; sourceTree = "<group>"; };
 		4520200D290F273400469569 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		4520200E290F87A200469569 /* MediaStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaStack.swift; sourceTree = "<group>"; };
-		45202010290F8DC600469569 /* NewPost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPost.swift; sourceTree = "<group>"; };
+		45202010290F8DC600469569 /* NewPostWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostWindow.swift; sourceTree = "<group>"; };
 		452020122910281300469569 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		4520201429104D7D00469569 /* canned_timeline.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = canned_timeline.json; sourceTree = "<group>"; };
 		455AC87E290D96F600137415 /* MastodonAgain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MastodonAgain.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -149,7 +149,7 @@
 				45F1A2B5290E0F4B0093A8AC /* Support.swift */,
 				45F1A2BC290E31360093A8AC /* Minikeychain.swift */,
 				45F1A2BE290E351B0093A8AC /* AuthorizationFlow.swift */,
-				45202010290F8DC600469569 /* NewPost.swift */,
+				45202010290F8DC600469569 /* NewPostWindow.swift */,
 				4520201429104D7D00469569 /* canned_timeline.json */,
 				455AC885290D96F700137415 /* Assets.xcassets */,
 				455AC887290D96F700137415 /* MastodonAgain.entitlements */,
@@ -289,7 +289,7 @@
 				45B45CC4291086660070F1C5 /* CardView.swift in Sources */,
 				45A27F49291053FB00662B71 /* TimelineStack.swift in Sources */,
 				45F1A2BB290E1FE50093A8AC /* StatusRow.swift in Sources */,
-				45202011290F8DC600469569 /* NewPost.swift in Sources */,
+				45202011290F8DC600469569 /* NewPostWindow.swift in Sources */,
 				45F1A2BF290E351B0093A8AC /* AuthorizationFlow.swift in Sources */,
 				45F1A2C1290E4FEE0093A8AC /* AppModel.swift in Sources */,
 				45F1A2BD290E31360093A8AC /* Minikeychain.swift in Sources */,
