@@ -46,7 +46,9 @@ struct TimelineView: View {
                     let data = try JSONEncoder().encode(timeline)
                     let path = FSPath.temporaryDirectory / "timeline.json"
                     try data.write(to: path.url)
+                    #if os(macOS)
                     path.reveal()
+                    #endif
                 }
                 catch {
                     fatal(error: error)

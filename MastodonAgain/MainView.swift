@@ -6,8 +6,9 @@ struct MainView: View {
     @EnvironmentObject
     var appModel: AppModel
 
-    @SceneStorage("MainView.selection")
-    var selection = MainTabs.home
+//    @SceneStorage("MainView.selection")
+    @State
+    var selection: MainTabs? = MainTabs.home
 
     var body: some View {
         NavigationSplitView {
@@ -17,7 +18,7 @@ struct MainView: View {
                 }
             }
         } detail: {
-            if let timelineType = selection.timelineType {
+            if let timelineType = selection!.timelineType {
                 if timelineType == .canned {
                     unimplemented()
 //                    let url = Bundle.main.url(forResource: "canned_timeline", withExtension: "json")!

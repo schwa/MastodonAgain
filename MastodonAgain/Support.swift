@@ -172,7 +172,6 @@ struct ActionButtonStyle: ButtonStyle {
             .foregroundColor(configuration.isPressed ? Color.primary : Color.secondary)
             .background((configuration.isPressed ? .thickMaterial : .bar))
             .cornerRadius(2)
-
     }
 }
 
@@ -231,9 +230,11 @@ extension Path {
 }
 
 extension FSPath {
+    #if os(macOS)
     func reveal() {
         NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: "")
     }
+    #endif
 }
 
 struct DebugDescriptionView <Value>: View {
