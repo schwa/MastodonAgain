@@ -73,22 +73,32 @@ struct ContentImage: View {
                 LinearGradient(colors: [.cyan, .purple], startPoint: .topLeading, endPoint: .bottomTrailing)
             }
         }
-        .onHover { value in
-            hover = value
-        }
-        .redlined(hover)
-        .overlay() {
+        .overlay {
             if hover {
-                VStack {
-                    Text("\(url, format: .url)").lineLimit(1)
-                    if let size {
-                        Text("\(size.width, format: .number), \(size.height, format: .number)")
-                    }
-                }
-                .font(.caption2)
-                .padding()
-                .background(Capsule().fill(Color.white))
+                Color.clear.redlined()
             }
         }
+
+        .overlay(alignment: .bottom) {
+            if hover, let size {
+                VStack {
+//                    Text("\(url, format: .url)").lineLimit(1)
+                    Text("\(size.width, format: .number), \(size.height, format: .number)")
+                    // , \(size.width / size.height, format: .number):1
+                }
+                .font(.caption2)
+                .padding(2)
+                .background(Capsule().fill(Color.white))
+                .overlay(Capsule().stroke(Color.black))
+                .padding(4)
+            }
+        }
+        .overlay {
+            Color.clear.onHover { value in
+                hover = value
+                print(hover)
+            }
+        }
+        .id(url)
     }
 }

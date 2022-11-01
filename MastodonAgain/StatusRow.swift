@@ -223,7 +223,7 @@ struct StatusActionButton: View {
                 await errorHandler.handle {
                     try await action()
                 }
-                await try Task.sleep(nanoseconds: 500_000)
+                //try await Task.sleep(nanoseconds: 500_000)
                 inFlight = false
             }
         } label: {
