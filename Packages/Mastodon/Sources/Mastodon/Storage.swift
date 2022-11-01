@@ -71,3 +71,10 @@ public extension Storage {
         }
     }
 }
+
+public func funHash(_ value: Int) -> String {
+    let adjectives = ["abrupt", "acidic", "adorable", "adventurous", "aggressive", "agitated", "alert", "aloof", "bored", "brave", "bright", "colossal", "condescending", "confused", "cooperative", "corny", "costly", "courageous", "cruel", "despicable", "determined", "dilapidated", "diminutive", "distressed", "disturbed", "dizzy", "exasperated", "excited", "exhilarated", "extensive", "exuberant", "frothy", "frustrating", "funny", "fuzzy", "gaudy", "graceful", "greasy", "grieving", "gritty", "grotesque", "grubby", "grumpy", "handsome", "happy", "hollow", "hungry", "hurt", "icy", "ideal", "immense", "impressionable", "intrigued", "irate", "foolish", "frantic", "fresh", "friendly", "frightened", "frothy", "frustrating", "glorious", "gorgeous", "grubby", "happy", "harebrained", "healthy", "helpful", "helpless", "high", "hollow", "homely", "large", "lazy", "livid", "lonely", "loose", "lovely", "lucky", "mysterious", "narrow", "nasty", "outrageous", "panicky", "perfect", "perplexed", "quizzical", "teeny", "tender", "tense", "terrible", "tricky", "troubled", "unsightly", "upset", "wicked", "yummy", "zany", "zealous", "zippy"]
+
+    var rng = SplitMix64(s: UInt64(bitPattern: Int64(value)))
+    return "\(adjectives.randomElement(using: &rng)!)-\(allEmoji.randomElement(using: &rng)!)-\(Int.random(in: 1...1000, using: &rng)))"
+}

@@ -102,6 +102,15 @@ extension Page<Status>.ID: CustomDebugStringConvertible {
 //        let hash = SHA256.hash(data: Array(ids.utf8)).map({ ("0" + String($0, radix: 16)).suffix(2) }).joined()
 //        return "\(hash.prefix(8))…\(hash.suffix(8))"
 //        return "\(hash.prefix(8))…\(hash.suffix(8))"
-        return "\(ids.first!)…\(ids.last!)"
+
+        let h = self.hashValue
+        return funHash(h)
+
+        //        if let first = ids.first, let last = ids.last {
+//            return "\(first)…\(last)"
+//        }
+//        else {
+//            return "<empty>"
+//        }
     }
 }
