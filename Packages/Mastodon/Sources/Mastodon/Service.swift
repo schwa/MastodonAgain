@@ -142,7 +142,7 @@ public extension Service {
 
 public extension Service {
     // https://mastodon.example/api/v1/statuses
-    func postStatus(text: String, inReplyTo: Status.ID?) async throws -> Status {
+    func postStatus(_ newPost: NewPost) async throws -> Status {
         guard let host = instance?.host, let token = instance?.token else {
             fatalError("No host or token.")
         }
@@ -150,10 +150,18 @@ public extension Service {
         let url = URL(string: "https://\(host)/api/v1/statuses")!
 
         var form = [
-            "status": text,
+            "status": newPost.status,
+            "language": newPost.language,
+            "visibility": newPost.visibility.rawValue,
         ]
-        if let inReplyTo {
-            form["in_reply_to_id"] = inReplyTo.rawValue
+
+        if newPost.sensitive {
+            form["sensitive"] = newPost.sensitive ? "true" : "false"
+            form["spoiler"] = newPost.spoiler
+        }
+
+        if let inReplyTo = newPost.inResponseTo {
+            form["in_reply_to_id"] = inReplyTo.id.rawValue
         }
 
         let request = URLRequest.post(url)

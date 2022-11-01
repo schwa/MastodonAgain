@@ -1,19 +1,6 @@
 import SwiftUI
 import Mastodon
 
-// https://docs.joinmastodon.org/methods/statuses/
-struct NewPost {
-    var status: String
-    var inResponseTo: Status?
-    var mediaIds: [MediaAttachment.ID]?
-    // pool
-    var sensitive: Bool
-    var spoiler: String
-    var visibility: Status.Visibility
-    var scheduleAt: Date?
-    var language: String
-}
-
 struct NewPostView: View {
     @EnvironmentObject
     var appModel: AppModel
@@ -26,13 +13,13 @@ struct NewPostView: View {
 
     init(open: Binding<NewPostWindow?>) {
         self._open = open
-        self._newPost = State(initialValue: NewPost(status: "", sensitive: false, spoiler: "", visibility: .public, language: "en"))
+        self._newPost = State(initialValue: NewPost(status: "", sensitive: false, spoiler: "", visibility: .public, language: Locale.current.topLevelIdentifier))
     }
 
     var body: some View {
         VStack {
             VStack {
-                DebugDescriptionView(open)
+                DebugDescriptionView(Locale.current.localizedString(forIdentifier: Locale.current.identifier))
                 DebugDescriptionView(newPost)
             }
             .debuggingInfo()
@@ -45,12 +32,15 @@ struct NewPostView: View {
             }
             HStack {
                 Button(systemImage: "paperclip", action: {})
-                Button(systemImage: "gear", action: {})
                 Button(systemImage: "eye.trianglebadge.exclamationmark", action: {
                     newPost.sensitive.toggle()
                 })
                 Picker("Language", selection: $newPost.language) {
-                    Text("en").tag("en")
+                    Text("\(Locale.current.localizedString(forIdentifier: Locale.current.topLevelIdentifier)!) (current)").tag(Optional<String>.none)
+                    Divider()
+                    ForEach(Locale.availableTopLevelIdentifiers.sorted(), id: \.self) { identifier in
+                        Text(Locale.current.localizedString(forIdentifier: identifier) ?? identifier).tag(Optional(identifier))
+                    }
                 }
                 .pickerStyle(.menu)
                 Picker("Visibility", selection: $newPost.visibility) {
@@ -63,7 +53,7 @@ struct NewPostView: View {
                 Text(newPost.status.count, format: .number).monospacedDigit()
                 Button("Reply") {
                     Task {
-                        let status = try await appModel.service.postStatus(text: newPost.status, inReplyTo: newPost.inResponseTo?.id)
+                        let status = try await appModel.service.postStatus(newPost)
                         print(status)
                         newPost.status = ""
                     }
@@ -77,6 +67,16 @@ struct NewPostView: View {
                 newPost.inResponseTo = await appModel.service.status(for: id)
             }
         }
+    }
+}
+
+extension Locale {
+    var topLevelIdentifier: String {
+        return String(identifier.prefix(upTo: identifier.firstIndex(of: "_") ?? identifier.endIndex))
+    }
+
+    static var availableTopLevelIdentifiers: [String] {
+        Locale.availableIdentifiers.filter({ !$0.contains("_") })
     }
 }
 

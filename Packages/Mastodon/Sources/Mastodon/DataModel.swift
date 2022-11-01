@@ -375,3 +375,26 @@ public struct Tag: Codable {
     public let url: URL
 }
 
+// https://docs.joinmastodon.org/methods/statuses/
+public struct NewPost {
+    public var status: String
+    public var inResponseTo: Status?
+    public var mediaIds: [MediaAttachment.ID]?
+    // poll
+    public var sensitive: Bool
+    public var spoiler: String
+    public var visibility: Status.Visibility
+    public var scheduleAt: Date?
+    public var language: String
+
+    public init(status: String, inResponseTo: Status? = nil, mediaIds: [MediaAttachment.ID]? = nil, sensitive: Bool, spoiler: String, visibility: Status.Visibility, scheduleAt: Date? = nil, language: String) {
+        self.status = status
+        self.inResponseTo = inResponseTo
+        self.mediaIds = mediaIds
+        self.sensitive = sensitive
+        self.spoiler = spoiler
+        self.visibility = visibility
+        self.scheduleAt = scheduleAt
+        self.language = language
+    }
+}
