@@ -55,7 +55,7 @@ public struct Page <Element>: Identifiable where Element: Identifiable, Element.
     }
 
     public init(cursor: Cursor, elements: [Element] = []) {
-        if let first = elements.first, let last = elements.first {
+        if let first = elements.first, let last = elements.last {
             self.id = first.id ... last.id
         }
         else {
