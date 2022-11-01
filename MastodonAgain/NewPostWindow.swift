@@ -20,7 +20,6 @@ struct NewPostView: View {
     var body: some View {
         VStack {
             VStack {
-                DebugDescriptionView(Locale.current.localizedString(forIdentifier: Locale.current.identifier))
                 DebugDescriptionView(newPost)
             }
             .debuggingInfo()
@@ -44,21 +43,23 @@ struct NewPostView: View {
                     }
                 }
                 .pickerStyle(.menu)
+                .fixedSize()
                 Picker("Visibility", selection: $newPost.visibility) {
                     ForEach(Status.Visibility.allCases, id: \.self) { visibility in
                         Text(visibility.rawValue).tag(visibility)
                     }
                 }
                 .pickerStyle(.menu)
+                .fixedSize()
                 Spacer()
                 Text(newPost.status.count, format: .number).monospacedDigit()
-                Button("Reply") {
+                Button("Post") {
                     Task {
                         _ = try await appModel.service.postStatus(newPost)
                         newPost.status = ""
                     }
                 }
-                .disabled(newPost.status.isEmpty)
+                .disabled(newPost.status.isEmpty || newPost.status.count > 500) // TODO: get limit from instance?
             }
         }
         .padding()

@@ -78,7 +78,7 @@ struct ContentImage: View {
                 Color.clear.redlined()
             }
         }
-
+/*
         .overlay(alignment: .bottom) {
             if hover, let size {
                 VStack {
@@ -99,5 +99,7 @@ struct ContentImage: View {
             }
         }
         .id(url)
+*/
+        
     }
 }
