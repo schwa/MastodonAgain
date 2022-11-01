@@ -2,7 +2,8 @@ import Everything
 import Mastodon
 import SwiftUI
 
-struct TimelineView: View {
+// TODO: Sendable view?
+struct TimelineView: View, Sendable {
     @Environment(\.errorHandler)
     var errorHandler
 
@@ -12,7 +13,7 @@ struct TimelineView: View {
     let timeline: Timeline
 
     @State
-    var pages = StatusesPagedContent()
+    var content = PagedContent<Status>()
 
     @State
     var refreshing = false
@@ -30,7 +31,7 @@ struct TimelineView: View {
                     ProgressView()
                 }
 
-                PagedContentView(content: $pages, isFetching: $refreshing) { status in
+                PagedContentView(content: $content, isFetching: $refreshing) { status in
                     StatusRow(status: status)
                     Divider()
                 }
@@ -69,14 +70,14 @@ struct TimelineView: View {
         }
         refreshing = true
         Task {
-            await errorHandler.handle {
+            await errorHandler.handle { [appModel, timeline] in
                 guard await appModel.instance.token != nil else {
                     return
                 }
                 let page = try await appModel.service.timelime(timeline)
                 appLogger?.log("Fetched page: \(page.debugDescription)")
                 await MainActor.run {
-                    self.pages.pages = [page]
+                    content.pages = [page]
                 }
             }
             refreshing = false

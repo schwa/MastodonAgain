@@ -97,10 +97,7 @@ extension Page.Cursor: CustomDebugStringConvertible {
 
 // MARK: -
 
-public typealias StatusesPagedContent = PagedContent<Status>
-public typealias StatusPage = StatusesPagedContent.Page
-
-extension StatusPage.ID: CustomDebugStringConvertible {
+extension Page<Status>.ID: CustomDebugStringConvertible {
     public var debugDescription: String {
 //        let hash = SHA256.hash(data: Array(ids.utf8)).map({ ("0" + String($0, radix: 16)).suffix(2) }).joined()
 //        return "\(hash.prefix(8))…\(hash.suffix(8))"

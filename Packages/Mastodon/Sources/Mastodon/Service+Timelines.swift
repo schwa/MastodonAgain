@@ -1,7 +1,7 @@
 import Foundation
 
 public extension Service {
-    private func fetchStatusesPage(url: URL) async throws -> StatusesPagedContent.Page {
+    private func fetchStatusesPage(url: URL) async throws -> PagedContent<Status>.Page {
         guard let instance = instance, let token = instance.token else {
             fatalError("No instance or token.")
         }
@@ -12,7 +12,7 @@ public extension Service {
         let statuses = try decoder.decode([Status].self, from: data)
 
         // TODO: Are all empty statuses the same even if they have different Cursors?
-        var cursor = StatusesPagedContent.Page.Cursor()
+        var cursor = PagedContent<Status>.Page.Cursor()
         if let link = response.allHeaderFields["Link"] {
             let link = link as! String
             let links = try processLinks(string: link)
@@ -31,7 +31,7 @@ public extension Service {
         return .init(cursor: cursor, elements: statuses)
     }
 
-    func timelime(_ timeline: Timeline) async throws -> StatusesPagedContent.Page {
+    func timelime(_ timeline: Timeline) async throws -> PagedContent<Status>.Page {
         guard let url = timeline.url else {
             fatalError("No url")
         }

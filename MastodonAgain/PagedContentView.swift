@@ -1,8 +1,9 @@
 import Mastodon
 import SwiftUI
 
+// TODO: Sendable view?
 struct PagedContentView <Row>: View where Row: View {
-    typealias Content = StatusesPagedContent
+    typealias Content = PagedContent<Status>
 
     @Binding
     var content: Content
@@ -14,7 +15,7 @@ struct PagedContentView <Row>: View where Row: View {
     var errorHandler
 
     @ViewBuilder
-    let row: (Binding<Content.Element>) -> Row
+    let row: @Sendable (Binding<Content.Element>) -> Row
 
     var body: some View {
         Button("Newer") {
@@ -49,8 +50,10 @@ struct PagedContentView <Row>: View where Row: View {
             await errorHandler.handle {
                 let newPage = try await fetch()
                 appLogger?.log("Fetched: \(newPage.debugDescription)")
-                content.pages.insert(newPage, at: 0)
-                isFetching = false
+                await MainActor.run {
+                    content.pages.insert(newPage, at: 0)
+                    isFetching = false
+                }
             }
         }
     }
@@ -65,8 +68,10 @@ struct PagedContentView <Row>: View where Row: View {
             await errorHandler.handle {
                 let newPage = try await fetch()
                 appLogger?.log("Fetched: \(newPage.debugDescription)")
-                content.pages.append(newPage)
-                isFetching = false
+                await MainActor.run {
+                    content.pages.append(newPage)
+                    isFetching = false
+                }
             }
         }
     }

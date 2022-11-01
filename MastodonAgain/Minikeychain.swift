@@ -9,12 +9,12 @@ class MiniKeychain {
 
 extension MiniKeychain {
     func savePassword(account: String, password: String) throws {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: account,
-            kSecValueData as String: password,
-        ]
         DispatchQueue(label: "keychain-write", qos: .default).async {
+            let query: [String: Any] = [
+                kSecClass as String: kSecClassGenericPassword,
+                kSecAttrAccount as String: account,
+                kSecValueData as String: password,
+            ]
             let status = SecItemAdd(query as CFDictionary, nil)
             switch status {
             case errSecSuccess:
@@ -49,13 +49,13 @@ extension MiniKeychain {
     }
 
     func saveInternetPassword(server: String, account: String, password: String) throws {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassInternetPassword,
-            kSecAttrAccount as String: account,
-            kSecAttrServer as String: server,
-            kSecValueData as String: password,
-        ]
         DispatchQueue(label: "keychain-write", qos: .default).async {
+            let query: [String: Any] = [
+                kSecClass as String: kSecClassInternetPassword,
+                kSecAttrAccount as String: account,
+                kSecAttrServer as String: server,
+                kSecValueData as String: password,
+            ]
             let status = SecItemAdd(query as CFDictionary, nil)
             switch status {
             case errSecSuccess:
@@ -70,17 +70,17 @@ extension MiniKeychain {
     }
 
     func removeInternetPassword(forServer server: String, account: String? = nil) throws {
-        var query: [String: Any] = [
-            kSecClass as String: kSecClassInternetPassword,
-            kSecAttrServer as String: server,
-            kSecMatchLimit as String: kSecMatchLimitOne,
-            kSecReturnAttributes as String: true,
-            kSecReturnData as String: true,
-        ]
-        if let account {
-            query[kSecAttrAccount as String] = account
-        }
         DispatchQueue(label: "keychain-write", qos: .default).async {
+            var query: [String: Any] = [
+                kSecClass as String: kSecClassInternetPassword,
+                kSecAttrServer as String: server,
+                kSecMatchLimit as String: kSecMatchLimitOne,
+                kSecReturnAttributes as String: true,
+                kSecReturnData as String: true,
+            ]
+            if let account {
+                query[kSecAttrAccount as String] = account
+            }
             let status = SecItemDelete(query as CFDictionary)
             switch status {
             case errSecSuccess, errSecItemNotFound:

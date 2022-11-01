@@ -206,7 +206,7 @@ public struct Mention: Identifiable, Codable, Sendable {
 public struct Poll: Codable, Sendable {
 }
 
-public protocol StatusProtocol {
+public protocol StatusProtocol: Sendable {
     var id: Tagged<Status, String> { get }
     var created: Date { get }
     var inReplyToId: Status.ID? { get }

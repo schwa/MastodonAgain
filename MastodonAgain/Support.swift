@@ -1,5 +1,6 @@
 import CachedAsyncImage
 import Everything
+@preconcurrency import Foundation
 import Mastodon
 import RegexBuilder
 import SwiftUI
@@ -75,10 +76,6 @@ struct Avatar: View {
     }
 }
 
-// TODO
-extension ErrorHandler: @unchecked Sendable {
-}
-
 public extension ErrorHandler {
     func handle(_ block: @Sendable () async throws -> Void) async {
         do {
@@ -138,7 +135,7 @@ struct RequestDebugView: View {
 }
 
 public extension Button {
-    init(title: String, systemImage systemName: String, action: @escaping () async -> Void) where Label == SwiftUI.Label<Text, Image> {
+    init(title: String, systemImage systemName: String, action: @escaping @Sendable () async -> Void) where Label == SwiftUI.Label<Text, Image> {
         self = Button(action: {
             Task {
                 await action()
@@ -148,7 +145,7 @@ public extension Button {
         })
     }
 
-    init(systemImage systemName: String, action: @escaping () async -> Void) where Label == Image {
+    init(systemImage systemName: String, action: @escaping @Sendable () async -> Void) where Label == Image {
         self = Button(action: {
             Task {
                 await action()
@@ -158,7 +155,7 @@ public extension Button {
         })
     }
 
-    init(action: @escaping () async -> Void, @ViewBuilder label: () -> Label) {
+    init(action: @Sendable @escaping () async -> Void, @ViewBuilder label: () -> Label) {
         self = Button(action: {
             Task {
                 await action()

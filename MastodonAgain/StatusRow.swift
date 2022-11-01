@@ -3,7 +3,8 @@ import CachedAsyncImage
 import Mastodon
 import SwiftUI
 
-struct StatusRow: View {
+// TODO: Sendable view?
+struct StatusRow: View, Sendable {
     @Binding
     var status: Status
 
@@ -132,15 +133,25 @@ struct StatusRow: View {
         })
     }
 
+    // TODO: Experiments here to solve Capture of 'self' with non-sendable type 'StatusRow' in a `@Sendable` closure
     @ViewBuilder
     var reblogButton: some View {
         let resolvedStatus: any StatusProtocol = status.reblog ?? status
         let reblogged = resolvedStatus.reblogged ?? false
         StatusActionButton(count: resolvedStatus.reblogsCount, label: "reblog", systemImage: "arrow.2.squarepath", isOn: reblogged) {
             // TODO: what status do we get back here?
-            try! await appModel.service.reblog(status: resolvedStatus.id, set: !reblogged)
+            _ = try! await appModel.service.reblog(status: resolvedStatus.id, set: !reblogged)
             // TODO: Because of uncertainty of previous TODO - fetch a fresh status
-            status = try! await appModel.service.fetchStatus(for: self.status.id)
+            let newStatus = try! await appModel.service.fetchStatus(for: status.id)
+            await MainActor.run {
+                self.status = newStatus
+            }
+        }
+    }
+
+    func update(_ status: Status) async {
+        await MainActor.run {
+            self.status = status
         }
     }
 
@@ -150,9 +161,12 @@ struct StatusRow: View {
         let favourited = resolvedStatus.favourited ?? false
         StatusActionButton(count: resolvedStatus.favouritesCount, label: "Favourite", systemImage: "star", isOn: favourited) {
             // TODO: what status do we get back here?
-            try! await appModel.service.favorite(status: resolvedStatus.id, set: !favourited)
+            _ = try! await appModel.service.favorite(status: resolvedStatus.id, set: !favourited)
             // TODO: Because of uncertainty of previous TODO - fetch a fresh status
-            status = try! await appModel.service.fetchStatus(for: self.status.id)
+            let newStatus = try! await appModel.service.fetchStatus(for: self.status.id)
+            await MainActor.run {
+                self.status = newStatus
+            }
         }
     }
 
@@ -162,9 +176,12 @@ struct StatusRow: View {
         let bookmarked = resolvedStatus.bookmarked ?? false
         StatusActionButton(label: "Bookmark", systemImage: "bookmark", isOn: bookmarked) {
             // TODO: what status do we get back here?
-            try! await appModel.service.bookmark(status: resolvedStatus.id, set: !bookmarked)
+            _ = try! await appModel.service.bookmark(status: resolvedStatus.id, set: !bookmarked)
             // TODO: Because of uncertainty of previous TODO - fetch a fresh status
-            status = try! await appModel.service.fetchStatus(for: self.status.id)
+            let newStatus = try! await appModel.service.fetchStatus(for: self.status.id)
+            await MainActor.run {
+                self.status = newStatus
+            }
         }
     }
 
@@ -196,7 +213,7 @@ struct StatusActionButton: View {
     let label: String
     let systemName: String
     let isOn: Bool
-    let action: () async throws -> Void
+    let action: @Sendable () async throws -> Void
 
     @Environment(\.errorHandler)
     var errorHandler
@@ -204,7 +221,7 @@ struct StatusActionButton: View {
     @State
     var inFlight = false
 
-    init(count: Int? = nil, label: String, systemImage systemName: String, isOn: Bool, action: @escaping () async throws -> Void) {
+    init(count: Int? = nil, label: String, systemImage systemName: String, isOn: Bool, action: @Sendable @escaping () async throws -> Void) {
         self.count = count
         self.label = label
         self.systemName = systemName
@@ -220,7 +237,7 @@ struct StatusActionButton: View {
             }
             Task {
                 inFlight = true
-                await errorHandler.handle {
+                await errorHandler.handle { [action] in
                     try await action()
                 }
                 //try await Task.sleep(nanoseconds: 500_000)

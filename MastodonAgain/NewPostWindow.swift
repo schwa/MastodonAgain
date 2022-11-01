@@ -1,3 +1,4 @@
+import Foundation
 import SwiftUI
 import Mastodon
 
@@ -53,7 +54,7 @@ struct NewPostView: View {
                 Text(newPost.status.count, format: .number).monospacedDigit()
                 Button("Reply") {
                     Task {
-                        let status = try await appModel.service.postStatus(newPost)
+                        _ = try await appModel.service.postStatus(newPost)
                         newPost.status = ""
                     }
                 }
@@ -105,22 +106,28 @@ struct ImageWell: View {
                         fatalError("No provider")
                     }
                     Task {
-                        guard let url = try await provider.loadItem(forTypeIdentifier: "public.image") as? URL else {
-                            fatalError("No url")
-                        }
-                        #if os(macOS)
-                        guard let nsImage = NSImage(contentsOf: url) else {
-                            fatalError("Could not create image")
-                        }
-                        self.imageURL = url
-                        self.image = Image(nsImage: nsImage)
-                        #else
-                        fatalError("TODO: No images yet on iOS")
-                        #endif
+                        try await loadImage(for: provider)
                     }
                     return true
                 }
         }
+    }
+
+    // swiftlint:disable:next unavailable_function
+    func loadImage(for provider: NSItemProvider) async throws {
+        guard let url = try await provider.loadItem(forTypeIdentifier: "public.image") as? URL else {
+            fatalError("No url")
+        }
+#if os(macOS)
+        guard let nsImage = NSImage(contentsOf: url) else {
+            fatalError("Could not create image")
+        }
+        self.imageURL = url
+        // swiftlint:disable:next accessibility_label_for_image
+        self.image = Image(nsImage: nsImage)
+#else
+        fatalError("TODO: No images yet on iOS")
+#endif
     }
 }
 
