@@ -1,4 +1,4 @@
-public struct Instance: Identifiable, Codable, Hashable {
+public struct Instance: Identifiable, Codable, Hashable, Sendable {
     public var id: String {
         return host
     }
@@ -12,7 +12,7 @@ public struct Instance: Identifiable, Codable, Hashable {
     }
 }
 
-public enum Authorization: Codable, Hashable {
+public enum Authorization: Codable, Hashable, Sendable {
     case unauthorized
     case registered(RegisteredApplication)
     case authorized(RegisteredApplication, Token)

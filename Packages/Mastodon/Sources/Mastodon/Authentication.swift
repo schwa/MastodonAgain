@@ -1,7 +1,7 @@
 import Foundation
 import Everything
 
-public struct RegisteredApplication: Identifiable, Codable, Hashable {
+public struct RegisteredApplication: Identifiable, Codable, Hashable, Sendable {
     public enum CodingKeys: String, CodingKey {
         case id
         case name
@@ -21,7 +21,7 @@ public struct RegisteredApplication: Identifiable, Codable, Hashable {
     public let vapidKey: String
 }
 
-public struct Token: Codable, Hashable {
+public struct Token: Codable, Hashable, Sendable {
     public enum CodingKeys: String, CodingKey {
         case accessToken = "access_token"
         case tokenType = "token_type"

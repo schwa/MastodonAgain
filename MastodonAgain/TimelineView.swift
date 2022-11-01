@@ -36,10 +36,10 @@ struct TimelineView: View {
                 }
             }
         }
-        .refreshable {
-            // TODO: How to get this to work on macOS?
-            refreshTask()
-        }
+//        .refreshable {
+//            // TODO: How to get this to work on macOS?
+//            refreshTask()
+//        }
         .toolbar {
             Button("Save") {
                 do {
@@ -61,17 +61,23 @@ struct TimelineView: View {
     }
 
     func refreshTask(direction: PagingDirection? = nil) {
+        guard refreshing == false else {
+            return
+        }
         guard timeline.timelineType != .canned else {
             return
         }
         refreshing = true
         Task {
             await errorHandler.handle {
-                guard appModel.instance.token != nil else {
+                guard await appModel.instance.token != nil else {
                     return
                 }
                 let page = try await appModel.service.timelime(timeline)
-                self.pages.pages.append(page)
+                appLogger?.log("Fetched page: \(page.debugDescription)")
+                await MainActor.run {
+                    self.pages.pages = [page]
+                }
             }
             refreshing = false
         }

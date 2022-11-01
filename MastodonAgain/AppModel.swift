@@ -1,6 +1,7 @@
 import Mastodon
 import SwiftUI
 
+@MainActor
 class AppModel: ObservableObject {
     @Published
     var instance: Instance {

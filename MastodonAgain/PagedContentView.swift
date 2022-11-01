@@ -18,9 +18,9 @@ struct PagedContentView <Row>: View where Row: View {
 
     var body: some View {
         Button("Newer") {
-            fetchNewest()
+            fetchPrevious()
         }
-        .disabled(content.pages.first?.cursor.next == nil)
+        .disabled(content.pages.first?.cursor.previous == nil)
         ForEach(content.pages) { page in
             let id = page.id
             let pageBinding = Binding {
@@ -34,27 +34,12 @@ struct PagedContentView <Row>: View where Row: View {
             PageView(page: pageBinding, row: row)
         }
         Button("Older") {
-            fetchOldest()
+            fetchNext()
         }
-        .disabled(content.pages.last?.cursor.previous == nil)
+        .disabled(content.pages.last?.cursor.next == nil)
     }
 
-    func fetchNewest() {
-        assert(isFetching == false)
-        isFetching = true
-        guard let fetch = content.pages.first?.cursor.next else {
-            fatalError("No page or not cursor")
-        }
-        Task {
-            await errorHandler.handle {
-                let newPage = try await fetch()
-                content.pages.insert(newPage, at: 0)
-                isFetching = false
-            }
-        }
-    }
-
-    func fetchOldest() {
+    func fetchPrevious() {
         assert(isFetching == false)
         isFetching = true
         guard let fetch = content.pages.last?.cursor.previous else {
@@ -63,6 +48,23 @@ struct PagedContentView <Row>: View where Row: View {
         Task {
             await errorHandler.handle {
                 let newPage = try await fetch()
+                appLogger?.log("Fetched: \(newPage.debugDescription)")
+                content.pages.insert(newPage, at: 0)
+                isFetching = false
+            }
+        }
+    }
+
+    func fetchNext() {
+        assert(isFetching == false)
+        isFetching = true
+        guard let fetch = content.pages.first?.cursor.next else {
+            fatalError("No page or not cursor")
+        }
+        Task {
+            await errorHandler.handle {
+                let newPage = try await fetch()
+                appLogger?.log("Fetched: \(newPage.debugDescription)")
                 content.pages.append(newPage)
                 isFetching = false
             }

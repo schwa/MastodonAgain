@@ -385,5 +385,5 @@ public extension Optional where Wrapped: Collection {
     }
 }
 
-public struct PlaceholderCodable: Codable {
+public struct PlaceholderCodable: Codable, Sendable {
 }

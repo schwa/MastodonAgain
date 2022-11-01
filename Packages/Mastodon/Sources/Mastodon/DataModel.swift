@@ -3,7 +3,7 @@ import Foundation
 
 // swiftlint:disable file_length
 
-public struct Account: Identifiable, Codable {
+public struct Account: Identifiable, Codable, Sendable {
     public enum CodingKeys: String, CodingKey {
         case id
         case username
@@ -53,12 +53,12 @@ public struct Account: Identifiable, Codable {
     public let fields: [Field]
 }
 
-public struct Application: Codable {
+public struct Application: Codable, Sendable {
     public let name: String
     public let website: String?
 }
 
-public struct Card: Codable {
+public struct Card: Codable, Sendable {
     public enum CodingKeys: String, CodingKey {
         case authorName = "author_name"
         case authorURL = "author_url"
@@ -76,7 +76,7 @@ public struct Card: Codable {
         case width
     }
 
-    public enum CardType: String, Codable {
+    public enum CardType: String, Codable, Sendable {
         case link
         case photo
         case video
@@ -117,7 +117,7 @@ public struct Card: Codable {
     }
 }
 
-public struct Emoji: Codable {
+public struct Emoji: Codable, Sendable {
     public enum CodingKeys: String, CodingKey {
         case shortCode
         case url
@@ -131,7 +131,7 @@ public struct Emoji: Codable {
     public let visibleInPic: Bool?
 }
 
-public struct Field: Codable {
+public struct Field: Codable, Sendable {
     public enum CodingKeys: String, CodingKey {
         case name
         case value
@@ -143,7 +143,7 @@ public struct Field: Codable {
     public let verifiedAt: String?
 }
 
-public struct MediaAttachment: Identifiable, Codable {
+public struct MediaAttachment: Identifiable, Codable, Sendable {
     public enum CodingKeys: String, CodingKey {
         case id
         case type
@@ -157,7 +157,7 @@ public struct MediaAttachment: Identifiable, Codable {
         case blurHash
     }
 
-    public enum MediaType: String, Codable {
+    public enum MediaType: String, Codable, Sendable {
         case image
         case audio
         case gifv
@@ -165,8 +165,8 @@ public struct MediaAttachment: Identifiable, Codable {
         case unknown
     }
 
-    public struct Meta: Codable {
-        public struct Size: Codable {
+    public struct Meta: Codable, Sendable {
+        public struct Size: Codable, Sendable {
             public let width: Double?
             public let height: Double?
             public let size: String?
@@ -189,7 +189,7 @@ public struct MediaAttachment: Identifiable, Codable {
     public let blurHash: Blurhash?
 }
 
-public struct Mention: Identifiable, Codable {
+public struct Mention: Identifiable, Codable, Sendable {
     public enum CodingKeys: String, CodingKey {
         case id
         case username
@@ -203,7 +203,7 @@ public struct Mention: Identifiable, Codable {
     public let acct: String
 }
 
-public struct Poll: Codable {
+public struct Poll: Codable, Sendable {
 }
 
 public protocol StatusProtocol {
@@ -236,7 +236,7 @@ public protocol StatusProtocol {
     var bookmarked: Bool? { get }
 }
 
-public struct Status: StatusProtocol, Identifiable, Codable {
+public struct Status: StatusProtocol, Identifiable, Codable, Sendable {
     public enum CodingKeys: String, CodingKey {
         case id
         case created = "created_at"
@@ -269,7 +269,7 @@ public struct Status: StatusProtocol, Identifiable, Codable {
         case bookmarked
     }
 
-    public enum Visibility: String, Codable, CaseIterable {
+    public enum Visibility: String, Codable, CaseIterable, Sendable {
         case `public`
         case unlisted
         case `private`
@@ -308,7 +308,7 @@ public struct Status: StatusProtocol, Identifiable, Codable {
     public let bookmarked: Bool?
 }
 
-public struct ReblogStatus: StatusProtocol, Identifiable, Codable {
+public struct ReblogStatus: StatusProtocol, Identifiable, Codable, Sendable {
     public enum CodingKeys: String, CodingKey {
         case id
         case created = "created_at"
@@ -370,13 +370,13 @@ public struct ReblogStatus: StatusProtocol, Identifiable, Codable {
     public let bookmarked: Bool?
 }
 
-public struct Tag: Codable {
+public struct Tag: Codable, Sendable {
     public let name: String
     public let url: URL
 }
 
 // https://docs.joinmastodon.org/methods/statuses/
-public struct NewPost {
+public struct NewPost: Sendable {
     public var status: String
     public var inResponseTo: Status?
     public var mediaIds: [MediaAttachment.ID]?

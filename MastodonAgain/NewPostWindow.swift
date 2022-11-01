@@ -54,7 +54,6 @@ struct NewPostView: View {
                 Button("Reply") {
                     Task {
                         let status = try await appModel.service.postStatus(newPost)
-                        print(status)
                         newPost.status = ""
                     }
                 }

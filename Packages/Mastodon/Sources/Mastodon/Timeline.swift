@@ -1,6 +1,6 @@
 import Foundation
 
-public enum TimelineType: Codable, Hashable {
+public enum TimelineType: Codable, Hashable, Sendable {
     case `public`
     case federated
     case local
@@ -50,7 +50,7 @@ public enum TimelineType: Codable, Hashable {
 
 // MARK: -
 
-public struct Timeline: Codable, Hashable {
+public struct Timeline: Codable, Hashable, Sendable {
     public var url: URL? {
         timelineType.path.map { URL(string: "https://\(instance.host)\($0)")! }
     }

@@ -75,8 +75,12 @@ struct Avatar: View {
     }
 }
 
+// TODO
+extension ErrorHandler: @unchecked Sendable {
+}
+
 public extension ErrorHandler {
-    func handle(_ block: () async throws -> Void) async {
+    func handle(_ block: @Sendable () async throws -> Void) async {
         do {
             try await block()
         }

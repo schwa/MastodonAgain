@@ -17,10 +17,10 @@ struct TimelineStack: View {
     }
 
     var body: some View {
-        NavigationStack {
+//        NavigationStack {
             TimelineView(timeline: timeline)
                 .id(timeline)
                 .navigationTitle(timeline.timelineType.title)
-        }
+//        }
     }
 }

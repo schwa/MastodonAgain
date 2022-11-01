@@ -96,7 +96,6 @@ struct ContentImage: View {
         .overlay {
             Color.clear.onHover { value in
                 hover = value
-                print(hover)
             }
         }
         .id(url)
