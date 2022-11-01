@@ -55,7 +55,8 @@ public struct Page <Element>: Identifiable where Element: Identifiable, Element.
     }
 
     public init(cursor: Cursor, elements: [Element] = []) {
-        if let first = elements.first, let last = elements.last {
+        // TODO: Yes this is reversed.
+        if let first = elements.last, let last = elements.first {
             self.id = first.id ... last.id
         }
         else {
