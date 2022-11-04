@@ -42,9 +42,10 @@ public struct Page <Element>: Identifiable, Sendable where Element: Identifiable
         public var previous: Fetch?
         public var next: Fetch?
 
-        public init(previous: Fetch? = nil, next: Fetch? = nil) {
-            self.previous = previous
-            self.next = next
+        public var previousURL: URL?
+        public var nextURL: URL?
+
+        public init() {
         }
     }
 
@@ -91,7 +92,7 @@ extension Page: CustomDebugStringConvertible {
 
 extension Page.Cursor: CustomDebugStringConvertible {
     public var debugDescription: String {
-        return "Cursor(previous: \(previous != nil), next: \(next != nil))"
+        return "Cursor(previous: \(previousURL?.absoluteString ?? "<nil>"), next: \(nextURL?.absoluteString ?? "<nil>"))"
     }
 }
 

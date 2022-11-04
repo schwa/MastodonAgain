@@ -27,6 +27,10 @@
 		45F1A2BF290E351B0093A8AC /* AuthorizationFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F1A2BE290E351B0093A8AC /* AuthorizationFlow.swift */; };
 		45F1A2C1290E4FEE0093A8AC /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F1A2C0290E4FEE0093A8AC /* AppModel.swift */; };
 		45F1A2C3290E4FF60093A8AC /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F1A2C2290E4FF60093A8AC /* AppSettings.swift */; };
+		45FDAF822916EE5A0073E8E0 /* MiniStatusRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FDAF812916EE5A0073E8E0 /* MiniStatusRow.swift */; };
+		45FDAF84291714F40073E8E0 /* StatusInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FDAF83291714F40073E8E0 /* StatusInfoView.swift */; };
+		45FDAF86291715130073E8E0 /* AccountInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FDAF85291715130073E8E0 /* AccountInfoView.swift */; };
+		45FDAF8929177EF50073E8E0 /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 45FDAF8829177EF50073E8E0 /* AsyncAlgorithms */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -63,6 +67,9 @@
 		45F1A2BE290E351B0093A8AC /* AuthorizationFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationFlow.swift; sourceTree = "<group>"; };
 		45F1A2C0290E4FEE0093A8AC /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		45F1A2C2290E4FF60093A8AC /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		45FDAF812916EE5A0073E8E0 /* MiniStatusRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniStatusRow.swift; sourceTree = "<group>"; };
+		45FDAF83291714F40073E8E0 /* StatusInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusInfoView.swift; sourceTree = "<group>"; };
+		45FDAF85291715130073E8E0 /* AccountInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +79,7 @@
 			files = (
 				45F1A2AF290DBB990093A8AC /* Mastodon in Frameworks */,
 				45F1A2B2290DD6AB0093A8AC /* CachedAsyncImage in Frameworks */,
+				45FDAF8929177EF50073E8E0 /* AsyncAlgorithms in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -141,12 +149,15 @@
 				455AC883290D96F600137415 /* ContentView.swift */,
 				452020122910281300469569 /* MainView.swift */,
 				45A27F48291053FB00662B71 /* TimelineStack.swift */,
+				45FDAF85291715130073E8E0 /* AccountInfoView.swift */,
 				45F1A2B8290E1FB60093A8AC /* TimelineView.swift */,
 				45F1A2BA290E1FE50093A8AC /* StatusRow.swift */,
+				45FDAF812916EE5A0073E8E0 /* MiniStatusRow.swift */,
 				45B45CC3291086660070F1C5 /* CardView.swift */,
 				45B45CC1291065870070F1C5 /* PagedContentView.swift */,
 				4520200E290F87A200469569 /* MediaStack.swift */,
 				45F1A2B5290E0F4B0093A8AC /* Support.swift */,
+				45FDAF83291714F40073E8E0 /* StatusInfoView.swift */,
 				45F1A2BC290E31360093A8AC /* Minikeychain.swift */,
 				45F1A2BE290E351B0093A8AC /* AuthorizationFlow.swift */,
 				45202010290F8DC600469569 /* NewPostWindow.swift */,
@@ -201,6 +212,7 @@
 			packageProductDependencies = (
 				45F1A2AE290DBB990093A8AC /* Mastodon */,
 				45F1A2B1290DD6AB0093A8AC /* CachedAsyncImage */,
+				45FDAF8829177EF50073E8E0 /* AsyncAlgorithms */,
 			);
 			productName = MastodonAgain;
 			productReference = 455AC87E290D96F600137415 /* MastodonAgain.app */;
@@ -232,6 +244,7 @@
 			mainGroup = 455AC875290D96F600137415;
 			packageReferences = (
 				45F1A2B0290DD6AB0093A8AC /* XCRemoteSwiftPackageReference "swiftui-cached-async-image" */,
+				45FDAF8729177EF50073E8E0 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */,
 			);
 			productRefGroup = 455AC87F290D96F600137415 /* Products */;
 			projectDirPath = "";
@@ -287,13 +300,16 @@
 				452020132910281300469569 /* MainView.swift in Sources */,
 				4520200F290F87A200469569 /* MediaStack.swift in Sources */,
 				45B45CC4291086660070F1C5 /* CardView.swift in Sources */,
+				45FDAF84291714F40073E8E0 /* StatusInfoView.swift in Sources */,
 				45A27F49291053FB00662B71 /* TimelineStack.swift in Sources */,
 				45F1A2BB290E1FE50093A8AC /* StatusRow.swift in Sources */,
+				45FDAF822916EE5A0073E8E0 /* MiniStatusRow.swift in Sources */,
 				45202011290F8DC600469569 /* NewPostWindow.swift in Sources */,
 				45F1A2BF290E351B0093A8AC /* AuthorizationFlow.swift in Sources */,
 				45F1A2C1290E4FEE0093A8AC /* AppModel.swift in Sources */,
 				45F1A2BD290E31360093A8AC /* Minikeychain.swift in Sources */,
 				455AC882290D96F600137415 /* MastodonAgainApp.swift in Sources */,
+				45FDAF86291715130073E8E0 /* AccountInfoView.swift in Sources */,
 				45F1A2B9290E1FB60093A8AC /* TimelineView.swift in Sources */,
 				45F1A2C3290E4FF60093A8AC /* AppSettings.swift in Sources */,
 				45F1A2B6290E0F4B0093A8AC /* Support.swift in Sources */,
@@ -371,6 +387,14 @@
 				minimumVersion = 2.0.0;
 			};
 		};
+		45FDAF8729177EF50073E8E0 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-async-algorithms";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.3;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -382,6 +406,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 45F1A2B0290DD6AB0093A8AC /* XCRemoteSwiftPackageReference "swiftui-cached-async-image" */;
 			productName = CachedAsyncImage;
+		};
+		45FDAF8829177EF50073E8E0 /* AsyncAlgorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 45FDAF8729177EF50073E8E0 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */;
+			productName = AsyncAlgorithms;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

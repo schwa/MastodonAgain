@@ -13,8 +13,17 @@ class AppModel: ObservableObject {
         }
     }
 
-    @Published
-    var showDebugInfo = true
+    @AppStorage("showDebuggingInfo")
+    var showDebuggingInfo = false
+
+    @AppStorage("hideSensitiveContent")
+    var hideSensitiveContent = false
+
+    @AppStorage("useMarkdownContent")
+    var useMarkdownContent = false
+
+    @AppStorage("StatusRowMode")
+    var statusRowMode = TimelineView.Mode.large
 
     let service = Service()
 

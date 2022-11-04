@@ -148,26 +148,10 @@ public extension Service {
         }
         logger?.log("Posting")
         let url = URL(string: "https://\(host)/api/v1/statuses")!
-
-        var form = [
-            "status": newPost.status,
-            "language": newPost.language,
-            "visibility": newPost.visibility.rawValue,
-        ]
-
-        if newPost.sensitive {
-            form["sensitive"] = newPost.sensitive ? "true" : "false"
-            form["spoiler"] = newPost.spoiler
-        }
-
-        if let inReplyTo = newPost.inResponseTo {
-            form["in_reply_to_id"] = inReplyTo.id.rawValue
-        }
-
-        let request = URLRequest.post(url)
+        var request = URLRequest.post(url)
             .headers(token.headers)
-            .form(form)
-
+            .headers(["Content-Type": "application/json; charset=utf-8"])
+        request.httpBody = try JSONEncoder().encode(newPost)
         let (data, _) = try await session.validatedData(for: request)
         let status = try decoder.decode(Status.self, from: data)
         update(status)
@@ -175,17 +159,17 @@ public extension Service {
         return status
     }
 
-    func uploadAttachment(file: URL, description: String) async throws -> Any {
+    func uploadAttachment(file: URL, description: String) async throws -> MediaAttachment {
         guard let host = instance?.host, let token = instance?.token else {
             fatalError("No host or token.")
         }
-        logger?.log("Posting")
+        logger?.log("Uploading image")
 
         let fileData = try Data(contentsOf: file)
 
         let formValues: [FormValue] = [
             .value("description", description),
-            .file("image", file.lastPathComponent, "image/png", fileData) // TODO
+            .file("file", file.lastPathComponent, "image/png", fileData) // TODO
         ]
 
         let url = URL(string: "https://\(host)/api/v1/media")!
@@ -194,8 +178,7 @@ public extension Service {
             .multipartForm(formValues)
 
         let (data, _) = try await session.validatedData(for: request)
-
-        print(try jsonTidy(data: data))
-        return status
+        let attachment = try decoder.decode(MediaAttachment.self, from: data)
+        return attachment
     }
 }

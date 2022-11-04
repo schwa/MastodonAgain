@@ -15,6 +15,11 @@ struct TimelineView: View, Sendable {
     @State
     var content = PagedContent<Status>()
 
+    enum Mode: String, RawRepresentable, CaseIterable, Sendable {
+        case small
+        case large
+    }
+
     @State
     var refreshing = false
 
@@ -22,26 +27,37 @@ struct TimelineView: View, Sendable {
         self.timeline = timeline
     }
 
+    @State
+    var selection: Set<Status.ID> = []
+
+    @StateObject
+    var stackModel = StackModel()
+
     @ViewBuilder
     var body: some View {
-        Group {
-            List() {
-                DebugDescriptionView(timeline.url).debuggingInfo()
-                if refreshing {
-                    ProgressView()
-                }
+        List(selection: $selection) {
+            DebugDescriptionView(timeline.url).debuggingInfo()
+            if refreshing {
+                ProgressView()
+            }
 
-                PagedContentView(content: $content, isFetching: $refreshing) { status in
+            PagedContentView(content: $content, isFetching: $refreshing) { status in
+                if appModel.statusRowMode == .large {
                     StatusRow(status: status)
                     Divider()
                 }
+                else {
+                    MiniStatusRow(status: status)
+                }
             }
         }
-//        .refreshable {
-//            // TODO: How to get this to work on macOS?
-//            refreshTask()
-//        }
         .toolbar {
+            Picker("Mode", selection: $appModel.statusRowMode) {
+                Image(systemName: "tablecells").tag(Mode.large)
+                Image(systemName: "list.dash").tag(Mode.small)
+            }
+            .pickerStyle(.inline)
+
             Button("Save") {
                 do {
                     let data = try JSONEncoder().encode(timeline)
@@ -125,3 +141,20 @@ struct TimelineView: View, Sendable {
 //        .debuggingInfo()
 //    }
 //}
+
+extension CaseIterable where Self: Equatable {
+    func nextWrapping() -> Self {
+        return next(wraps: true)! // TODO: can improve this
+    }
+
+    func next(wraps: Bool = false) -> Self? {
+        let allCases = Self.allCases
+        let index = allCases.index(after: allCases.firstIndex(of: self)!)
+        if index == allCases.endIndex {
+            return wraps ? allCases.first! : nil
+        }
+        else {
+            return allCases[index]
+        }
+    }
+}

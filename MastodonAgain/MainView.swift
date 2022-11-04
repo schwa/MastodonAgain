@@ -37,6 +37,24 @@ struct MainView: View {
                 WorkInProgressView().opacity(0.2)
             }
         }
+        .toolbar {
+            Toggle("Debug", isOn: $appModel.showDebuggingInfo)
+                .toggleStyle(ImageToggleStyle())
+        }
+    }
+}
+
+struct ImageToggleStyle: ToggleStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        Button { configuration.isOn.toggle() }
+        label: {
+            if configuration.isOn {
+                Image(systemName: "ladybug").foregroundColor(.red).symbolVariant(.circle)
+            }
+            else {
+                Image(systemName: "ladybug")
+            }
+        }
     }
 }
 

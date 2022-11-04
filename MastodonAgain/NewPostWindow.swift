@@ -1,6 +1,15 @@
 import Foundation
 import SwiftUI
 import Mastodon
+import AsyncAlgorithms
+
+extension NSItemProvider: @unchecked Sendable {
+}
+
+enum NewPostWindow: Codable, Hashable {
+    case empty
+    case reply(Status.ID) // TODO: Make full status?
+}
 
 struct NewPostView: View {
     @EnvironmentObject
@@ -11,6 +20,18 @@ struct NewPostView: View {
 
     @State
     var newPost: NewPost
+
+    @State
+    var images: [Resource<Image>] = []
+
+    @State
+    var inReplyTo: Status?
+
+    @State
+    var isTargeted = false
+
+    @Environment(\.errorHandler)
+    var errorHandler
 
     init(open: Binding<NewPostWindow?>) {
         self._open = open
@@ -23,12 +44,18 @@ struct NewPostView: View {
                 DebugDescriptionView(newPost)
             }
             .debuggingInfo()
-            if let inResponseTo = newPost.inResponseTo {
-                Text("Replying to \(inResponseTo.account.acct)") // TODO: use full name
+            if let inReplyTo {
+                Text("Replying to \(inReplyTo.account.acct)") // TODO: use full name
             }
-            TextEditor(text: $newPost.status)
+            HStack {
+                TextEditor(text: $newPost.status)
+                ForEach(images, id: \.url) { image in
+                    image.content.resizable().scaledToFit()
+                    .frame(maxWidth: 80, maxHeight: 80, alignment: .trailing)
+                }
+            }
             if newPost.sensitive {
-                TextField("Content Warning", text: $newPost.spoiler)
+                TextField("Content Warning", text: $newPost.spoiler.unwrappingRebound(default: { "" }))
             }
             HStack {
                 Button(systemImage: "paperclip", action: {})
@@ -54,19 +81,55 @@ struct NewPostView: View {
                 Spacer()
                 Text(newPost.status.count, format: .number).monospacedDigit()
                 Button("Post") {
+                    let imageUrls = images.map(\.url)
+                    let newPost = newPost
                     Task {
-                        _ = try await appModel.service.postStatus(newPost)
-                        newPost.status = ""
+                        await errorHandler { [appModel] in
+                            var newPost = newPost
+                            let mediaAttachments = try await withThrowingTaskGroup(of: MediaAttachment.self) { group in
+                                imageUrls.forEach { url in
+                                    group.addTask {
+                                        try await appModel.service.uploadAttachment(file: url, description: "<description forthcoming>")
+                                    }
+                                }
+                                return try await Array(group)
+                            }
+                            newPost.mediaIds = mediaAttachments.map(\.id)
+                            _ = try await appModel.service.postStatus(newPost)
+                        }
                     }
                 }
                 .disabled(newPost.status.isEmpty || newPost.status.count > 500) // TODO: get limit from instance?
             }
         }
         .padding()
+        .overlay {
+            if isTargeted {
+                Rectangle().stroke(Color.accentColor, lineWidth: 8)
+            }
+        }
         .task {
             if case let .reply(id) = open {
-                newPost.inResponseTo = await appModel.service.status(for: id)
+                inReplyTo = await appModel.service.status(for: id)
+                newPost.inResponseTo = id
             }
+        }
+        .foregroundColor(isTargeted ? .accentColor : .secondary)
+        .onDrop(of: [.image], isTargeted: $isTargeted) { providers, _ in
+            guard providers.count == 1 else {
+                return false
+            }
+            guard let provider = providers.first else {
+                fatalError("No provider")
+            }
+            Task {
+                let image = try await Resource(provider: provider)
+                guard !images.contains(image) else {
+                    return
+                }
+                images.append(image)
+            }
+            return true
         }
     }
 }
@@ -81,71 +144,35 @@ extension Locale {
     }
 }
 
-struct ImageWell: View {
-    @Binding
-    var image: Image?
+public struct Resource <Content> {
+    public var url: URL
+    public var content: Content
+}
 
-    @Binding
-    var imageURL: URL?
+extension Resource: Equatable where Content: Equatable {
+}
 
-    @State
-    var isTargeted = false
+extension Resource: Hashable where Content: Hashable {
+}
 
-    var body: some View {
-        if let image {
-            image.resizable().scaledToFit()
-        }
-        else {
-            Image(systemName: "photo").resizable().scaledToFit()
-                .padding()
-                .foregroundColor(isTargeted ? .accentColor : .secondary)
-                .onDrop(of: [.image], isTargeted: $isTargeted) { providers, _ in
-                    guard providers.count == 1 else {
-                        return false
-                    }
-                    guard let provider = providers.first else {
-                        fatalError("No provider")
-                    }
-                    Task {
-                        try await loadImage(for: provider)
-                    }
-                    return true
-                }
-        }
-    }
+extension Resource: Sendable where Content: Sendable {
+}
 
+extension Resource where Content == Image {
     // swiftlint:disable:next unavailable_function
-    func loadImage(for provider: NSItemProvider) async throws {
+    init(provider: NSItemProvider) async throws {
+#if os(macOS)
         guard let url = try await provider.loadItem(forTypeIdentifier: "public.image") as? URL else {
             fatalError("No url")
         }
-#if os(macOS)
         guard let nsImage = NSImage(contentsOf: url) else {
             fatalError("Could not create image")
         }
-        self.imageURL = url
         // swiftlint:disable:next accessibility_label_for_image
-        self.image = Image(nsImage: nsImage)
+        let image = Image(nsImage: nsImage)
+        self = .init(url: url, content: image)
 #else
         fatalError("TODO: No images yet on iOS")
 #endif
     }
 }
-
-enum NewPostWindow: Codable, Hashable {
-    case empty
-    case reply(Status.ID) // TODO: Make full status?
-}
-
-//HStack {
-//    ImageWell(image: $image, imageURL: $imageURL).frame(width: 128, height: 128)
-//    if image != nil {
-//        TextField("Image description", text: $imageDescription)
-//    }
-//}
-
-//                    if let imageURL = imageURL, !imageDescription.isEmpty {
-//                        let status = try await appModel.service.uploadAttachment(file: imageURL, description: imageDescription)
-//                        print(status)
-//                    }
-

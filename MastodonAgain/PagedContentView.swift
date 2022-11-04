@@ -15,10 +15,10 @@ struct PagedContentView <Row>: View where Row: View {
     var errorHandler
 
     @ViewBuilder
-    let row: @Sendable (Binding<Content.Element>) -> Row
+    let row: (Binding<Content.Element>) -> Row
 
     var body: some View {
-        Button("Newer") {
+        Refresh("Newer") {
             fetchPrevious()
         }
         .disabled(content.pages.first?.cursor.previous == nil)
@@ -34,7 +34,7 @@ struct PagedContentView <Row>: View where Row: View {
             }
             PageView(page: pageBinding, row: row)
         }
-        Button("Older") {
+        Refresh("Older") {
             fetchNext()
         }
         .disabled(content.pages.last?.cursor.next == nil)
@@ -43,7 +43,7 @@ struct PagedContentView <Row>: View where Row: View {
     func fetchPrevious() {
         assert(isFetching == false)
         isFetching = true
-        guard let fetch = content.pages.last?.cursor.previous else {
+        guard let fetch = content.pages.first?.cursor.previous else {
             fatalError("No page or not cursor")
         }
         Task {
@@ -59,10 +59,12 @@ struct PagedContentView <Row>: View where Row: View {
     }
 
     func fetchNext() {
-        assert(isFetching == false)
+        guard isFetching == false else {
+            return
+        }
         isFetching = true
-        guard let fetch = content.pages.first?.cursor.next else {
-            fatalError("No page or not cursor")
+        guard let fetch = content.pages.last?.cursor.next else {
+            return
         }
         Task {
             await errorHandler.handle {
@@ -95,12 +97,48 @@ struct PagedContentView <Row>: View where Row: View {
                     element
                 } set: { newValue in
                     guard let index = page.elements.firstIndex(where: { $0.id == id }) else {
-                        fatalError("Could not find am element in a page we were displaying it from...")
+                        fatalError("Could not find an element in a page we were displaying it from...")
                     }
                     page.elements[index] = newValue
                 }
                 row(binding)
             }
+        }
+    }
+}
+
+struct Refresh: View {
+    let title: String
+    let action: @Sendable () async throws -> Void
+
+    @State
+    var running = false
+
+    init(_ title: String, action: @escaping @Sendable () async throws -> Void) {
+        self.title = title
+        self.action = action
+    }
+
+    var body: some View {
+        if running {
+            ProgressView()
+        }
+        else {
+            Button(title) {
+                run()
+            }
+            .onAppear() {
+//                run()
+            }
+        }
+    }
+
+    func run() {
+        let action = action
+        running = true
+        Task.detached {
+            try await action()
+            running = false
         }
     }
 }

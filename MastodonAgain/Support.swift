@@ -59,10 +59,13 @@ extension View {
 }
 
 struct Avatar: View {
-    let url: URL
+    @EnvironmentObject
+    var stackModel: StackModel
+
+    let account: Account
 
     var body: some View {
-        CachedAsyncImage(url: url) { image in
+        CachedAsyncImage(url: account.avatar) { image in
             image
                 .resizable()
                 .background(.ultraThinMaterial)
@@ -72,6 +75,15 @@ struct Avatar: View {
                 }
         } placeholder: {
             Image(systemName: "person.circle.fill")
+        }
+        .contextMenu {
+            Text(account)
+            Button("Info") {
+                stackModel.path.append(.account(account.id))
+            }
+            Button("Disable Reposts") {
+                unimplemented()
+            }
         }
     }
 }
@@ -259,5 +271,17 @@ struct DebugDescriptionView <Value>: View {
         }
         .textSelection(.enabled)
         .font(.body.monospaced())
+    }
+}
+
+extension ErrorHandler {
+    func callAsFunction <R>(_ block: @Sendable () async throws -> R?) async -> R? {
+        do {
+            return try await block()
+        }
+        catch {
+            handle(error: error)
+            return nil
+        }
     }
 }

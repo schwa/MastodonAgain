@@ -14,9 +14,6 @@ struct StatusRow: View, Sendable {
     @EnvironmentObject
     var appModel: AppModel
 
-    @Environment(\.openWindow)
-    var openWindow
-
     var body: some View {
         HStack(alignment: .top) {
             avatar
@@ -28,12 +25,9 @@ struct StatusRow: View, Sendable {
         }
     }
 
-    @State
-    var isDebugPopoverPresented = false
-
     @ViewBuilder
     var avatar: some View {
-        Avatar(url: status.account.avatar)
+        Avatar(account: status.account)
             .frame(width: 40, height: 40)
     }
 
@@ -75,14 +69,7 @@ struct StatusRow: View, Sendable {
     @ViewBuilder
     var footer: some View {
         HStack(alignment: .center, spacing: 32) {
-            replyButton
-            reblogButton
-            favouriteButton
-            bookmarkButton
-            shareButton
-            moreButton
-            debugButton
-
+            StatusActions(status: _status)
             HStack(spacing: 8) {
                 Text(verbatim: "ID: \(status.id)")
                 if let reblog = status.reblog {
@@ -117,19 +104,204 @@ struct StatusRow: View, Sendable {
         }
         .buttonStyle(ActionButtonStyle())
     }
+}
 
-    @ViewBuilder
-    var debugView: some View {
-        // https://mastodon.example/api/v1/statuses/:id
-        let url = URL(string: "https://\(appModel.instance.host)/api/v1/statuses/\(status.id.rawValue)")!
-        let request = URLRequest(url: url)
-        RequestDebugView(request: request).padding()
+struct StatusActionButton: View {
+    let count: Int?
+    let label: String
+    let systemName: String
+    let isOn: Bool
+    let action: @Sendable () async throws -> Void
+
+    @Environment(\.errorHandler)
+    var errorHandler
+
+    @State
+    var inFlight = false
+
+    init(count: Int? = nil, label: String, systemImage systemName: String, isOn: Bool, action: @Sendable @escaping () async throws -> Void) {
+        self.count = count
+        self.label = label
+        self.systemName = systemName
+        self.isOn = isOn
+        self.action = action
+    }
+
+    var body: some View {
+        Button {
+            guard inFlight == false else {
+                appLogger?.debug("Task for \(label) is already in flight, dropping.")
+                return
+            }
+            Task {
+                inFlight = true
+                await errorHandler.handle { [action] in
+                    try await action()
+                }
+                //try await Task.sleep(nanoseconds: 500_000)
+                inFlight = false
+            }
+        } label: {
+            let image = Image(systemName: systemName)
+                .symbolVariant(isOn ? .fill : .none)
+                .foregroundColor(isOn ? .accentColor : nil)
+            // swiftlint:disable:next empty_count
+            if let count, count > 0 {
+                Label {
+                    Text("\(count, format: .number)")
+                } icon: {
+                    image
+                }
+            }
+            else {
+                if inFlight {
+                    ProgressView().controlSize(.small)
+                }
+                else {
+                    image
+                }
+            }
+        }
+    }
+}
+
+extension Text {
+    init(_ account: Account) {
+        var text = Text("")
+        if !account.displayName.isEmpty {
+            // swiftlint:disable shorthand_operator
+            text = text + Text("\(account.displayName)").bold()
+        }
+        self = text + Text(" ") + Text("@\(account.acct)")
+                .foregroundColor(.secondary)
+    }
+}
+
+struct StatusContent <Status>: View where Status: StatusProtocol {
+    @EnvironmentObject
+    var appModel: AppModel
+
+    let status: Status
+
+    var sensitive: Bool {
+        return status.sensitive
+    }
+
+    var hideContent: Bool {
+        sensitive && !allowSensitive && appModel.hideSensitiveContent
+    }
+
+    @State
+    var allowSensitive = false
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            if sensitive && appModel.hideSensitiveContent == true {
+                HStack() {
+                    status.spoilerText.nilify().map(Text.init)
+                    Toggle("Show Sensitive Content", isOn: $allowSensitive)
+                }
+                .controlSize(.small)
+            }
+            VStack(alignment: .leading) {
+                Text(appModel.useMarkdownContent ? status.markdownContent : status.attributedContent)
+                    .textSelection(.enabled)
+                if !status.mediaAttachments.isEmpty {
+                    MediaStack(attachments: status.mediaAttachments)
+                }
+                if let poll = status.poll {
+                    Text("Poll: \(String(describing: poll))").debuggingInfo()
+                }
+                if let card = status.card {
+                    CardView(card: card)
+                }
+            }
+            .sensitiveContent(hideContent)
+            .frame(maxWidth: .infinity, alignment: .leading)
+//            .overlay {
+//                if sensitive && !allowSensitive {
+//                    Color.red.opacity(1).backgroundStyle(.thickMaterial)
+//                }
+//            }
+        }
+    }
+}
+
+struct SensitiveContentModifier: ViewModifier {
+    let sensitive: Bool
+
+    func body(content: Content) -> some View {
+        if sensitive {
+            content
+                .blur(radius: 20)
+                .clipped()
+                .cornerRadius(8)
+                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.red))
+        }
+        else {
+            content
+        }
+    }
+}
+
+extension View {
+    func sensitiveContent(_ sensitive: Bool) -> some View {
+        return self.modifier(SensitiveContentModifier(sensitive: sensitive))
+    }
+}
+
+extension Collection {
+    func nilify() -> Self? {
+        if isEmpty {
+            return nil
+        }
+        else {
+            return self
+        }
+    }
+}
+
+struct StatusActions: View {
+    @Binding
+    var status: Status
+
+    @Environment(\.openURL)
+    var openURL
+
+    @EnvironmentObject
+    var appModel: AppModel
+
+    @EnvironmentObject
+    var stackModel: StackModel
+
+    @Environment(\.openWindow)
+    var openWindow
+
+    @State
+    var isDebugPopoverPresented = false
+
+    var body: some View {
+        infoButton
+        replyButton
+        reblogButton
+        favouriteButton
+        bookmarkButton
+        shareButton
+        moreButton
+        debugButton
     }
 
     @ViewBuilder
     var replyButton: some View {
         Button(systemImage: "arrowshape.turn.up.backward", action: {
             openWindow(value: NewPostWindow.reply(status.id))
+        })
+    }
+
+    @ViewBuilder
+    var infoButton: some View {
+        Button(systemImage: "info", action: {
+            stackModel.path.append(.status(status.id))
         })
     }
 
@@ -206,162 +378,13 @@ struct StatusRow: View, Sendable {
             debugView
         }
     }
-}
 
-struct StatusActionButton: View {
-    let count: Int?
-    let label: String
-    let systemName: String
-    let isOn: Bool
-    let action: @Sendable () async throws -> Void
-
-    @Environment(\.errorHandler)
-    var errorHandler
-
-    @State
-    var inFlight = false
-
-    init(count: Int? = nil, label: String, systemImage systemName: String, isOn: Bool, action: @Sendable @escaping () async throws -> Void) {
-        self.count = count
-        self.label = label
-        self.systemName = systemName
-        self.isOn = isOn
-        self.action = action
-    }
-
-    var body: some View {
-        Button {
-            guard inFlight == false else {
-                appLogger?.debug("Task for \(label) is already in flight, dropping.")
-                return
-            }
-            Task {
-                inFlight = true
-                await errorHandler.handle { [action] in
-                    try await action()
-                }
-                //try await Task.sleep(nanoseconds: 500_000)
-                inFlight = false
-            }
-        } label: {
-            let image = Image(systemName: systemName)
-                .symbolVariant(isOn ? .fill : .none)
-                .foregroundColor(isOn ? .accentColor : nil)
-            // swiftlint:disable:next empty_count
-            if let count, count > 0 {
-                Label {
-                    Text("\(count, format: .number)")
-                } icon: {
-                    image
-                }
-            }
-            else {
-                if inFlight {
-                    ProgressView().controlSize(.small)
-                }
-                else {
-                    image
-                }
-            }
-        }
+    @ViewBuilder
+    var debugView: some View {
+        // https://mastodon.example/api/v1/statuses/:id
+        let url = URL(string: "https://\(appModel.instance.host)/api/v1/statuses/\(status.id.rawValue)")!
+        let request = URLRequest(url: url)
+        RequestDebugView(request: request).padding()
     }
 }
 
-extension Text {
-    init(_ account: Account) {
-        var text = Text("")
-        if !account.displayName.isEmpty {
-            // swiftlint:disable shorthand_operator
-            text = text + Text("\(account.displayName)").bold()
-        }
-        self = text + Text(" ") + Text("@\(account.acct)")
-                .foregroundColor(.secondary)
-    }
-}
-
-struct StatusContent <Status>: View where Status: StatusProtocol {
-    let status: Status
-
-    @AppStorage("hideSensitiveContent")
-    var hideSensitiveContent = false
-
-    var sensitive: Bool {
-        return status.sensitive
-    }
-
-    var hideContent: Bool {
-        sensitive && !allowSensitive && hideSensitiveContent
-    }
-
-    @State
-    var allowSensitive = false
-
-    @AppStorage("useMarkdownContent")
-    var useMarkdownContent = false
-
-    var body: some View {
-        VStack(alignment: .leading) {
-            if sensitive && hideSensitiveContent == true {
-                HStack() {
-                    status.spoilerText.nilify().map(Text.init)
-                    Toggle("Show Sensitive Content", isOn: $allowSensitive)
-                }
-                .controlSize(.small)
-            }
-            VStack(alignment: .leading) {
-                Text(useMarkdownContent ? status.markdownContent : status.attributedContent)
-                    .textSelection(.enabled)
-                if !status.mediaAttachments.isEmpty {
-                    MediaStack(attachments: status.mediaAttachments)
-                }
-                if let poll = status.poll {
-                    Text("Poll: \(String(describing: poll))").debuggingInfo()
-                }
-                if let card = status.card {
-                    CardView(card: card)
-                }
-            }
-            .sensitiveContent(hideContent)
-            .frame(maxWidth: .infinity, alignment: .leading)
-//            .overlay {
-//                if sensitive && !allowSensitive {
-//                    Color.red.opacity(1).backgroundStyle(.thickMaterial)
-//                }
-//            }
-        }
-    }
-}
-
-struct SensitiveContentModifier: ViewModifier {
-    let sensitive: Bool
-
-    func body(content: Content) -> some View {
-        if sensitive {
-            content
-                .blur(radius: 20)
-                .clipped()
-                .cornerRadius(8)
-                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.red))
-        }
-        else {
-            content
-        }
-    }
-}
-
-extension View {
-    func sensitiveContent(_ sensitive: Bool) -> some View {
-        return self.modifier(SensitiveContentModifier(sensitive: sensitive))
-    }
-}
-
-extension Collection {
-    func nilify() -> Self? {
-        if isEmpty {
-            return nil
-        }
-        else {
-            return self
-        }
-    }
-}

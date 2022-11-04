@@ -17,11 +17,13 @@ public extension Service {
             let link = link as! String
             let links = try processLinks(string: link)
             if let previous = links["prev"] {
+                cursor.previousURL = previous
                 cursor.previous = {
                     try await self.fetchStatusesPage(url: previous)
                 }
             }
             if let next = links["next"] {
+                cursor.nextURL = next
                 cursor.next = {
                     try await self.fetchStatusesPage(url: next)
                 }

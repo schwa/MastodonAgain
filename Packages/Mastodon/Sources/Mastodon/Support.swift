@@ -336,7 +336,7 @@ public extension Sequence where Element == FormValue {
         return Data([
             Data("--\(boundary)\r\n".utf8),
             Data(chunks.joined(separator: Data("--\(boundary)\r\n".utf8))),
-            Data("--\(boundary)--".utf8),
+            Data("--\(boundary)--\r\n".utf8),
         ].joined())
     }
 }
@@ -356,7 +356,7 @@ public extension URLRequest {
         var copy = self
         copy.httpMethod = "POST"
         let boundary = "__X_BOUNDARY__"
-        copy.setValue("multipart/form-data; charset=utf-8; boundary=\(boundary)}", forHTTPHeaderField: "Content-Type")
+        copy.setValue("multipart/form-data; charset=utf-8; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types#multipartform-data
         copy.httpBody = values.data(boundary: boundary)
         return copy

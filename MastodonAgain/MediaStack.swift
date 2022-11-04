@@ -99,7 +99,6 @@ struct ContentImage: View {
             }
         }
         .id(url)
-*/
-        
+*/        
     }
 }
