@@ -9,7 +9,8 @@ struct AuthorizationFlow: View {
 
     let hosts = [
         Instance("mastodon.social"),
-        Instance("mastodon.online")
+        Instance("mastodon.online"),
+        Instance("fosstodon.org"),
     ]
 
     @State

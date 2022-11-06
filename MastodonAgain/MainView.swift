@@ -13,6 +13,14 @@ struct MainView: View {
     var body: some View {
         NavigationSplitView {
             List(selection: $selection) {
+                Label {
+                    Text(appModel.instance.host)
+                    Image(systemName: "chevron.down")
+                } icon: {
+                    Image(systemName: "gear")
+                }
+                Divider()
+
                 ForEach(MainTabs.allCases, id: \.self) { tab in
                     Label {
                         Text(tab.title)
@@ -23,23 +31,14 @@ struct MainView: View {
                 }
             }
         } detail: {
-            if let timelineType = selection!.timelineType {
-                if timelineType == .canned {
-                    unimplemented()
-//                    let url = Bundle.main.url(forResource: "canned_timeline", withExtension: "json")!
-//                    let data = try! Data(contentsOf: url)
-//                    // Do not use mastodon decoder for canned timeline
-//                    let loadedTimeline = try! JSONDecoder().decode(Timeline.self, from: data)
-//                    let timeline = Timeline(instance: appModel.instance, timelineType: timelineType)
-//                    TimelineStack(timeline: timeline)
-                }
-                else {
-                    let timeline = Timeline(instance: appModel.instance, timelineType: timelineType)
-                    TimelineStack(timeline: timeline)
-                }
-            }
-            else {
-                WorkInProgressView().opacity(0.2)
+            switch selection {
+            case .public, .federated, .home, .local:
+                let timeline = Timeline(instance: appModel.instance, timelineType: selection!.timelineType!)
+                TimelineStack(root: .timeline(timeline))
+            case .me:
+                TimelineStack(root: .me)
+            default:
+                unimplemented()
             }
         }
         .toolbar {
@@ -70,7 +69,7 @@ enum MainTabs: String, CaseIterable {
     case local
 //    case directMessages
 //    case search
-//    case me
+    case me
 //    case cannedTimeline
 
     var timelineType: TimelineType? {
@@ -98,8 +97,8 @@ enum MainTabs: String, CaseIterable {
 //            return "Direct Messages"
 //        case (.search, nil):
 //            return "Search"
-//        case (.me, nil):
-//            return "Me"
+        case (.me, nil):
+            return "Me"
         default:
             fatalError("Fallthrough")
         }
@@ -109,6 +108,8 @@ enum MainTabs: String, CaseIterable {
         switch (self, timelineType) {
         case (_, .some(let timeline)):
             return timeline.image
+        case (.me, nil):
+            return Image(systemName: "person")
         default:
             return Image(systemName: "gear")
         }

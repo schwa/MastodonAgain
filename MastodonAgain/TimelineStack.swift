@@ -2,15 +2,16 @@ import SwiftUI
 import Mastodon
 import Everything
 
+enum NavigationPage: Hashable {
+    case timeline(Timeline)
+    case status(Status.ID)
+    case account(Account.ID)
+    case me
+}
+
 class StackModel: ObservableObject {
     @Published
     var path: [NavigationPage] = []
-
-    enum NavigationPage: Hashable {
-        case timeline(Timeline)
-        case status(Status.ID)
-        case account(Account.ID)
-    }
 }
 
 struct TimelineStack: View {
@@ -20,34 +21,39 @@ struct TimelineStack: View {
     @StateObject
     var stackModel = StackModel()
 
-    let timeline: Timeline
+    let root: NavigationPage
 
-    init(timeline: Timeline) {
-        self.timeline = timeline
+    init(root: NavigationPage) {
+        self.root = root
     }
 
     var body: some View {
         NavigationStack(path: $stackModel.path) {
-            TimelineView(timeline: timeline)
-                .id(timeline)
-                .navigationTitle(timeline.timelineType.title)
-                .navigationDestination(for: StackModel.NavigationPage.self) { page in
-                    switch page {
-                    case .timeline(let timeline):
-                        TimelineView(timeline: timeline)
-                            .id(timeline)
-                            .navigationTitle(timeline.timelineType.title)
-                    case .status(let status):
-                        StatusInfoView(id: status)
-                            .id(status)
-                            .navigationTitle("Status \(status.rawValue)")
-                    case .account(let account):
-                        AccountInfoView(id: account)
-                            .id(account)
-                    }
-                }
+            view(for: root)
+            .navigationDestination(for: NavigationPage.self) { page in
+                view(for: page)
+            }
         }
         .environmentObject(appModel)
         .environmentObject(stackModel)
+    }
+
+    @ViewBuilder
+    func view(for page: NavigationPage) -> some View {
+        switch page {
+        case .timeline(let timeline):
+            TimelineView(timeline: timeline)
+                .id(timeline)
+                .navigationTitle(timeline.timelineType.title)
+        case .status(let status):
+            StatusInfoView(id: status)
+                .id(status)
+                .navigationTitle("Status \(status.rawValue)")
+        case .account(let account):
+            AccountInfoView(id: account)
+                .id(account)
+        case .me:
+            MeAccountInfoView()
+        }
     }
 }

@@ -47,7 +47,7 @@ public struct Account: Identifiable, Codable, Sendable {
     public let followersCount: Int
     public let followingCount: Int
     public let statusesCount: Int
-    public let lastStatusAt: Date
+    public let lastStatusAt: Date?
     public let noindex: Bool?
     public let emojis: [Emoji]
     public let fields: [Field]

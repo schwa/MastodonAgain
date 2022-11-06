@@ -24,7 +24,7 @@ I did a bad thing.
   - Disable reposts
 - A real API - right now Service.swift is just a bunch of hard coded GET/POST URLRequests. I have some experiments going on in jwight/wip branch to improve this
 - A real Status Detail view - right now just shows JSON :-)
-- A real Account Detail view - again just JSON :-)
+- A real Account Detail view - again just ~~JSON~~ basic placeholder UI
 - A thread view
 - Add robust fail handling to Posting - including Drafts
 - Places for pinned tweets
@@ -38,3 +38,4 @@ I did a bad thing.
 - Fix contextual menus in timeline - right now there's a lot of fighting between taps for selection, onTap and context menus
 - Build and run on iOS
 - Improve image posting UX
+- Instance switcher

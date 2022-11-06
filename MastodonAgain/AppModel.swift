@@ -25,6 +25,9 @@ class AppModel: ObservableObject {
     @AppStorage("StatusRowMode")
     var statusRowMode = TimelineView.Mode.large
 
+//    @Published
+//    var me: Account?
+
     let service = Service()
 
     init() {

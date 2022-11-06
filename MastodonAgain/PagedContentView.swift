@@ -2,8 +2,8 @@ import Mastodon
 import SwiftUI
 
 // TODO: Sendable view?
-struct PagedContentView <Row>: View where Row: View {
-    typealias Content = PagedContent<Status>
+struct PagedContentView <Row, Element>: View where Row: View, Element: Identifiable & Sendable, Element.ID: Comparable & Sendable {
+    typealias Content = PagedContent<Element>
 
     @Binding
     var content: Content

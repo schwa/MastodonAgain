@@ -285,3 +285,102 @@ extension ErrorHandler {
         }
     }
 }
+
+struct SelectionLayoutKey: LayoutValueKey {
+    static var defaultValue: AnyHashable?
+}
+
+extension View {
+    func selection(_ selection: AnyHashable) -> some View {
+        return self.layoutValue(key: SelectionLayoutKey.self, value: selection)
+    }
+}
+
+// TODO: Rename
+struct SelectedView: Layout {
+    let selection: AnyHashable
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let size = CGSize(proposal.width ?? .infinity, proposal.height ?? .infinity)
+        return size
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        subviews.forEach { subview in
+            let key = subview[SelectionLayoutKey.self]
+            if key == selection {
+                subview.place(at: bounds.origin, proposal: .init(width: bounds.width, height: bounds.height))
+            }
+            else {
+                // Make the unselected view zero size.
+                subview.place(at: .zero, proposal: .zero)
+            }
+        }
+    }
+}
+
+struct FetchableValueView <Value, Content>: View where Value: Sendable, Content: View {
+    @State
+    var value: Value?
+
+    let fetch: @Sendable () async throws -> Value?
+    let content: (Value) -> Content
+    let canRefresh: Bool
+
+    @State
+    var refreshing = false
+
+    let start = Date()
+
+    @Environment(\.errorHandler)
+    var errorHandler
+
+    init(value: Value? = nil, canRefresh: Bool = false, fetch: @escaping @Sendable () async throws -> Value?, content: @escaping (Value) -> Content) {
+        self._value = State(initialValue: value)
+        self.canRefresh = canRefresh
+        self.fetch = fetch
+        self.content = content
+    }
+
+    var body: some View {
+        Group {
+            if let value {
+                content(value)
+            }
+            else {
+                VStack {
+                    ProgressView()
+                    Text("Fetching (") + Text(start, style: .relative) + Text(")")
+                }
+                .task {
+                    value = await errorHandler { [fetch] in
+                        return try await fetch()
+                    }
+                }
+            }
+        }
+        .toolbar {
+            if canRefresh {
+                if refreshing {
+                    ProgressView()
+                }
+                else {
+                    Button("Refresh") {
+                        refreshing = true
+                        Task {
+                            value = await errorHandler { [fetch] in
+                                let value = try await fetch()
+                                print("DONE")
+                                MainActor.runTask {
+                                    refreshing = false
+                                }
+                                return value
+                            }
+                        }
+                    }
+                    .disabled(value == nil)
+                }
+            }
+        }
+    }
+}
