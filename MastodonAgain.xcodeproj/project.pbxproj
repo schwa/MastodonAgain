@@ -70,6 +70,7 @@
 		45FDAF812916EE5A0073E8E0 /* MiniStatusRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniStatusRow.swift; sourceTree = "<group>"; };
 		45FDAF83291714F40073E8E0 /* StatusInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusInfoView.swift; sourceTree = "<group>"; };
 		45FDAF85291715130073E8E0 /* AccountInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoView.swift; sourceTree = "<group>"; };
+		45FDAF8A29178A970073E8E0 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,6 +123,7 @@
 		455AC875290D96F600137415 = {
 			isa = PBXGroup;
 			children = (
+				45FDAF8A29178A970073E8E0 /* README.md */,
 				45201FF8290F14E800469569 /* DotFiles */,
 				45201FFF290F164800469569 /* xcconfig */,
 				455AC891290D981A00137415 /* Packages */,
