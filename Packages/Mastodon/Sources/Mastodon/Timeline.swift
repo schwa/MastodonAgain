@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 public enum TimelineType: Codable, Hashable, Sendable {
     case `public`
@@ -44,6 +45,26 @@ public enum TimelineType: Codable, Hashable, Sendable {
             return "List(\(listID))"
         case .canned:
             return "Canned"
+        }
+    }
+
+    public var image: Image {
+        // TODO: This icon names are almost random.
+        switch self {
+        case .public:
+            return Image(systemName: "globe.europe.africa")
+        case .federated:
+            return Image(systemName: "person.3")
+        case .local:
+            return Image(systemName: "map")
+        case .hashtag:
+            return Image(systemName: "number.circle")
+        case .home:
+            return Image(systemName: "house")
+        case .list:
+            return Image(systemName: "list.bullet.clipboard")
+        case .canned:
+            return Image(systemName: "opticaldisc")
         }
     }
 }

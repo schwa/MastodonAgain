@@ -14,7 +14,12 @@ struct MainView: View {
         NavigationSplitView {
             List(selection: $selection) {
                 ForEach(MainTabs.allCases, id: \.self) { tab in
-                    Label(tab.title, systemImage: tab.systemImage).tag(tab)
+                    Label {
+                        Text(tab.title)
+                    } icon: {
+                        tab.image
+                    }
+                    .tag(tab)
                 }
             }
         } detail: {
@@ -63,10 +68,10 @@ enum MainTabs: String, CaseIterable {
     case `public`
     case federated
     case local
-    case directMessages
-    case search
-    case me
-    case cannedTimeline
+//    case directMessages
+//    case search
+//    case me
+//    case cannedTimeline
 
     var timelineType: TimelineType? {
         switch self {
@@ -78,8 +83,8 @@ enum MainTabs: String, CaseIterable {
             return .federated
         case .local:
             return .local
-        case .cannedTimeline:
-            return .canned
+//        case .cannedTimeline:
+//            return .canned
         default:
             return nil
         }
@@ -89,19 +94,25 @@ enum MainTabs: String, CaseIterable {
         switch (self, timelineType) {
         case (_, .some(let timeline)):
             return timeline.title
-        case (.directMessages, nil):
-            return "Direct Messages"
-        case (.search, nil):
-            return "Search"
-        case (.me, nil):
-            return "Me"
+//        case (.directMessages, nil):
+//            return "Direct Messages"
+//        case (.search, nil):
+//            return "Search"
+//        case (.me, nil):
+//            return "Me"
         default:
             fatalError("Fallthrough")
         }
     }
 
-    var systemImage: String {
-        return "gear"
+    var image: Image {
+        switch (self, timelineType) {
+        case (_, .some(let timeline)):
+            return timeline.image
+        default:
+            return Image(systemName: "gear")
+        }
+    }
 
 //        Label("Home", systemImage: "house").tag(MainTabs.home)
 //        Label("Public", systemImage: "person.3").tag(MainTabs.public)
@@ -112,5 +123,4 @@ enum MainTabs: String, CaseIterable {
 //        Label("Me", systemImage: "person.text.rectangle").badge(1).tag(MainTabs.me)
 //        Label("Canned Timeline", systemImage: "oilcan").tag(MainTabs.cannedTimeline)
 
-    }
 }

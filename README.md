@@ -31,3 +31,10 @@ I did a bad thing.
 - Local timeline search/filtering
 - Remote search
 - Better caching and persistence
+- Intercept clicks on the content links (rewrite the links on the attributed strings? add a onURL handler)
+- Better handling of content warnings
+- Make the mini timeline view more useful - remove CRLF etc
+- Get the markdown content mode working
+- Fix contextual menus in timeline - right now there's a lot of fighting between taps for selection, onTap and context menus
+- Build and run on iOS
+- Improve image posting UX

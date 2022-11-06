@@ -378,34 +378,34 @@ public struct Tag: Codable, Sendable {
 // https://docs.joinmastodon.org/methods/statuses/
 public struct NewPost: Codable, Sendable {
     public var status: String
-    public var inResponseTo: Status.ID? // TODO: Rename
+    public var inReplyTo: Status.ID?
     public var mediaIds: [MediaAttachment.ID]?
     // poll
     public var sensitive: Bool
     public var spoiler: String?
     public var visibility: Status.Visibility
-    public var scheduleAt: Date? // TODO: Rename
+    public var scheduled: Date?
     public var language: String
 
     public enum CodingKeys: String, CodingKey {
         case status
-        case inResponseTo = "in_reply_to"
+        case inReplyTo = "in_reply_to_id"
         case mediaIds = "media_ids"
         case sensitive
         case spoiler = "spoiler_text"
         case visibility
-        case scheduleAt = "scheduled_at"
+        case scheduled = "scheduled_at"
         case language
     }
 
-    public init(status: String, inResponseTo: Status.ID? = nil, mediaIds: [MediaAttachment.ID]? = nil, sensitive: Bool, spoiler: String?, visibility: Status.Visibility, scheduleAt: Date? = nil, language: String) {
+    public init(status: String, inReplyTo: Status.ID? = nil, mediaIds: [MediaAttachment.ID]? = nil, sensitive: Bool, spoiler: String?, visibility: Status.Visibility, scheduled: Date? = nil, language: String) {
         self.status = status
-        self.inResponseTo = inResponseTo
+        self.inReplyTo = inReplyTo
         self.mediaIds = mediaIds
         self.sensitive = sensitive
         self.spoiler = spoiler
         self.visibility = visibility
-        self.scheduleAt = scheduleAt
+        self.scheduled = scheduled
         self.language = language
     }
 }

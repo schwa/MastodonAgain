@@ -58,48 +58,7 @@ struct NewPostView: View {
                 TextField("Content Warning", text: $newPost.spoiler.unwrappingRebound(default: { "" }))
             }
             HStack {
-                Button(systemImage: "paperclip", action: {})
-                Button(systemImage: "eye.trianglebadge.exclamationmark", action: {
-                    newPost.sensitive.toggle()
-                })
-                Picker("Language", selection: $newPost.language) {
-                    Text("\(Locale.current.localizedString(forIdentifier: Locale.current.topLevelIdentifier)!) (current)").tag(Optional<String>.none)
-                    Divider()
-                    ForEach(Locale.availableTopLevelIdentifiers.sorted(), id: \.self) { identifier in
-                        Text(Locale.current.localizedString(forIdentifier: identifier) ?? identifier).tag(Optional(identifier))
-                    }
-                }
-                .pickerStyle(.menu)
-                .fixedSize()
-                Picker("Visibility", selection: $newPost.visibility) {
-                    ForEach(Status.Visibility.allCases, id: \.self) { visibility in
-                        Text(visibility.rawValue).tag(visibility)
-                    }
-                }
-                .pickerStyle(.menu)
-                .fixedSize()
-                Spacer()
-                Text(newPost.status.count, format: .number).monospacedDigit()
-                Button("Post") {
-                    let imageUrls = images.map(\.url)
-                    let newPost = newPost
-                    Task {
-                        await errorHandler { [appModel] in
-                            var newPost = newPost
-                            let mediaAttachments = try await withThrowingTaskGroup(of: MediaAttachment.self) { group in
-                                imageUrls.forEach { url in
-                                    group.addTask {
-                                        try await appModel.service.uploadAttachment(file: url, description: "<description forthcoming>")
-                                    }
-                                }
-                                return try await Array(group)
-                            }
-                            newPost.mediaIds = mediaAttachments.map(\.id)
-                            _ = try await appModel.service.postStatus(newPost)
-                        }
-                    }
-                }
-                .disabled(newPost.status.isEmpty || newPost.status.count > 500) // TODO: get limit from instance?
+                footer
             }
         }
         .padding()
@@ -111,7 +70,7 @@ struct NewPostView: View {
         .task {
             if case let .reply(id) = open {
                 inReplyTo = await appModel.service.status(for: id)
-                newPost.inResponseTo = id
+                newPost.inReplyTo = id
             }
         }
         .foregroundColor(isTargeted ? .accentColor : .secondary)
@@ -131,6 +90,53 @@ struct NewPostView: View {
             }
             return true
         }
+    }
+
+    @ViewBuilder
+    var footer: some View {
+        Button(systemImage: "paperclip", action: {})
+        Button(systemImage: "eye.trianglebadge.exclamationmark", action: {
+            newPost.sensitive.toggle()
+        })
+        Picker("Language", selection: $newPost.language) {
+            Text("\(Locale.current.localizedString(forIdentifier: Locale.current.topLevelIdentifier)!) (current)").tag(Optional<String>.none)
+            Divider()
+            ForEach(Locale.availableTopLevelIdentifiers.sorted(), id: \.self) { identifier in
+                Text(Locale.current.localizedString(forIdentifier: identifier) ?? identifier).tag(Optional(identifier))
+            }
+        }
+        .pickerStyle(.menu)
+        .fixedSize()
+        Picker("Visibility", selection: $newPost.visibility) {
+            ForEach(Status.Visibility.allCases, id: \.self) { visibility in
+                Text(visibility.rawValue).tag(visibility)
+            }
+        }
+        .pickerStyle(.menu)
+        .fixedSize()
+        Spacer()
+        Text(newPost.status.count, format: .number).monospacedDigit()
+        Button("Post") {
+            let imageUrls = images.map(\.url)
+            let newPost = newPost
+            Task {
+                await errorHandler { [appModel] in
+                    var newPost = newPost
+                    let mediaAttachments = try await withThrowingTaskGroup(of: MediaAttachment.self) { group in
+                        imageUrls.forEach { url in
+                            group.addTask {
+                                try await appModel.service.uploadAttachment(file: url, description: "<description forthcoming>")
+                            }
+                        }
+                        return try await Array(group)
+                    }
+                    newPost.mediaIds = mediaAttachments.map(\.id)
+                    _ = try await appModel.service.postStatus(newPost)
+                }
+            }
+        }
+        .disabled(newPost.status.isEmpty || newPost.status.count > 500) // TODO: get limit from instance?
+
     }
 }
 
