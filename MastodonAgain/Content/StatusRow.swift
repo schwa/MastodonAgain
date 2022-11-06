@@ -14,6 +14,9 @@ struct StatusRow: View, Sendable {
     @EnvironmentObject
     var appModel: AppModel
 
+    @EnvironmentObject
+    var instanceModel: InstanceModel
+
     var body: some View {
         HStack(alignment: .top) {
             avatar
@@ -135,7 +138,7 @@ struct StatusActionButton: View {
             }
             Task {
                 inFlight = true
-                await errorHandler.handle { [action] in
+                await errorHandler { [action] in
                     try await action()
                 }
                 //try await Task.sleep(nanoseconds: 500_000)
@@ -272,6 +275,9 @@ struct StatusActions: View {
     var appModel: AppModel
 
     @EnvironmentObject
+    var instanceModel: InstanceModel
+
+    @EnvironmentObject
     var stackModel: StackModel
 
     @Environment(\.openWindow)
@@ -310,11 +316,11 @@ struct StatusActions: View {
     var reblogButton: some View {
         let resolvedStatus: any StatusProtocol = status.reblog ?? status
         let reblogged = resolvedStatus.reblogged ?? false
-        StatusActionButton(count: resolvedStatus.reblogsCount, label: "reblog", systemImage: "arrow.2.squarepath", isOn: reblogged) {
+        StatusActionButton(count: resolvedStatus.reblogsCount, label: "reblog", systemImage: "arrow.2.squarepath", isOn: reblogged) { [instanceModel, status] in
             // TODO: what status do we get back here?
-            _ = try! await appModel.service.reblog(status: resolvedStatus.id, set: !reblogged)
+            _ = try! await instanceModel.service.reblog(status: resolvedStatus.id, set: !reblogged)
             // TODO: Because of uncertainty of previous TODO - fetch a fresh status
-            let newStatus = try! await appModel.service.fetchStatus(for: status.id)
+            let newStatus = try! await instanceModel.service.fetchStatus(for: status.id)
             await MainActor.run {
                 self.status = newStatus
             }
@@ -331,11 +337,11 @@ struct StatusActions: View {
     var favouriteButton: some View {
         let resolvedStatus: any StatusProtocol = status.reblog ?? status
         let favourited = resolvedStatus.favourited ?? false
-        StatusActionButton(count: resolvedStatus.favouritesCount, label: "Favourite", systemImage: "star", isOn: favourited) {
+        StatusActionButton(count: resolvedStatus.favouritesCount, label: "Favourite", systemImage: "star", isOn: favourited) { [instanceModel, status] in
             // TODO: what status do we get back here?
-            _ = try! await appModel.service.favorite(status: resolvedStatus.id, set: !favourited)
+            _ = try! await instanceModel.service.favorite(status: resolvedStatus.id, set: !favourited)
             // TODO: Because of uncertainty of previous TODO - fetch a fresh status
-            let newStatus = try! await appModel.service.fetchStatus(for: self.status.id)
+            let newStatus = try! await instanceModel.service.fetchStatus(for: status.id)
             await MainActor.run {
                 self.status = newStatus
             }
@@ -346,11 +352,11 @@ struct StatusActions: View {
     var bookmarkButton: some View {
         let resolvedStatus: any StatusProtocol = status.reblog ?? status
         let bookmarked = resolvedStatus.bookmarked ?? false
-        StatusActionButton(label: "Bookmark", systemImage: "bookmark", isOn: bookmarked) {
+        StatusActionButton(label: "Bookmark", systemImage: "bookmark", isOn: bookmarked) { [instanceModel, status] in
             // TODO: what status do we get back here?
-            _ = try! await appModel.service.bookmark(status: resolvedStatus.id, set: !bookmarked)
+            _ = try! await instanceModel.service.bookmark(status: resolvedStatus.id, set: !bookmarked)
             // TODO: Because of uncertainty of previous TODO - fetch a fresh status
-            let newStatus = try! await appModel.service.fetchStatus(for: self.status.id)
+            let newStatus = try! await instanceModel.service.fetchStatus(for: status.id)
             await MainActor.run {
                 self.status = newStatus
             }
@@ -382,7 +388,7 @@ struct StatusActions: View {
     @ViewBuilder
     var debugView: some View {
         // https://mastodon.example/api/v1/statuses/:id
-        let url = URL(string: "https://\(appModel.instance.host)/api/v1/statuses/\(status.id.rawValue)")!
+        let url = URL(string: "https://\(instanceModel.signin.host)/api/v1/statuses/\(status.id.rawValue)")!
         let request = URLRequest(url: url)
         RequestDebugView(request: request).padding()
     }

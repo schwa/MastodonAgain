@@ -13,6 +13,9 @@ struct MiniStatusRow: View, Sendable {
     @EnvironmentObject
     var appModel: AppModel
 
+    @EnvironmentObject
+    var instanceModel: InstanceModel
+
     @Environment(\.openWindow)
     var openWindow
 

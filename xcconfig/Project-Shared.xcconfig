@@ -5,7 +5,8 @@
 // https://buildsettingextractor.com
 //
 
-SWIFT_STRICT_CONCURRENCY = complete
+// TODO: Temporarily disable
+//SWIFT_STRICT_CONCURRENCY = complete
 
 ALWAYS_SEARCH_USER_PATHS = NO
 CLANG_ANALYZER_NONNULL = YES

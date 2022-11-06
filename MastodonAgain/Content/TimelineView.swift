@@ -10,6 +10,9 @@ struct TimelineView: View, Sendable {
     @EnvironmentObject
     var appModel: AppModel
 
+    @EnvironmentObject
+    var instanceModel: InstanceModel
+
     let timeline: Timeline
 
     @State
@@ -86,11 +89,11 @@ struct TimelineView: View, Sendable {
         }
         refreshing = true
         Task {
-            await errorHandler.handle { [appModel, timeline] in
-                guard await appModel.instance.token != nil else {
+            await errorHandler { [instanceModel, timeline] in
+                guard await instanceModel.signin.authorization.token != nil else {
                     return
                 }
-                let page = try await appModel.service.timelime(timeline)
+                let page = try await instanceModel.service.timelime(timeline)
                 appLogger?.log("Fetched page: \(page.debugDescription)")
                 await MainActor.run {
                     content.pages = [page]

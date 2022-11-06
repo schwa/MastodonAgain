@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		451434982918386E004A9208 /* InstanceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451434972918386E004A9208 /* InstanceModel.swift */; };
+		4514349D29184E05004A9208 /* SigninsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4514349C29184E05004A9208 /* SigninsView.swift */; };
 		4520200F290F87A200469569 /* MediaStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4520200E290F87A200469569 /* MediaStack.swift */; };
 		45202011290F8DC600469569 /* NewPostWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45202010290F8DC600469569 /* NewPostWindow.swift */; };
 		452020132910281300469569 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452020122910281300469569 /* MainView.swift */; };
@@ -24,7 +26,6 @@
 		45F1A2B9290E1FB60093A8AC /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F1A2B8290E1FB60093A8AC /* TimelineView.swift */; };
 		45F1A2BB290E1FE50093A8AC /* StatusRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F1A2BA290E1FE50093A8AC /* StatusRow.swift */; };
 		45F1A2BD290E31360093A8AC /* Minikeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F1A2BC290E31360093A8AC /* Minikeychain.swift */; };
-		45F1A2BF290E351B0093A8AC /* AuthorizationFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F1A2BE290E351B0093A8AC /* AuthorizationFlow.swift */; };
 		45F1A2C1290E4FEE0093A8AC /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F1A2C0290E4FEE0093A8AC /* AppModel.swift */; };
 		45F1A2C3290E4FF60093A8AC /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F1A2C2290E4FF60093A8AC /* AppSettings.swift */; };
 		45FDAF822916EE5A0073E8E0 /* MiniStatusRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FDAF812916EE5A0073E8E0 /* MiniStatusRow.swift */; };
@@ -34,6 +35,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		451434972918386E004A9208 /* InstanceModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceModel.swift; sourceTree = "<group>"; };
+		4514349C29184E05004A9208 /* SigninsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigninsView.swift; sourceTree = "<group>"; };
 		45201FF9290F150100469569 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		45201FFA290F150100469569 /* .swiftformat */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swiftformat; sourceTree = "<group>"; };
 		45201FFB290F150100469569 /* .swift-version */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".swift-version"; sourceTree = "<group>"; };
@@ -64,7 +67,6 @@
 		45F1A2B8290E1FB60093A8AC /* TimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
 		45F1A2BA290E1FE50093A8AC /* StatusRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusRow.swift; sourceTree = "<group>"; };
 		45F1A2BC290E31360093A8AC /* Minikeychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Minikeychain.swift; sourceTree = "<group>"; };
-		45F1A2BE290E351B0093A8AC /* AuthorizationFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationFlow.swift; sourceTree = "<group>"; };
 		45F1A2C0290E4FEE0093A8AC /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		45F1A2C2290E4FF60093A8AC /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		45FDAF812916EE5A0073E8E0 /* MiniStatusRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniStatusRow.swift; sourceTree = "<group>"; };
@@ -87,6 +89,46 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4514349929183DD6004A9208 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				455AC881290D96F600137415 /* MastodonAgainApp.swift */,
+				45F1A2C0290E4FEE0093A8AC /* AppModel.swift */,
+				451434972918386E004A9208 /* InstanceModel.swift */,
+				45F1A2C2290E4FF60093A8AC /* AppSettings.swift */,
+				455AC883290D96F600137415 /* ContentView.swift */,
+				452020122910281300469569 /* MainView.swift */,
+				4514349C29184E05004A9208 /* SigninsView.swift */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
+		4514349A29183DF1004A9208 /* Content */ = {
+			isa = PBXGroup;
+			children = (
+				45A27F48291053FB00662B71 /* TimelineStack.swift */,
+				45FDAF85291715130073E8E0 /* AccountInfoView.swift */,
+				45F1A2B8290E1FB60093A8AC /* TimelineView.swift */,
+				45F1A2BA290E1FE50093A8AC /* StatusRow.swift */,
+				45FDAF812916EE5A0073E8E0 /* MiniStatusRow.swift */,
+				45B45CC3291086660070F1C5 /* CardView.swift */,
+				4520200E290F87A200469569 /* MediaStack.swift */,
+				45FDAF83291714F40073E8E0 /* StatusInfoView.swift */,
+				45202010290F8DC600469569 /* NewPostWindow.swift */,
+			);
+			path = Content;
+			sourceTree = "<group>";
+		};
+		4514349B29183DFA004A9208 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				45B45CC1291065870070F1C5 /* PagedContentView.swift */,
+				45F1A2B5290E0F4B0093A8AC /* Support.swift */,
+				45F1A2BC290E31360093A8AC /* Minikeychain.swift */,
+			);
+			path = Support;
+			sourceTree = "<group>";
+		};
 		45201FF8290F14E800469569 /* DotFiles */ = {
 			isa = PBXGroup;
 			children = (
@@ -144,25 +186,10 @@
 		455AC880290D96F600137415 /* MastodonAgain */ = {
 			isa = PBXGroup;
 			children = (
+				4514349929183DD6004A9208 /* Main */,
+				4514349A29183DF1004A9208 /* Content */,
+				4514349B29183DFA004A9208 /* Support */,
 				4520200D290F273400469569 /* Info.plist */,
-				455AC881290D96F600137415 /* MastodonAgainApp.swift */,
-				45F1A2C0290E4FEE0093A8AC /* AppModel.swift */,
-				45F1A2C2290E4FF60093A8AC /* AppSettings.swift */,
-				455AC883290D96F600137415 /* ContentView.swift */,
-				452020122910281300469569 /* MainView.swift */,
-				45A27F48291053FB00662B71 /* TimelineStack.swift */,
-				45FDAF85291715130073E8E0 /* AccountInfoView.swift */,
-				45F1A2B8290E1FB60093A8AC /* TimelineView.swift */,
-				45F1A2BA290E1FE50093A8AC /* StatusRow.swift */,
-				45FDAF812916EE5A0073E8E0 /* MiniStatusRow.swift */,
-				45B45CC3291086660070F1C5 /* CardView.swift */,
-				45B45CC1291065870070F1C5 /* PagedContentView.swift */,
-				4520200E290F87A200469569 /* MediaStack.swift */,
-				45F1A2B5290E0F4B0093A8AC /* Support.swift */,
-				45FDAF83291714F40073E8E0 /* StatusInfoView.swift */,
-				45F1A2BC290E31360093A8AC /* Minikeychain.swift */,
-				45F1A2BE290E351B0093A8AC /* AuthorizationFlow.swift */,
-				45202010290F8DC600469569 /* NewPostWindow.swift */,
 				4520201429104D7D00469569 /* canned_timeline.json */,
 				455AC885290D96F700137415 /* Assets.xcassets */,
 				455AC887290D96F700137415 /* MastodonAgain.entitlements */,
@@ -307,13 +334,14 @@
 				45F1A2BB290E1FE50093A8AC /* StatusRow.swift in Sources */,
 				45FDAF822916EE5A0073E8E0 /* MiniStatusRow.swift in Sources */,
 				45202011290F8DC600469569 /* NewPostWindow.swift in Sources */,
-				45F1A2BF290E351B0093A8AC /* AuthorizationFlow.swift in Sources */,
+				451434982918386E004A9208 /* InstanceModel.swift in Sources */,
 				45F1A2C1290E4FEE0093A8AC /* AppModel.swift in Sources */,
 				45F1A2BD290E31360093A8AC /* Minikeychain.swift in Sources */,
 				455AC882290D96F600137415 /* MastodonAgainApp.swift in Sources */,
 				45FDAF86291715130073E8E0 /* AccountInfoView.swift in Sources */,
 				45F1A2B9290E1FB60093A8AC /* TimelineView.swift in Sources */,
 				45F1A2C3290E4FF60093A8AC /* AppSettings.swift in Sources */,
+				4514349D29184E05004A9208 /* SigninsView.swift in Sources */,
 				45F1A2B6290E0F4B0093A8AC /* Support.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

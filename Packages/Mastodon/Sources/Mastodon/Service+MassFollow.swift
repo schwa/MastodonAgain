@@ -14,7 +14,7 @@ public extension Service {
     }
 
     func followAccount(_ account: Account) async throws {
-        guard let host = instance?.host, let token = instance?.token else {
+        guard let token = authorization.token else {
             fatalError("No host or token.")
         }
         let url = URL(string: "https://\(host)/api/v1/accounts/\(account.id.rawValue)/follow")!
@@ -24,7 +24,7 @@ public extension Service {
     }
 
     func myAccount() async throws -> Account {
-        guard let host = instance?.host, let token = instance?.token else {
+        guard let token = authorization.token else {
             fatalError("No host or token.")
         }
         let url = URL(string: "https://\(host)/api/v1/accounts/verify_credentials")!
@@ -34,7 +34,7 @@ public extension Service {
     }
 
     func searchAccount(_ username: String) async throws -> Account? {
-        guard let host = instance?.host, let token = instance?.token else {
+        guard let token = authorization.token else {
             fatalError("No host or token.")
         }
         // https://mastodon.example/api/v1/statuses/:id
@@ -47,7 +47,7 @@ public extension Service {
 
     // TODO: function name is misleading. "accounts (this) account is following"
     func following(_ account: Account) async throws -> [Account] {
-        guard let host = instance?.host, let token = instance?.token else {
+        guard let token = authorization.token else {
             fatalError("No host or token.")
         }
         let url = URL(string: "https://\(host)/api/v1/accounts/\(account.id.rawValue)/following?limit=1000")!
@@ -57,17 +57,13 @@ public extension Service {
     }
 
     func massFollow(usernames: [String]) async throws {
-        guard let localHost = instance?.host else {
-            throw GeneralError.unknown
-        }
-
         let me = try await myAccount()
         print(me)
 
         let following = try await following(me)
         print(following)
 
-        let localUsernames = usernames.filter { $0.hasSuffix(localHost) }
+        let localUsernames = usernames.filter { $0.hasSuffix(host) }
         for username in localUsernames {
             print(username)
             if let account = try await searchAccount(username) {

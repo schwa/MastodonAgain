@@ -47,7 +47,7 @@ struct PagedContentView <Row, Element>: View where Row: View, Element: Identifia
             fatalError("No page or not cursor")
         }
         Task {
-            await errorHandler.handle {
+            await errorHandler {
                 let newPage = try await fetch()
                 appLogger?.log("Fetched: \(newPage.debugDescription)")
                 await MainActor.run {
@@ -67,7 +67,7 @@ struct PagedContentView <Row, Element>: View where Row: View, Element: Identifia
             return
         }
         Task {
-            await errorHandler.handle {
+            await errorHandler {
                 let newPage = try await fetch()
                 appLogger?.log("Fetched: \(newPage.debugDescription)")
                 await MainActor.run {

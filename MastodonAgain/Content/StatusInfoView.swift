@@ -10,6 +10,9 @@ struct StatusInfoView: View {
     @EnvironmentObject
     var appModel: AppModel
 
+    @EnvironmentObject
+    var instanceModel: InstanceModel
+
     var body: some View {
         if let status {
             DebugDescriptionView(status)
@@ -18,7 +21,7 @@ struct StatusInfoView: View {
         else {
             ProgressView()
                 .task {
-                    status = await appModel.service.status(for: id)
+                    status = await instanceModel.service.status(for: id)
                 }
         }
     }

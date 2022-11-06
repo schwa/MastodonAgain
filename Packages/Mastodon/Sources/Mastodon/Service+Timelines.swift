@@ -2,10 +2,10 @@ import Foundation
 
 public extension Service {
     private func fetchStatusesPage(url: URL) async throws -> PagedContent<Status>.Page {
-        guard let instance = instance, let token = instance.token else {
-            fatalError("No instance or token.")
+        guard let token = authorization.token else {
+            fatalError("No host or token.")
         }
-        assert(instance.host == url.host)
+        assert(host == url.host)
         let request = URLRequest(url: url).headers(token.headers)
         let (data, response) = try await session.validatedData(for: request)
 

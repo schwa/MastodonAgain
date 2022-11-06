@@ -1,14 +1,10 @@
-public struct Instance: Identifiable, Codable, Hashable, Sendable {
-    public var id: String {
-        return host
-    }
+import Foundation
 
-    public var host: String
-    public var authorization: Authorization
+public struct Host: Codable, Sendable, Hashable {
+    public let url: URL
 
     public init(_ host: String) {
-        self.host = host
-        self.authorization = .unauthorized
+        self.url = URL(string: "https://host/")!
     }
 }
 
@@ -18,13 +14,11 @@ public enum Authorization: Codable, Hashable, Sendable {
     case authorized(RegisteredApplication, Token)
 }
 
-public extension Instance {
+public extension Authorization {
     var token: Token? {
-        if case let .authorized(_, token) = authorization {
-            return token
-        }
-        else {
+        guard case let .authorized(_, token) = self else {
             return nil
         }
+        return token
     }
 }

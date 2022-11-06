@@ -18,6 +18,9 @@ struct TimelineStack: View {
     @EnvironmentObject
     var appModel: AppModel
 
+    @EnvironmentObject
+    var instanceModel: InstanceModel
+
     @StateObject
     var stackModel = StackModel()
 

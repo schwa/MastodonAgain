@@ -15,6 +15,9 @@ struct NewPostView: View {
     @EnvironmentObject
     var appModel: AppModel
 
+    @EnvironmentObject
+    var instanceModel: InstanceModel
+
     @Binding
     var open: NewPostWindow?
 
@@ -49,7 +52,7 @@ struct NewPostView: View {
             }
             HStack {
                 TextEditor(text: $newPost.status)
-                ForEach(images, id: \.url) { image in
+                ForEach(images, id: \.source) { image in
                     image.content.resizable().scaledToFit()
                     .frame(maxWidth: 80, maxHeight: 80, alignment: .trailing)
                 }
@@ -69,7 +72,7 @@ struct NewPostView: View {
         }
         .task {
             if case let .reply(id) = open {
-                inReplyTo = await appModel.service.status(for: id)
+                inReplyTo = await instanceModel.service.status(for: id)
                 newPost.inReplyTo = id
             }
         }
@@ -117,21 +120,28 @@ struct NewPostView: View {
         Spacer()
         Text(newPost.status.count, format: .number).monospacedDigit()
         Button("Post") {
-            let imageUrls = images.map(\.url)
+            let imageUrls = images.map { image in
+                if case let .url(url) = image.source {
+                    return url
+                }
+                else {
+                    fatalError("Image without URL")
+                }
+            }
             let newPost = newPost
             Task {
-                await errorHandler { [appModel] in
+                await errorHandler { [instanceModel] in
                     var newPost = newPost
                     let mediaAttachments = try await withThrowingTaskGroup(of: MediaAttachment.self) { group in
                         imageUrls.forEach { url in
                             group.addTask {
-                                try await appModel.service.uploadAttachment(file: url, description: "<description forthcoming>")
+                                try await instanceModel.service.uploadAttachment(file: url, description: "<description forthcoming>")
                             }
                         }
                         return try await Array(group)
                     }
                     newPost.mediaIds = mediaAttachments.map(\.id)
-                    _ = try await appModel.service.postStatus(newPost)
+                    _ = try await instanceModel.service.postStatus(newPost)
                 }
             }
         }
@@ -150,35 +160,3 @@ extension Locale {
     }
 }
 
-public struct Resource <Content> {
-    public var url: URL
-    public var content: Content
-}
-
-extension Resource: Equatable where Content: Equatable {
-}
-
-extension Resource: Hashable where Content: Hashable {
-}
-
-extension Resource: Sendable where Content: Sendable {
-}
-
-extension Resource where Content == Image {
-    // swiftlint:disable:next unavailable_function
-    init(provider: NSItemProvider) async throws {
-#if os(macOS)
-        guard let url = try await provider.loadItem(forTypeIdentifier: "public.image") as? URL else {
-            fatalError("No url")
-        }
-        guard let nsImage = NSImage(contentsOf: url) else {
-            fatalError("Could not create image")
-        }
-        // swiftlint:disable:next accessibility_label_for_image
-        let image = Image(nsImage: nsImage)
-        self = .init(url: url, content: image)
-#else
-        fatalError("TODO: No images yet on iOS")
-#endif
-    }
-}

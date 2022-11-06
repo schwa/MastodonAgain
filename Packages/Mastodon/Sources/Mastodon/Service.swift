@@ -4,6 +4,7 @@ import Foundation
 import RegexBuilder
 import os
 import UniformTypeIdentifiers
+import SwiftUI
 
 private let logger: Logger? = Logger()
 
@@ -27,20 +28,45 @@ public extension JSONDecoder {
     }
 }
 
+public struct SignIn: Codable, Identifiable {
+    public var id: String {
+        name
+    }
+
+    public var name: String {
+        "@\(account.acct)@\(host)"
+    }
+
+    public var host: String
+    public var authorization: Authorization
+    public var account: Account
+    public var avatar: Resource<Image>
+
+    public init(host: String, authorization: Authorization, account: Account, avatar: Resource<Image>) {
+        self.host = host
+        self.authorization = authorization
+        self.account = account
+        self.avatar = avatar
+    }
+}
+
 public actor Service {
-    internal var instance: Instance?
+    public let host: String
+    public let authorization: Authorization
+
+    public var baseURL: URL {
+        return URL(string: "https://\(host)")!
+    }
+
     internal let session = URLSession.shared
     internal let decoder = JSONDecoder.mastodonDecoder
 
     internal var datedStatuses: [Status.ID: Dated<Status>] = [:]
     internal var datedAccounts: [Account.ID: Dated<Account>] = [:]
 
-    public init() {
-    }
-
-    public func update(instance: Instance?) {
-        logger?.debug("Setting instance: \(instance?.id ?? "<nil>")")
-        self.instance = instance
+    public init(host: String, authorization: Authorization) {
+        self.host = host
+        self.authorization = authorization
     }
 
     public func update(_ value: Status) {
@@ -70,7 +96,7 @@ public extension Service {
 
     // TODO: All this needs cleanup. Use URLPath to return a (pre-configured) URLRequest
     func fetchStatus(for id: Status.ID) async throws -> Status {
-        guard let host = instance?.host, let token = instance?.token else {
+        guard let token = authorization.token else {
             fatalError("No host or token.")
         }
         // https://mastodon.example/api/v1/statuses/:id
@@ -88,7 +114,7 @@ public extension Service {
 
     // TODO: All this needs cleanup. Use URLPath to return a (pre-configured) URLRequest
     func fetchAccount(for id: Account.ID) async throws -> Account {
-        guard let host = instance?.host, let token = instance?.token else {
+        guard let token = authorization.token else {
             fatalError("No host or token.")
         }
         // https://mastodon.example/api/v1/statuses/:id
@@ -101,7 +127,7 @@ public extension Service {
     }
 
     func favorite(status: Status.ID, set: Bool = true) async throws -> Status {
-        guard let host = instance?.host, let token = instance?.token else {
+        guard let token = authorization.token else {
             fatalError("No host or token.")
         }
         let verb = set ? "favourite" : "unfavourite"
@@ -114,7 +140,7 @@ public extension Service {
     }
 
     func reblog(status: Status.ID, set: Bool = true) async throws -> Status {
-        guard let host = instance?.host, let token = instance?.token else {
+        guard let token = authorization.token else {
             fatalError("No host or token.")
         }
         let verb = set ? "reblog" : "unreblog"
@@ -127,7 +153,7 @@ public extension Service {
     }
 
     func bookmark(status: Status.ID, set: Bool = true) async throws -> Status {
-        guard let host = instance?.host, let token = instance?.token else {
+        guard let token = authorization.token else {
             fatalError("No host or token.")
         }
         let verb = set ? "bookmark" : "unbookmark"
@@ -143,7 +169,7 @@ public extension Service {
 public extension Service {
     // https://mastodon.example/api/v1/statuses
     func postStatus(_ newPost: NewPost) async throws -> Status {
-        guard let host = instance?.host, let token = instance?.token else {
+        guard let token = authorization.token else {
             fatalError("No host or token.")
         }
         logger?.log("Posting")
@@ -160,7 +186,7 @@ public extension Service {
     }
 
     func uploadAttachment(file: URL, description: String) async throws -> MediaAttachment {
-        guard let host = instance?.host, let token = instance?.token else {
+        guard let token = authorization.token else {
             fatalError("No host or token.")
         }
         logger?.log("Uploading image")

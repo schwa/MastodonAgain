@@ -15,8 +15,9 @@ I did a bad thing.
 
 ## What needs help?
 
+- [BUG] The @Store PropertyWrapper isn't working inside a ObservableObject and now life sucks.
+- [BUG] Hitting the new post window when multiple account timelines are open - picks a random account to post from
 - Timeline "infinite scroll". SwiftUI probably isn't going to work here.
-- All the action buttons need to be hooked up.
 - ... button
   - Delete post
   - All the other actions

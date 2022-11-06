@@ -14,6 +14,9 @@ struct AccountInfoView: View {
     @EnvironmentObject
     var appModel: AppModel
 
+    @EnvironmentObject
+    var instanceModel: InstanceModel
+
     init(id: Account.ID) {
         self.id = id
     }
@@ -27,10 +30,10 @@ struct AccountInfoView: View {
     var primaryTabSelection: Int = 1
 
     var body: some View {
-        FetchableValueView(value: account, canRefresh: false) { [appModel, id] in
-            var account = await appModel.service.account(for: id)
+        FetchableValueView(value: account, canRefresh: false) { [instanceModel, id] in
+            var account = await instanceModel.service.account(for: id)
             if account == nil {
-                account = try await appModel.service.fetchAccount(for: id)
+                account = try await instanceModel.service.fetchAccount(for: id)
             }
             return account
         } content: { account in
@@ -43,7 +46,7 @@ struct AccountInfoView: View {
                     .frame(maxWidth: 128, maxHeight: 128, alignment: .center)
                 Text(verbatim: account.displayName).bold()
                 HStack {
-                    Text(verbatim: "@\(account.acct)@\(appModel.instance.host)")
+                    Text(verbatim: "@\(account.acct)@\(instanceModel.signin.host)")
                     if account.locked {
                         Image(systemName: "lock")
                     }
@@ -106,13 +109,17 @@ struct AccountInfoView: View {
         PlaceholderShape().stroke()
     }
 }
+
 struct MeAccountInfoView: View {
     @EnvironmentObject
     var appModel: AppModel
 
+    @EnvironmentObject
+    var instanceModel: InstanceModel
+
     var body: some View {
-        FetchableValueView { [appModel] in
-            return try await appModel.service.myAccount()
+        FetchableValueView { [instanceModel] in
+            return try await instanceModel.service.myAccount()
         } content: { account in
             AccountInfoView(account: account)
         }

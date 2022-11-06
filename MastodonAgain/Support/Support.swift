@@ -1,9 +1,12 @@
 import CachedAsyncImage
 import Everything
-@preconcurrency import Foundation
+import Foundation
 import Mastodon
 import RegexBuilder
 import SwiftUI
+import WebKit
+
+// swiftlint:disable file_length
 
 struct RedlineModifier: ViewModifier {
     func body(content: Content) -> some View {
@@ -83,21 +86,6 @@ struct Avatar: View {
             }
             Button("Disable Reposts") {
                 unimplemented()
-            }
-        }
-    }
-}
-
-public extension ErrorHandler {
-    func handle(_ block: @Sendable () async throws -> Void) async {
-        do {
-            try await block()
-        }
-        catch {
-            Task {
-                await MainActor.run {
-                    handle(error: error)
-                }
             }
         }
     }
@@ -275,7 +263,8 @@ struct DebugDescriptionView <Value>: View {
 }
 
 extension ErrorHandler {
-    func callAsFunction <R>(_ block: @Sendable () async throws -> R?) async -> R? {
+    // TODO: should block be @Sendable
+    func callAsFunction <R>(_ block: @Sendable () async throws -> R?) async -> R? where R: Sendable {
         do {
             return try await block()
         }
@@ -381,6 +370,74 @@ struct FetchableValueView <Value, Content>: View where Value: Sendable, Content:
                     .disabled(value == nil)
                 }
             }
+        }
+    }
+}
+
+struct WebView: View {
+    let request: URLRequest
+
+    var body: some View {
+        ViewAdaptor {
+            let webConfiguration = WKWebViewConfiguration()
+            let view = WKWebView(frame: .zero, configuration: webConfiguration)
+            view.load(request)
+            return view
+        } update: { _ in
+        }
+    }
+}
+
+@propertyWrapper
+struct Stored <Value>: DynamicProperty where Value: Codable {
+    let key: String
+    let defaultValue: Value
+
+    class Cache: ObservableObject {
+        @Published
+        var value: Value?
+    }
+
+    @StateObject
+    var cache = Cache()
+
+    @MainActor
+    var wrappedValue: Value {
+        get {
+            let value = Storage.shared[key].map { try! JSONDecoder().decode(Value.self, from: $0) } ?? defaultValue
+            return value
+        }
+        nonmutating set {
+            let data = try! JSONEncoder().encode(newValue)
+            Storage.shared[key] = data
+            cache.value = newValue
+        }
+    }
+
+    init(wrappedValue: Value, _ key: String) {
+        self.defaultValue = wrappedValue
+        self.key = key
+    }
+}
+
+extension Bundle {
+    var displayName: String? {
+        // TODO: Localize?
+        (infoDictionary ?? [:]) ["CFBundleName"] as? String
+    }
+}
+
+struct ListPicker <Value, Content>: View where Value: Identifiable, Content: View {
+    let values: [Value]
+
+    @Binding
+    var selection: Value.ID?
+
+    var content: (Value) -> Content
+
+    var body: some View {
+        List(values, selection: $selection) { row in
+            content(row)
         }
     }
 }

@@ -73,14 +73,14 @@ public enum TimelineType: Codable, Hashable, Sendable {
 
 public struct Timeline: Codable, Hashable, Sendable {
     public var url: URL? {
-        timelineType.path.map { URL(string: "https://\(instance.host)\($0)")! }
+        timelineType.path.map { URL(string: "https://\(host)\($0)")! }
     }
 
+    public let host: String
     public let timelineType: TimelineType
-    public var instance: Instance
 
-    public init(instance: Instance, timelineType: TimelineType, canned: Bool = false) {
-        self.instance = instance
+    public init(host: String, timelineType: TimelineType, canned: Bool = false) {
+        self.host = host
         self.timelineType = timelineType
     }
 }
