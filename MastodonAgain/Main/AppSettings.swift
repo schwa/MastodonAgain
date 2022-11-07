@@ -67,12 +67,14 @@ struct AppSettings: View {
                     TextField("Name", text: $appModel.applicationName)
                     TextField("Website", text: $appModel.applicationWebsite)
                     Text("Application name and website are only used when logging in to a new instance.").font(.caption)
+                    #if os(macOS)
                     Button("Reveal Application Support Directory") {
                         FSPath.applicationSupportDirectory!.reveal()
                     }
                     Button("Reveal Preferences") {
                         (FSPath.libraryDirectory! / "Preferences/io.schwa.MastodonAgain.plist").reveal()
                     }
+                    #endif
                 }
             }
             .scrollContentBackground(.hidden)
