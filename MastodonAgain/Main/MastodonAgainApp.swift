@@ -1,7 +1,7 @@
 import Everything
 import Mastodon
-import SwiftUI
 import os
+import SwiftUI
 
 let appLogger: Logger? = Logger()
 
@@ -32,4 +32,3 @@ struct MastodonAgainApp: App {
         #endif
     }
 }
-

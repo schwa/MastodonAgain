@@ -212,7 +212,7 @@ struct DebuggingInfoModifier: ViewModifier {
                 .padding(4)
                 .background {
                     WorkInProgressView()
-                    .opacity(0.1)
+                        .opacity(0.1)
                 }
         }
     }
@@ -220,7 +220,7 @@ struct DebuggingInfoModifier: ViewModifier {
 
 extension View {
     func debuggingInfo() -> some View {
-        self.modifier(DebuggingInfoModifier())
+        modifier(DebuggingInfoModifier())
     }
 }
 
@@ -232,13 +232,13 @@ extension Path {
 
 extension FSPath {
     #if os(macOS)
-    func reveal() {
-        NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: "")
-    }
+        func reveal() {
+            NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: "")
+        }
     #endif
 }
 
-struct DebugDescriptionView <Value>: View {
+struct DebugDescriptionView<Value>: View {
     let value: Value
 
     init(_ value: Value) {
@@ -264,7 +264,7 @@ struct DebugDescriptionView <Value>: View {
 
 extension ErrorHandler {
     // TODO: should block be @Sendable
-    func callAsFunction <R>(_ block: @Sendable () async throws -> R?) async -> R? where R: Sendable {
+    func callAsFunction<R>(_ block: @Sendable () async throws -> R?) async -> R? where R: Sendable {
         do {
             return try await block()
         }
@@ -281,7 +281,7 @@ struct SelectionLayoutKey: LayoutValueKey {
 
 extension View {
     func selection(_ selection: AnyHashable) -> some View {
-        return self.layoutValue(key: SelectionLayoutKey.self, value: selection)
+        layoutValue(key: SelectionLayoutKey.self, value: selection)
     }
 }
 
@@ -308,7 +308,7 @@ struct SelectedView: Layout {
     }
 }
 
-struct FetchableValueView <Value, Content>: View where Value: Sendable, Content: View {
+struct FetchableValueView<Value, Content>: View where Value: Sendable, Content: View {
     @State
     var value: Value?
 
@@ -325,7 +325,7 @@ struct FetchableValueView <Value, Content>: View where Value: Sendable, Content:
     var errorHandler
 
     init(value: Value? = nil, canRefresh: Bool = false, fetch: @escaping @Sendable () async throws -> Value?, content: @escaping (Value) -> Content) {
-        self._value = State(initialValue: value)
+        _value = State(initialValue: value)
         self.canRefresh = canRefresh
         self.fetch = fetch
         self.content = content
@@ -343,7 +343,7 @@ struct FetchableValueView <Value, Content>: View where Value: Sendable, Content:
                 }
                 .task {
                     value = await errorHandler { [fetch] in
-                        return try await fetch()
+                        try await fetch()
                     }
                 }
             }
@@ -389,7 +389,7 @@ struct WebView: View {
 }
 
 @propertyWrapper
-struct Stored <Value>: DynamicProperty where Value: Codable {
+struct Stored<Value>: DynamicProperty where Value: Codable {
     let key: String
     let defaultValue: Value
 
@@ -415,7 +415,7 @@ struct Stored <Value>: DynamicProperty where Value: Codable {
     }
 
     init(wrappedValue: Value, _ key: String) {
-        self.defaultValue = wrappedValue
+        defaultValue = wrappedValue
         self.key = key
     }
 }
@@ -423,11 +423,11 @@ struct Stored <Value>: DynamicProperty where Value: Codable {
 extension Bundle {
     var displayName: String? {
         // TODO: Localize?
-        (infoDictionary ?? [:]) ["CFBundleName"] as? String
+        (infoDictionary ?? [:])["CFBundleName"] as? String
     }
 }
 
-struct ListPicker <Value, Content>: View where Value: Identifiable, Content: View {
+struct ListPicker<Value, Content>: View where Value: Identifiable, Content: View {
     let values: [Value]
 
     @Binding

@@ -85,7 +85,7 @@ public struct Timeline: Codable, Hashable, Sendable {
     }
 }
 
-//public extension Timeline {
+// public extension Timeline {
 //    var previousURL: URL? {
 //        guard let first = pages.first else {
 //            return nil
@@ -107,6 +107,6 @@ public struct Timeline: Codable, Hashable, Sendable {
 //    var nextURL: URL? {
 //        pages.last?.next
 //    }
-//}
+// }
 
 // MARK: -

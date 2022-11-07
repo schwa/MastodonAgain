@@ -1,7 +1,7 @@
-import SwiftUI
-import Mastodon
 import AVKit
 import CachedAsyncImage
+import Mastodon
+import SwiftUI
 
 struct MediaStack: View {
     let attachments: [MediaAttachment]
@@ -31,7 +31,7 @@ struct ImageAttachmentView: View {
     var body: some View {
         if let url = attachment.previewURL, let smallSize = attachment.meta?.small?.cgSize {
             ContentImage(url: url, size: smallSize, blurhash: attachment.blurHash, accessibilityLabel: Text("TODO"))
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         else {
             Text("NO PREVIEW OR NO SIZE").debuggingInfo()
@@ -78,27 +78,27 @@ struct ContentImage: View {
                 Color.clear.redlined()
             }
         }
-/*
-        .overlay(alignment: .bottom) {
-            if hover, let size {
-                VStack {
-//                    Text("\(url, format: .url)").lineLimit(1)
-                    Text("\(size.width, format: .number), \(size.height, format: .number)")
-                    // , \(size.width / size.height, format: .number):1
-                }
-                .font(.caption2)
-                .padding(2)
-                .background(Capsule().fill(Color.white))
-                .overlay(Capsule().stroke(Color.black))
-                .padding(4)
-            }
-        }
-        .overlay {
-            Color.clear.onHover { value in
-                hover = value
-            }
-        }
-        .id(url)
-*/        
+        /*
+                 .overlay(alignment: .bottom) {
+                     if hover, let size {
+                         VStack {
+         //                    Text("\(url, format: .url)").lineLimit(1)
+                             Text("\(size.width, format: .number), \(size.height, format: .number)")
+                             // , \(size.width / size.height, format: .number):1
+                         }
+                         .font(.caption2)
+                         .padding(2)
+                         .background(Capsule().fill(Color.white))
+                         .overlay(Capsule().stroke(Color.black))
+                         .padding(4)
+                     }
+                 }
+                 .overlay {
+                     Color.clear.onHover { value in
+                         hover = value
+                     }
+                 }
+                 .id(url)
+         */
     }
 }

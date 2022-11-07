@@ -4,7 +4,7 @@ public struct Host: Codable, Sendable, Hashable {
     public let url: URL
 
     public init(_ host: String) {
-        self.url = URL(string: "https://host/")!
+        url = URL(string: "https://host/")!
     }
 }
 
@@ -16,7 +16,7 @@ public enum Authorization: Codable, Hashable, Sendable {
 
 public extension Authorization {
     var token: Token? {
-        guard case let .authorized(_, token) = self else {
+        guard case .authorized(_, let token) = self else {
             return nil
         }
         return token

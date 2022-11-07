@@ -8,8 +8,9 @@ struct AppSettings: View {
 
     struct Tab: CaseIterable, Identifiable, Hashable {
         var id: String {
-            return title
+            title
         }
+
         let title: String
         let systemImage: String
 
@@ -18,7 +19,7 @@ struct AppSettings: View {
         static let misc = Tab(title: "Misc", systemImage: "gear")
 
         static var allCases: [AppSettings.Tab] {
-            return [.application, .accounts, .misc]
+            [.application, .accounts, .misc]
         }
     }
 
@@ -38,7 +39,7 @@ struct AppSettings: View {
         }
         .navigationSplitViewStyle(.prominentDetail)
         #if os(macOS)
-        .toolbar(.hidden, for: .windowToolbar)
+            .toolbar(.hidden, for: .windowToolbar)
         #endif
     }
 
@@ -62,22 +63,22 @@ struct AppSettings: View {
 
     @ViewBuilder
     var application: some View {
-            List {
-                Form {
-                    TextField("Name", text: $appModel.applicationName)
-                    TextField("Website", text: $appModel.applicationWebsite)
-                    Text("Application name and website are only used when logging in to a new instance.").font(.caption)
-                    #if os(macOS)
+        List {
+            Form {
+                TextField("Name", text: $appModel.applicationName)
+                TextField("Website", text: $appModel.applicationWebsite)
+                Text("Application name and website are only used when logging in to a new instance.").font(.caption)
+                #if os(macOS)
                     Button("Reveal Application Support Directory") {
                         FSPath.applicationSupportDirectory!.reveal()
                     }
                     Button("Reveal Preferences") {
                         (FSPath.libraryDirectory! / "Preferences/io.schwa.MastodonAgain.plist").reveal()
                     }
-                    #endif
-                }
+                #endif
             }
-            .scrollContentBackground(.hidden)
+        }
+        .scrollContentBackground(.hidden)
     }
 
     @ViewBuilder

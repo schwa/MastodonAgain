@@ -22,7 +22,7 @@ struct AccountInfoView: View {
     }
 
     init(account: Account) {
-        self.id = account.id
+        id = account.id
         self.account = account
     }
 
@@ -119,7 +119,7 @@ struct MeAccountInfoView: View {
 
     var body: some View {
         FetchableValueView { [instanceModel] in
-            return try await instanceModel.service.myAccount()
+            try await instanceModel.service.myAccount()
         } content: { account in
             AccountInfoView(account: account)
         }

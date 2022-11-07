@@ -47,9 +47,9 @@ struct StatusRow: View, Sendable {
             } label: {
                 Text(status.created, style: .relative).foregroundColor(.secondary)
             }
-#if os(macOS)
+            #if os(macOS)
             .buttonStyle(.link)
-#endif
+            #endif
             .fixedSize()
         }
     }
@@ -141,7 +141,7 @@ struct StatusActionButton: View {
                 await errorHandler { [action] in
                     try await action()
                 }
-                //try await Task.sleep(nanoseconds: 500_000)
+                // try await Task.sleep(nanoseconds: 500_000)
                 inFlight = false
             }
         } label: {
@@ -176,18 +176,18 @@ extension Text {
             text = text + Text("\(account.displayName)").bold()
         }
         self = text + Text(" ") + Text("@\(account.acct)")
-                .foregroundColor(.secondary)
+            .foregroundColor(.secondary)
     }
 }
 
-struct StatusContent <Status>: View where Status: StatusProtocol {
+struct StatusContent<Status>: View where Status: StatusProtocol {
     @EnvironmentObject
     var appModel: AppModel
 
     let status: Status
 
     var sensitive: Bool {
-        return status.sensitive
+        status.sensitive
     }
 
     var hideContent: Bool {
@@ -249,7 +249,7 @@ struct SensitiveContentModifier: ViewModifier {
 
 extension View {
     func sensitiveContent(_ sensitive: Bool) -> some View {
-        return self.modifier(SensitiveContentModifier(sensitive: sensitive))
+        modifier(SensitiveContentModifier(sensitive: sensitive))
     }
 }
 
@@ -371,7 +371,7 @@ struct StatusActions: View {
     @ViewBuilder
     var shareButton: some View {
         let status: any StatusProtocol = status.reblog ?? status
-        let url = status.url! // TODO
+        let url = status.url! // TODO:
         ShareLink(item: url, label: { Image(systemName: "square.and.arrow.up") })
     }
 
@@ -393,4 +393,3 @@ struct StatusActions: View {
         RequestDebugView(request: request).padding()
     }
 }
-

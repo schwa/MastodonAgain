@@ -287,8 +287,8 @@ extension URLSession {
         switch httpResponse.statusCode {
         case 200 ..< 299:
             return (data, httpResponse)
-            //    case 401:
-            //        throw HTTPError(statusCode: .init(response.statusCode))
+        //    case 401:
+        //        throw HTTPError(statusCode: .init(response.statusCode))
         default:
             throw HTTPError(statusCode: .init(httpResponse.statusCode))
         }
@@ -310,7 +310,7 @@ public enum FormValue {
     case file(_ name: String, _ filename: String, _ mimeType: String, _ data: Data)
 }
 
-public extension Sequence where Element == FormValue {
+public extension Sequence<FormValue> {
     func data(boundary: String) -> Data {
         let chunks = map { value in
             switch value {
@@ -394,6 +394,5 @@ public func funHash(_ value: Int) -> String {
     let cities = ["Paris", "London", "Bangkok", "Singapore", "New York", "Kuala Lumpur", "Hong Kong", "Dubai", "Istanbul", "Rome", "Shanghai", "Los Angeles", "Las Vegas", "Miami", "Toronto", "Barcelona", "Dublin", "Amsterdam", "Moscow", "Cairo", "Prague", "Vienna", "Madrid", "San Francisco", "Vancouver", "Budapest", "Rio de Janeiro", "Berlin", "Tokyo", "Mexico City", "Buenos Aires", "St. Petersburg", "Seoul", "Athens", "Jerusalem", "Seattle", "Delhi", "Sydney", "Mumbai", "Munich", "Venice", "Florence", "Beijing", "Cape Town", "Washington D.C.", "Montreal", "Atlanta", "Boston", "Philadelphia", "Chicago", "San Diego", "Stockholm", "Cancún", "Warsaw", "Sharm el-Sheikh", "Dallas", "Hồ Chí Minh", "Milan", "Oslo", "Libson", "Punta Cana", "Johannesburg", "Antalya", "Mecca", "Macau", "Pattaya", "Guangzhou", "Kiev", "Shenzhen", "Bucharest", "Taipei", "Orlando", "Brussels", "Chennai", "Marrakesh", "Phuket", "Edirne", "Bali", "Copenhagen", "São Paulo", "Agra", "Varna", "Riyadh", "Jakarta", "Auckland", "Honolulu", "Edinburgh", "Wellington", "New Orleans", "Petra", "Melbourne", "Luxor", "Hà Nội", "Manila", "Houston", "Phnom Penh", "Zürich", "Lima", "Santiago", "Bogotá"]
 
     var rng = SplitMix64(s: UInt64(bitPattern: Int64(value)))
-    return "\(adjectives.randomElement(using: &rng)!)-\(cities.randomElement(using: &rng)!)-\(Int.random(in: 1...10, using: &rng)))"
+    return "\(adjectives.randomElement(using: &rng)!)-\(cities.randomElement(using: &rng)!)-\(Int.random(in: 1 ... 10, using: &rng)))"
 }
-

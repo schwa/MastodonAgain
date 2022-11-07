@@ -67,7 +67,7 @@ struct TimelineView: View, Sendable {
                     let path = FSPath.temporaryDirectory / "timeline.json"
                     try data.write(to: path.url)
                     #if os(macOS)
-                    path.reveal()
+                        path.reveal()
                     #endif
                 }
                 catch {
@@ -104,7 +104,7 @@ struct TimelineView: View, Sendable {
     }
 }
 
-//struct PageView: View {
+// struct PageView: View {
 //    @Binding
 //    var page: Timeline.Page
 //
@@ -143,11 +143,11 @@ struct TimelineView: View, Sendable {
 //        }
 //        .debuggingInfo()
 //    }
-//}
+// }
 
 extension CaseIterable where Self: Equatable {
     func nextWrapping() -> Self {
-        return next(wraps: true)! // TODO: can improve this
+        next(wraps: true)! // TODO: can improve this
     }
 
     func next(wraps: Bool = false) -> Self? {

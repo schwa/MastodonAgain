@@ -1,6 +1,6 @@
-import TabularData
-import Foundation
 import Everything
+import Foundation
+import TabularData
 
 public extension Service {
     func massFollow(csvFile: URL) async throws {
@@ -19,7 +19,7 @@ public extension Service {
         }
         let url = URL(string: "https://\(host)/api/v1/accounts/\(account.id.rawValue)/follow")!
         let request = URLRequest.post(url).headers(token.headers)
-        let (_, _) = try await session.validatedData(for: request)
+        _ = try await session.validatedData(for: request)
         // TODO: check following = true i suppose?
     }
 

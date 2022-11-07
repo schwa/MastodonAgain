@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-public struct Resource <Content> {
+public struct Resource<Content> {
     public enum Source: Hashable, Sendable, Codable {
         case url(URL)
         case data(Data)
@@ -42,31 +42,31 @@ public extension Resource where Content == Image {
         switch source {
         case .url(let url):
             #if os(macOS)
-            guard let nsImage = NSImage(contentsOf: url) else {
-                fatalError("Could not create image")
-            }
-            let image = Image(nsImage: nsImage)
-            self = .init(source: source, content: image)
+                guard let nsImage = NSImage(contentsOf: url) else {
+                    fatalError("Could not create image")
+                }
+                let image = Image(nsImage: nsImage)
+                self = .init(source: source, content: image)
             #elseif os(iOS)
-            guard let uiImage = UIImage(contentsOfFile: url.path) else {
-                fatalError("Could not create image")
-            }
-            let image = Image(uiImage: uiImage)
-            self.init(source: source, content: image)
+                guard let uiImage = UIImage(contentsOfFile: url.path) else {
+                    fatalError("Could not create image")
+                }
+                let image = Image(uiImage: uiImage)
+                self.init(source: source, content: image)
             #endif
         case .data(let data):
             #if os(macOS)
-            guard let nsImage = NSImage(data: data) else {
-                fatalError("TODO: Throw instead")
-            }
-            let image = Image(nsImage: nsImage)
-            self.init(source: source, content: image)
+                guard let nsImage = NSImage(data: data) else {
+                    fatalError("TODO: Throw instead")
+                }
+                let image = Image(nsImage: nsImage)
+                self.init(source: source, content: image)
             #elseif os(iOS)
-            guard let uiImage = UIImage(data: data) else {
-                fatalError("TODO: Throw instead")
-            }
-            let image = Image(uiImage: uiImage)
-            self.init(source: source, content: image)
+                guard let uiImage = UIImage(data: data) else {
+                    fatalError("TODO: Throw instead")
+                }
+                let image = Image(uiImage: uiImage)
+                self.init(source: source, content: image)
             #endif
         }
     }

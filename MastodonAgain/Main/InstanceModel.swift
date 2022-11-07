@@ -6,7 +6,7 @@ class InstanceModel: ObservableObject {
     @Published
     var signin: SignIn {
         didSet {
-            self.service = Service(host: signin.host, authorization: signin.authorization)
+            service = Service(host: signin.host, authorization: signin.authorization)
         }
     }
 
@@ -15,6 +15,6 @@ class InstanceModel: ObservableObject {
 
     init(signin: SignIn) {
         self.signin = signin
-        self.service = Service(host: signin.host, authorization: signin.authorization)
+        service = Service(host: signin.host, authorization: signin.authorization)
     }
 }

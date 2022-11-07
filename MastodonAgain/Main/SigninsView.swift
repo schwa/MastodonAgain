@@ -58,9 +58,9 @@ struct SigninsView: View {
     }
 }
 
-//struct Host {
+// struct Host {
 //    var host: String
-//}
+// }
 
 struct SignInView: View {
     let result: (SignIn?) -> Void
@@ -240,4 +240,3 @@ struct NewAuthorizationFlow: View {
         mode = nil
     }
 }
-

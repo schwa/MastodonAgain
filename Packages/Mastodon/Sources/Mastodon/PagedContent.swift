@@ -1,5 +1,5 @@
-import Foundation
 import CryptoKit
+import Foundation
 
 // MARK: -
 
@@ -10,13 +10,13 @@ public enum PagingDirection: Sendable {
 
 // MARK: -
 
-public struct PagedContent <Element>: Identifiable, Sendable where Element: Identifiable & Sendable, Element.ID: Comparable & Sendable {
+public struct PagedContent<Element>: Identifiable, Sendable where Element: Identifiable & Sendable, Element.ID: Comparable & Sendable {
     public typealias Element = Element
     public typealias Page = Mastodon.Page<Element> // TODO: Gross.
     public typealias Cursor = Page.Cursor
 
     public var id: [Page.ID] {
-        return pages.map(\.id)
+        pages.map(\.id)
     }
 
     public var pages: [Page] {
@@ -29,11 +29,11 @@ public struct PagedContent <Element>: Identifiable, Sendable where Element: Iden
     }
 
     public init() {
-        self.pages = []
+        pages = []
     }
 }
 
-public struct Page <Element>: Identifiable, Sendable where Element: Identifiable & Sendable, Element.ID: Comparable & Sendable {
+public struct Page<Element>: Identifiable, Sendable where Element: Identifiable & Sendable, Element.ID: Comparable & Sendable {
     public typealias Element = Element
 
     public struct Cursor: Sendable {
@@ -77,7 +77,7 @@ public struct Page <Element>: Identifiable, Sendable where Element: Identifiable
     }
 
     public init(cursor: Cursor, elements: [Element] = []) {
-        self.id = .init(elements)
+        id = .init(elements)
         self.cursor = cursor
         self.elements = elements
         assert(elements.map(\.id) == elements.map(\.id).sorted().reversed())
@@ -86,13 +86,13 @@ public struct Page <Element>: Identifiable, Sendable where Element: Identifiable
 
 extension Page: CustomDebugStringConvertible {
     public var debugDescription: String {
-        return "Page <\(Element.self)> (id: \(id), cursor: \(cursor), elements: \(elements.count))"
+        "Page <\(Element.self)> (id: \(id), cursor: \(cursor), elements: \(elements.count))"
     }
 }
 
 extension Page.Cursor: CustomDebugStringConvertible {
     public var debugDescription: String {
-        return "Cursor(previous: \(previousURL?.absoluteString ?? "<nil>"), next: \(nextURL?.absoluteString ?? "<nil>"))"
+        "Cursor(previous: \(previousURL?.absoluteString ?? "<nil>"), next: \(nextURL?.absoluteString ?? "<nil>"))"
     }
 }
 
@@ -104,7 +104,7 @@ extension Page<Status>.ID: CustomDebugStringConvertible {
 //        return "\(hash.prefix(8))…\(hash.suffix(8))"
 //        return "\(hash.prefix(8))…\(hash.suffix(8))"
 
-        let h = self.hashValue
+        let h = hashValue
         return funHash(h)
 
         //        if let first = ids.first, let last = ids.last {

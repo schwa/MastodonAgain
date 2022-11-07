@@ -3,7 +3,7 @@ import SwiftUI
 
 extension Card {
     var size: CGSize? {
-        guard let width = width, let height = height else {
+        guard let width, let height else {
             return nil
         }
         return CGSize(width: width, height: height)
@@ -20,8 +20,8 @@ struct CardView: View {
                 HStack {
                     if let image = card.image {
                         ContentImage(url: image, size: card.size, blurhash: card.blurhash, accessibilityLabel: Text("TODO"))
-                        .frame(maxHeight: 80)
-                        .border(Color.purple)
+                            .frame(maxHeight: 80)
+                            .border(Color.purple)
                     }
                     if let description = card.title ?? card.description {
                         Label("\(description) (\(card.url.absoluteString))", systemImage: "link").symbolVariant(.circle)

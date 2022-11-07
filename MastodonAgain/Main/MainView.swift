@@ -1,6 +1,6 @@
-import SwiftUI
-import Mastodon
 import Everything
+import Mastodon
+import SwiftUI
 
 struct MainView: View {
     @EnvironmentObject
@@ -49,12 +49,12 @@ struct ImageToggleStyle: ToggleStyle {
     func makeBody(configuration: Configuration) -> some View {
         Button { configuration.isOn.toggle() }
         label: {
-            if configuration.isOn {
-                Image(systemName: "ladybug").foregroundColor(.red).symbolVariant(.circle)
-            }
-            else {
-                Image(systemName: "ladybug")
-            }
+                if configuration.isOn {
+                    Image(systemName: "ladybug").foregroundColor(.red).symbolVariant(.circle)
+                }
+                else {
+                    Image(systemName: "ladybug")
+                }
         }
     }
 }
@@ -172,4 +172,3 @@ struct SignInPicker: View {
         }
     }
 }
-

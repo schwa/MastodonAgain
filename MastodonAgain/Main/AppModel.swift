@@ -52,8 +52,8 @@ extension UUID: RawRepresentable {
     public init?(rawValue: String) {
         self = UUID(uuidString: rawValue)!
     }
+
     public var rawValue: String {
-        return uuidString
+        uuidString
     }
 }
-

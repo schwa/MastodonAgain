@@ -55,11 +55,10 @@ struct MiniStatusRow: View, Sendable {
     }
 }
 
-extension Collection where Element == Text {
+extension Collection<Text> {
     func joined(separator: Text) -> Text {
-        return reduce(Text("")) { partialResult, element in
-            return partialResult + separator + element
+        reduce(Text("")) { partialResult, element in
+            partialResult + separator + element
         }
     }
 }
-

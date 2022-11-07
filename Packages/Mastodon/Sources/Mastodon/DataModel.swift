@@ -100,20 +100,20 @@ public struct Card: Codable, Sendable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.authorName = try container.decodeIfPresent(String.self, forKey: .authorName).nilify()
-        self.authorURL = try container.decodeIfPresent(String.self, forKey: .authorURL).nilify().map { try URL(string: $0).safelyUnwrap(GeneralError.illegalValue) }
-        self.blurhash = try container.decodeIfPresent(Blurhash.self, forKey: .blurhash)
-        self.description = try container.decodeIfPresent(String.self, forKey: .description).nilify()
-        self.embedURL = try container.decodeIfPresent(String.self, forKey: .embedURL).nilify().map { try URL(string: $0).safelyUnwrap(GeneralError.illegalValue) }
-        self.height = try container.decodeIfPresent(Double.self, forKey: .height)
-        self.html = try container.decodeIfPresent(String.self, forKey: .html).nilify()
-        self.image = try container.decodeIfPresent(String.self, forKey: .image).nilify().map { try URL(string: $0).safelyUnwrap(GeneralError.illegalValue) }
-        self.providerName = try container.decodeIfPresent(String.self, forKey: .providerName).nilify()
-        self.providerURL = try container.decodeIfPresent(String.self, forKey: .providerURL).nilify().map { try URL(string: $0).safelyUnwrap(GeneralError.illegalValue) }
-        self.title = try container.decodeIfPresent(String.self, forKey: .title).nilify()
-        self.type = try container.decode(Card.CardType.self, forKey: .type)
-        self.url = try container.decode(URL.self, forKey: .url)
-        self.width = try container.decodeIfPresent(Double.self, forKey: .width)
+        authorName = try container.decodeIfPresent(String.self, forKey: .authorName).nilify()
+        authorURL = try container.decodeIfPresent(String.self, forKey: .authorURL).nilify().map { try URL(string: $0).safelyUnwrap(GeneralError.illegalValue) }
+        blurhash = try container.decodeIfPresent(Blurhash.self, forKey: .blurhash)
+        description = try container.decodeIfPresent(String.self, forKey: .description).nilify()
+        embedURL = try container.decodeIfPresent(String.self, forKey: .embedURL).nilify().map { try URL(string: $0).safelyUnwrap(GeneralError.illegalValue) }
+        height = try container.decodeIfPresent(Double.self, forKey: .height)
+        html = try container.decodeIfPresent(String.self, forKey: .html).nilify()
+        image = try container.decodeIfPresent(String.self, forKey: .image).nilify().map { try URL(string: $0).safelyUnwrap(GeneralError.illegalValue) }
+        providerName = try container.decodeIfPresent(String.self, forKey: .providerName).nilify()
+        providerURL = try container.decodeIfPresent(String.self, forKey: .providerURL).nilify().map { try URL(string: $0).safelyUnwrap(GeneralError.illegalValue) }
+        title = try container.decodeIfPresent(String.self, forKey: .title).nilify()
+        type = try container.decode(Card.CardType.self, forKey: .type)
+        url = try container.decode(URL.self, forKey: .url)
+        width = try container.decodeIfPresent(Double.self, forKey: .width)
     }
 }
 

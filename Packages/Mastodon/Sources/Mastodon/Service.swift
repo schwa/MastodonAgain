@@ -1,10 +1,10 @@
 import AsyncAlgorithms
 import Everything
 import Foundation
-import RegexBuilder
 import os
-import UniformTypeIdentifiers
+import RegexBuilder
 import SwiftUI
+import UniformTypeIdentifiers
 
 private let logger: Logger? = Logger()
 
@@ -55,7 +55,7 @@ public actor Service {
     public let authorization: Authorization
 
     public var baseURL: URL {
-        return URL(string: "https://\(host)")!
+        URL(string: "https://\(host)")!
     }
 
     internal let session = URLSession.shared
@@ -91,7 +91,7 @@ public actor Service {
 
 public extension Service {
     func status(for id: Status.ID) async -> Status? {
-        return datedStatuses[id]?.content
+        datedStatuses[id]?.content
     }
 
     // TODO: All this needs cleanup. Use URLPath to return a (pre-configured) URLRequest
@@ -109,7 +109,7 @@ public extension Service {
     }
 
     func account(for id: Account.ID) async -> Account? {
-        return datedAccounts[id]?.content
+        datedAccounts[id]?.content
     }
 
     // TODO: All this needs cleanup. Use URLPath to return a (pre-configured) URLRequest
@@ -195,7 +195,7 @@ public extension Service {
 
         let formValues: [FormValue] = [
             .value("description", description),
-            .file("file", file.lastPathComponent, "image/png", fileData) // TODO
+            .file("file", file.lastPathComponent, "image/png", fileData), // TODO:
         ]
 
         let url = URL(string: "https://\(host)/api/v1/media")!

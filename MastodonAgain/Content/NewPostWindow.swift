@@ -1,7 +1,7 @@
-import Foundation
-import SwiftUI
-import Mastodon
 import AsyncAlgorithms
+import Foundation
+import Mastodon
+import SwiftUI
 
 extension NSItemProvider: @unchecked Sendable {
 }
@@ -37,8 +37,8 @@ struct NewPostView: View {
     var errorHandler
 
     init(open: Binding<NewPostWindow?>) {
-        self._open = open
-        self._newPost = State(initialValue: NewPost(status: "", sensitive: false, spoiler: "", visibility: .public, language: Locale.current.topLevelIdentifier))
+        _open = open
+        _newPost = State(initialValue: NewPost(status: "", sensitive: false, spoiler: "", visibility: .public, language: Locale.current.topLevelIdentifier))
     }
 
     var body: some View {
@@ -54,7 +54,7 @@ struct NewPostView: View {
                 TextEditor(text: $newPost.status)
                 ForEach(images, id: \.source) { image in
                     image.content.resizable().scaledToFit()
-                    .frame(maxWidth: 80, maxHeight: 80, alignment: .trailing)
+                        .frame(maxWidth: 80, maxHeight: 80, alignment: .trailing)
                 }
             }
             if newPost.sensitive {
@@ -71,7 +71,7 @@ struct NewPostView: View {
             }
         }
         .task {
-            if case let .reply(id) = open {
+            if case .reply(let id) = open {
                 inReplyTo = await instanceModel.service.status(for: id)
                 newPost.inReplyTo = id
             }
@@ -102,7 +102,7 @@ struct NewPostView: View {
             newPost.sensitive.toggle()
         })
         Picker("Language", selection: $newPost.language) {
-            Text("\(Locale.current.localizedString(forIdentifier: Locale.current.topLevelIdentifier)!) (current)").tag(Optional<String>.none)
+            Text("\(Locale.current.localizedString(forIdentifier: Locale.current.topLevelIdentifier)!) (current)").tag(String?.none)
             Divider()
             ForEach(Locale.availableTopLevelIdentifiers.sorted(), id: \.self) { identifier in
                 Text(Locale.current.localizedString(forIdentifier: identifier) ?? identifier).tag(Optional(identifier))
@@ -121,7 +121,7 @@ struct NewPostView: View {
         Text(newPost.status.count, format: .number).monospacedDigit()
         Button("Post") {
             let imageUrls = images.map { image in
-                if case let .url(url) = image.source {
+                if case .url(let url) = image.source {
                     return url
                 }
                 else {
@@ -146,17 +146,15 @@ struct NewPostView: View {
             }
         }
         .disabled(newPost.status.isEmpty || newPost.status.count > 500) // TODO: get limit from instance?
-
     }
 }
 
 extension Locale {
     var topLevelIdentifier: String {
-        return String(identifier.prefix(upTo: identifier.firstIndex(of: "_") ?? identifier.endIndex))
+        String(identifier.prefix(upTo: identifier.firstIndex(of: "_") ?? identifier.endIndex))
     }
 
     static var availableTopLevelIdentifiers: [String] {
         Locale.availableIdentifiers.filter({ !$0.contains("_") })
     }
 }
-

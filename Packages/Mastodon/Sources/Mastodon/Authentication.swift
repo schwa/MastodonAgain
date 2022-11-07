@@ -1,5 +1,5 @@
-import Foundation
 import Everything
+import Foundation
 
 public struct RegisteredApplication: Identifiable, Codable, Hashable, Sendable {
     public enum CodingKeys: String, CodingKey {
@@ -34,4 +34,3 @@ public struct Token: Codable, Hashable, Sendable {
     public let scope: String
     public let created: Date
 }
-
