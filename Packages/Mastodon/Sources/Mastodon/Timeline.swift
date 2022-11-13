@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import Blueprint
 
 public enum TimelineType: Codable, Hashable, Sendable {
     case `public`

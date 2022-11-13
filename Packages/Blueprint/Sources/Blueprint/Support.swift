@@ -32,3 +32,40 @@ extension String {
     }
 }
 
+extension URL: ExpressibleByStringLiteral {
+    public init(stringLiteral value: String) {
+        self.init(string: value)!
+    }
+}
+
+public struct URLPath: Hashable {
+    public let rawValue: String
+
+    public init(_ path: String) {
+        self.rawValue = path
+    }
+}
+
+extension URLPath: Comparable {
+    public static func < (lhs: URLPath, rhs: URLPath) -> Bool {
+        lhs.rawValue < rhs.rawValue
+    }
+}
+
+extension URLPath: ExpressibleByStringLiteral {
+    public init(stringLiteral value: String) {
+        rawValue = value
+    }
+}
+
+extension URLPath: ExpressibleByStringInterpolation {
+    public init(stringInterpolation: DefaultStringInterpolation) {
+        rawValue = stringInterpolation.description // TODO?????
+    }
+}
+
+extension URLPath: CustomStringConvertible {
+    public var description: String {
+        rawValue
+    }
+}

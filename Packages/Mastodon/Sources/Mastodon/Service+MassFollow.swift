@@ -1,19 +1,9 @@
+import Blueprint
 import Everything
 import Foundation
 import TabularData
 
 public extension Service {
-
-    var variables: [String: String] {
-        get throws {
-            guard let token = authorization.token else {
-                fatalError("No host or token.")
-            }
-            return ["userToken": token.accessToken]
-        }
-    }
-
-
     func massFollow(csvFile: URL) async throws {
         let data = try DataFrame(contentsOfCSVFile: csvFile)
         guard let columnIndex = data.indexOfColumn("Account address") else {
@@ -28,29 +18,22 @@ public extension Service {
         guard let token = authorization.token else {
             fatalError("No host or token.")
         }
-        let url = URL(string: "https://\(host)/api/v1/accounts/\(account.id.rawValue)/follow")!
-        let request = URLRequest.post(url).headers(token.headers)
-        _ = try await session.validatedData(for: request)
-        // TODO: check following = true i suppose?
+        _ = try await session.perform(MastodonAPI.Accounts.Follow(baseURL: baseURL, token: token, id: account.id))
     }
 
     func myAccount() async throws -> Account {
-        let blueprint = MastodonBlueprints.Accounts.verify
-        let request = try URLRequest(url: baseURL, request: blueprint, variables: variables)
-        let (data, response) = try await session.validatedData(for: request)
-        return try blueprint.handleResponse(data: data, response: response)
+        guard let token = authorization.token else {
+            fatalError("No host or token.")
+        }
+        return try await session.perform(MastodonAPI.Accounts.Verify(baseURL: baseURL, token: token)) as! Account
     }
 
     func searchAccount(_ username: String) async throws -> Account? {
         guard let token = authorization.token else {
             fatalError("No host or token.")
         }
-        // https://mastodon.example/api/v1/statuses/:id
-        let url = URL(string: "https://\(host)/api/v1/accounts/search?q=\(username)&limit=1&resolve=true")!
-        let request = URLRequest(url: url).headers(token.headers)
-        let (data, _) = try await session.validatedData(for: request)
-        let accounts = try decoder.decode([Account].self, from: data)
-        return accounts.first
+        let results = try await session.perform(MastodonAPI.Accounts.Search(baseURL: baseURL, token: token, query: username, limit: 1, resolve: true)) as! [Account]
+        return results.first
     }
 
     // TODO: function name is misleading. "accounts (this) account is following"
@@ -58,10 +41,7 @@ public extension Service {
         guard let token = authorization.token else {
             fatalError("No host or token.")
         }
-        let url = URL(string: "https://\(host)/api/v1/accounts/\(account.id.rawValue)/following?limit=1000")!
-        let request = URLRequest(url: url).headers(token.headers)
-        let (data, _) = try await session.validatedData(for: request)
-        return try decoder.decode([Account].self, from: data)
+        return try await session.perform(MastodonAPI.Accounts.Following(baseURL: baseURL, token: token, id: account.id, limit: 1000)) as! [Account]
     }
 
     func massFollow(usernames: [String]) async throws {

@@ -30,7 +30,7 @@ public struct Account: Identifiable, Codable, Sendable {
     }
 
     public let id: Tagged<Account, String>
-    public let username: String
+    public let username: String?
     public let acct: String
     public let displayName: String
     public let locked: Bool
@@ -407,5 +407,28 @@ public struct NewPost: Codable, Sendable {
         self.visibility = visibility
         self.scheduled = scheduled
         self.language = language
+    }
+}
+
+public struct Relationship: Codable {
+    public let id: Account.ID
+    public let following, showingReblogs, notifying, followedBy: Bool
+    public let blocking, blockedBy, muting, mutingNotifications: Bool
+    public let requested, domainBlocking, endorsed: Bool
+    public let note: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, following
+        case showingReblogs = "showing_reblogs"
+        case notifying
+        case followedBy = "followed_by"
+        case blocking
+        case blockedBy = "blocked_by"
+        case muting
+        case mutingNotifications = "muting_notifications"
+        case requested
+        case domainBlocking = "domain_blocking"
+        case endorsed
+        case note
     }
 }

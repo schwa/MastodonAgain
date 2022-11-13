@@ -10,12 +10,10 @@ let package = Package(
         .library(name: "Blueprint", targets: ["Blueprint"])
     ],
     dependencies: [
+        .package(url: "https://github.com/schwa/Everything.git", branch: "main"),
     ],
     targets: [
-        .target(name: "Blueprint"),
-        .executableTarget(
-            name: "CLI",
-            dependencies: ["Blueprint"]),
+        .target(name: "Blueprint", dependencies: ["Everything"]),
         .testTarget(
             name: "BlueprintTests",
             dependencies: ["Blueprint"]),

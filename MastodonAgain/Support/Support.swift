@@ -35,15 +35,15 @@ struct RedlineModifier: ViewModifier {
                         }
                     }
                 symbols: {
-                        Text(verbatim: "\(proxy.size.width, format: .number)")
-                            .padding(1)
-                            .background(.thickMaterial)
-                            .tag("width")
-                        Text(verbatim: "\(proxy.size.height, format: .number)")
-                            .padding(1)
-                            .background(.thickMaterial)
-                            .tag("height")
-                    }
+                    Text(verbatim: "\(proxy.size.width, format: .number)")
+                        .padding(1)
+                        .background(.thickMaterial)
+                        .tag("width")
+                    Text(verbatim: "\(proxy.size.height, format: .number)")
+                        .padding(1)
+                        .background(.thickMaterial)
+                        .tag("height")
+                }
                 }
             }
     }
@@ -65,7 +65,19 @@ struct Avatar: View {
     @EnvironmentObject
     var stackModel: StackModel
 
+    @EnvironmentObject
+    var instanceModel: InstanceModel
+
+    @Environment(\.errorHandler)
+    var errorHandler
+
     let account: Account
+
+    @State
+    var relationship: Relationship?
+
+    @State
+    var isNoteEditorPresented = false
 
     var body: some View {
         CachedAsyncImage(url: account.avatar) { image in
@@ -79,17 +91,75 @@ struct Avatar: View {
         } placeholder: {
             Image(systemName: "person.circle.fill")
         }
+        .task {
+            // TODO: this hits the server once per view. WE can batch requests into a single relationships fetch
+            await updateRelationship()
+        }
         .contextMenu {
             Text(account)
             Button("Info") {
                 stackModel.path.append(.account(account.id))
             }
-            Button("Disable Reposts") {
-                unimplemented()
+            if let relationship {
+                if relationship.following {
+                    Button("Unfollow") {
+                        await errorHandler {
+                            _ = try await instanceModel.service.perform(type: Relationship.self, { baseURL, token in
+                                MastodonAPI.Accounts.Unfollow(baseURL: baseURL, token: token, id: account.id)
+                            })
+                            appLogger?.info("You have unfollowed \(account.acct)")
+                            await updateRelationship()
+                        }
+                    }
+                    if relationship.showingReblogs {
+                        Button("Disable Reposts") {
+                            await errorHandler {
+                                _ = try await instanceModel.service.perform(type: Relationship.self, { baseURL, token in
+                                    MastodonAPI.Accounts.Follow(baseURL: baseURL, token: token, id: account.id, reblogs: false)
+                                })
+                                appLogger?.info("You have disabled reblogs for \(account.acct)")
+                                await updateRelationship()
+                            }
+                        }
+                    }
+                }
+                Button("Edit Note…") {
+                    isNoteEditorPresented = true
+                }
+            }
+            else {
+                Text("Fetching relationship...")
             }
         }
+        //        .alert(isPresented: $isNoteEditorPresented) {
+        //                        TextField("Hello world", text: .constant("Note"))
+        //        }
+        .popover(isPresented: $isNoteEditorPresented) {
+            AccountNoteEditor(relationship: relationship!, isPresenting: $isNoteEditorPresented)
+        }
     }
+
+    func updateRelationship() async {
+        do {
+            let service = instanceModel.service
+            let relationships = try await service.perform(type: [Relationship].self) { baseURL, token in
+                MastodonAPI.Accounts.Relationships(baseURL: baseURL, token: token, ids: [account.id])
+            }
+            guard let relationship = relationships.first else {
+                throw MastodonError.generic("No relationship found")
+            }
+            await MainActor.run {
+                self.relationship = relationship
+            }
+        }
+        catch {
+            appLogger?.error("Error \(error)")
+        }
+
+    }
+
 }
+
 
 struct RequestDebugView: View {
     let request: URLRequest
@@ -143,6 +213,14 @@ public extension Button {
         }, label: {
             SwiftUI.Label(title, systemImage: systemName)
         })
+    }
+
+    init(_ title: String, action: @escaping @Sendable () async -> Void) where Label == Text {
+        self = Button(title) {
+            Task {
+                await action()
+            }
+        }
     }
 
     init(systemImage systemName: String, action: @escaping @Sendable () async -> Void) where Label == Image {
@@ -231,11 +309,11 @@ extension Path {
 }
 
 extension FSPath {
-    #if os(macOS)
-        func reveal() {
-            NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: "")
-        }
-    #endif
+#if os(macOS)
+    func reveal() {
+        NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: "")
+    }
+#endif
 }
 
 struct DebugDescriptionView<Value>: View {
@@ -438,6 +516,62 @@ struct ListPicker<Value, Content>: View where Value: Identifiable, Content: View
     var body: some View {
         List(values, selection: $selection) { row in
             content(row)
+        }
+    }
+}
+
+struct AccountNoteEditor: View {
+    @EnvironmentObject
+    var stackModel: StackModel
+
+    @EnvironmentObject
+    var instanceModel: InstanceModel
+
+    @Environment(\.errorHandler)
+    var errorHandler
+
+    let relationship: Relationship
+
+    @Binding
+    var isPresenting: Bool
+
+    @State
+    var note: String = ""
+
+    var body: some View {
+        VStack {
+            TextField("Hello world", text: $note)
+                .frame(minWidth: 240)
+            HStack {
+                Button("Save") { [note] in
+                    Task {
+                        await errorHandler {
+                            let result = try await instanceModel.service.perform(type: Relationship.self) { baseURL, token in
+                                MastodonAPI.Accounts.Note(baseURL: baseURL, token: token, id: relationship.id, comment: note)
+                            }
+                            await MainActor.run {
+                                isPresenting = false
+                            }
+                        }
+                    }
+                }
+                Button("Delete", role: .destructive) {
+                    Task {
+                        await errorHandler {
+                            let result = try await instanceModel.service.perform(type: Relationship.self) { baseURL, token in
+                                MastodonAPI.Accounts.Note(baseURL: baseURL, token: token, id: relationship.id, comment: nil)
+                            }
+                            await MainActor.run {
+                                isPresenting = false
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .padding()
+        .onAppear {
+            note = relationship.note ?? ""
         }
     }
 }
