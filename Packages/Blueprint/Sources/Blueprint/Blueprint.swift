@@ -31,6 +31,24 @@ public enum Parameter {
     case optional(Expression)
 }
 
+// TODO: -> RequestBodyProtocol
+// TODO: this is broken as we're not LOOKING up the content at resolution time but rather at definition time.
+// TODO: URGENT URGENT
+@available(*, deprecated, message: "This is broken as hell.")
+public protocol BodyProtocol {
+    associatedtype Output: DataProtocol
+
+    var contentType: String { get }
+    func toData() throws -> Output
+}
+
+public protocol ResponseProtocol {
+    associatedtype Value
+    func handle(data: Data, response: HTTPURLResponse) throws -> Value
+}
+
+// MARK: -
+
 public extension Parameter {
     var string: String {
         get throws {
@@ -45,17 +63,6 @@ public extension Parameter {
 }
 
 // MARK: -
-
-// TODO: -> RequestBodyProtocol
-// TODO: this is broken as we're not LOOKING up the content at resolution time but rather at definition time.
-// TODO: URGENT URGENT
-@available(*, deprecated, message: "This is broken as hell.")
-public protocol BodyProtocol {
-    associatedtype Output: DataProtocol
-
-    var contentType: String { get }
-    func toData() throws -> Output
-}
 
 public struct JSONBody <Content>: BodyProtocol where Content: Codable {
     public let contentType = "application/json"
@@ -177,10 +184,7 @@ public struct MultipartForm: BodyProtocol {
     }
 }
 
-public protocol ResponseProtocol {
-    associatedtype Value
-    func handle(data: Data, response: HTTPURLResponse) throws -> Value
-}
+// MARK: -
 
 public struct JSONDecoderResponse <T>: ResponseProtocol where T: Decodable {
     let decoder: JSONDecoder
@@ -192,6 +196,10 @@ public struct JSONDecoderResponse <T>: ResponseProtocol where T: Decodable {
     public func handle(data: Data, response: HTTPURLResponse) throws -> T {
         guard let contentType = response.allHeaderFields["Content-Type"] as? String else {
             throw BlueprintError.generic("No content type header")
+        }
+        // Fast path the canonical json content-type.
+        guard contentType != "application/json; charset=utf-8" else {
+            return try decoder.decode(T.self, from: data)
         }
         // swiftlint:disable:next colon
         let pattern = #/^\s*(?<type>[^;\s]+)(?:\s*;\s*(?<q>.+))?\s*$/#
