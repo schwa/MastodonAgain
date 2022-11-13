@@ -1,7 +1,7 @@
 import Foundation
 import UniformTypeIdentifiers
 
-public struct Request {
+public struct Blueprint <ResultType> {
     public enum Method: String {
         case get = "GET"
         case post = "POST"
@@ -16,25 +16,65 @@ public struct Request {
     public var method: Method
     public var headers: [String: Parameter]
     public var body: (any BodyProtocol)?
+    public var expectedResponse: (any ResponseProtocol)?
 
-    public init(path: Expression, method: Request.Method, headers: [String : Request.Parameter] = [:], body: (any BodyProtocol)? = nil) {
+    public init<Response>(path: Expression, method: Blueprint.Method, headers: [String: Blueprint.Parameter] = [:], body: (any BodyProtocol)? = nil, expectedResponse: Response) where Response: ResponseProtocol, Response.Value == ResultType {
         self.path = path
         self.method = method
         self.headers = headers
         self.body = body
+        self.expectedResponse = expectedResponse
+    }
+
+    public init(path: Expression, method: Blueprint.Method, headers: [String: Blueprint.Parameter] = [:], body: (any BodyProtocol)? = nil) {
+        self.path = path
+        self.method = method
+        self.headers = headers
+        self.body = body
+        self.expectedResponse = nil
     }
 }
 
-public extension Request {
-    func resolve(_ variables: [String: String]) throws -> Request {
+public extension Blueprint {
+    func handleResponse(data: Data, response: URLResponse) throws -> ResultType {
+        guard let expectedResponse else {
+            fatalError()
+        }
+        guard let response = response as? HTTPURLResponse else {
+            fatalError()
+        }
+        // TODO: Fix the generics type system so this as? cast isn't necessary.
+        guard let value = try expectedResponse.handle(data: data, response: response) as? ResultType else {
+            fatalError()
+        }
+        return value
+    }
+}
+
+public extension Blueprint {
+    func resolve(_ variables: [String: String]) throws -> Self {
         var copy = self
         copy.path = Expression(try path.resolve(variables))
-        copy.headers = try headers.resolve(variables)
+        copy.headers = try Dictionary(uniqueKeysWithValues: headers.compactMap { key, value in
+            switch value {
+            case .required(let expression):
+                let expression = try expression.resolve(variables)
+                return (key, .required(Expression(expression)))
+            case .optional(let expression):
+                if expression.canResolve(variables) == false {
+                    return nil
+                }
+                else {
+                    let expression = try expression.resolve(variables)
+                    return (key, .optional(Expression(expression)))
+                }
+            }
+        })
         return copy
     }
 }
 
-public extension Request.Parameter {
+public extension Blueprint.Parameter {
     var string: String {
         get throws {
             switch self {
@@ -177,3 +217,34 @@ public struct MultipartForm: BodyProtocol {
     }
 }
 
+public protocol ResponseProtocol {
+    associatedtype Value
+    func handle(data: Data, response: HTTPURLResponse) throws -> Value
+}
+
+public struct JSONDecoderResponse <T>: ResponseProtocol where T: Decodable {
+    let decoder: JSONDecoder
+
+    public init(decoder: JSONDecoder = .init()) {
+        self.decoder = decoder
+    }
+
+    public func handle(data: Data, response: HTTPURLResponse) throws -> T {
+        guard let contentType = response.allHeaderFields["Content-Type"] as? String else {
+            throw BlueprintError.generic("No content type header")
+        }
+        // swiftlint:disable:next colon
+        let pattern = #/^\s*(?<type>[^;\s]+)(?:\s*;\s*(?<q>.+))?\s*$/#
+        guard let match = contentType.firstMatch(of: pattern) else {
+            throw BlueprintError.generic("Could not match content-type: \(contentType)")
+        }
+        let (_, mimeType, q) = match.output
+        // text/html; charset=utf-8
+        switch mimeType {
+        case "application/json", "text/json", "text/javascript":
+            return try decoder.decode(T.self, from: data)
+        default:
+            throw BlueprintError.unknown
+        }
+    }
+}

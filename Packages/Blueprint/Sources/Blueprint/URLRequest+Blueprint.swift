@@ -1,7 +1,7 @@
 import Foundation
 
 public extension URLRequest {
-    init(url: URL, request: Request, variables: [String: String]) throws {
+    init <ResultType>(url: URL, request: Blueprint<ResultType>, variables: [String: String]) throws {
         let request = try request.resolve(variables)
         self.init(url: url.appending(path: try request.path.string))
         httpMethod = request.method.rawValue
@@ -14,3 +14,4 @@ public extension URLRequest {
         }
     }
 }
+

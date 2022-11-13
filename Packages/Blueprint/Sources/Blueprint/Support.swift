@@ -1,7 +1,10 @@
 import Foundation
 
 public enum BlueprintError: Error {
+//    @available(*, deprecated, message: "Create better errors.")
     case unknown
+//    @available(*, deprecated, message: "Create better errors.")
+    case generic(String)
     case failedToResolveName(String)
 }
 

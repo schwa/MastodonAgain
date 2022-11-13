@@ -59,7 +59,6 @@ extension Expression: ExpressibleByStringInterpolation {
 }
 
 public extension Expression {
-
     var string: String {
         get throws {
             return try resolve([:])
@@ -92,23 +91,3 @@ public extension Expression {
 }
 
 // MARK: -
-
-internal extension Dictionary where Key == String, Value == Request.Parameter {
-    func resolve(_ variables: [String: String]) throws -> Self {
-        return try Dictionary(uniqueKeysWithValues: compactMap { key, value in
-            switch value {
-            case .required(let expression):
-                let expression = try expression.resolve(variables)
-                return (key, .required(Expression(expression)))
-            case .optional(let expression):
-                if expression.canResolve(variables) == false {
-                    return nil
-                }
-                else {
-                    let expression = try expression.resolve(variables)
-                    return (key, .optional(Expression(expression)))
-                }
-            }
-        })
-    }
-}

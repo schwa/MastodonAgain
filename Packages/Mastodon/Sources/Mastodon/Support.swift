@@ -119,11 +119,12 @@ public extension [String: String] {
     }
 }
 
-extension CharacterSet: ExpressibleByStringLiteral {
-    public init(stringLiteral value: String) {
-        self = CharacterSet(charactersIn: value)
-    }
-}
+// TODO: Already exposed by Blueprint
+//extension CharacterSet: ExpressibleByStringLiteral {
+//    public init(stringLiteral value: String) {
+//        self = CharacterSet(charactersIn: value)
+//    }
+//}
 
 public extension CharacterSet {
     static func + (lhs: CharacterSet, rhs: CharacterSet) -> CharacterSet {
