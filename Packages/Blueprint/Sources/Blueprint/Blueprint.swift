@@ -10,72 +10,25 @@ public struct Blueprint <ResultType> {
     public var path: Expression
     public var method: Method
     public var headers: [String: Parameter]
-    // TODO: Represent query here.
+    public var query: [String: Parameter]
     public var body: (any BodyProtocol)?
-    public var expectedResponse: (any ResponseProtocol)?
+    public var expectedResponse: any ResponseProtocol
 
-    public init<Response>(path: Expression, method: Blueprint.Method = .get, headers: [String: Parameter] = [:], body: (any BodyProtocol)? = nil, expectedResponse: Response) where Response: ResponseProtocol, Response.Value == ResultType {
+    public init<Response>(path: Expression, method: Blueprint.Method = .get, headers: [String: Parameter] = [:], query: [String: Parameter] = [:], body: (any BodyProtocol)? = nil, expectedResponse: Response) where Response: ResponseProtocol, Response.Value == ResultType {
         self.path = path
         self.method = method
         self.headers = headers
+        self.query = query
         self.body = body
         self.expectedResponse = expectedResponse
-    }
-
-    public init(path: Expression, method: Blueprint.Method = .get, headers: [String: Parameter] = [:], body: (any BodyProtocol)? = nil) {
-        self.path = path
-        self.method = method
-        self.headers = headers
-        self.body = body
-        self.expectedResponse = nil
     }
 }
 
 public enum Parameter {
-    // TODO: Mark Parameter a protocol and have required and optional be structs with .static accessors.
+    // TODO: Make Parameter a protocol and have required and optional be structs with .static accessors.
     // For example take a look at MastodonBluePrints.Accounts.Follow for how annoying this is right now
     case required(Expression)
     case optional(Expression)
-}
-
-public extension Blueprint {
-    func handleResponse(data: Data, response: URLResponse) throws -> ResultType {
-        guard let expectedResponse else {
-            // TODO: ExpectedResponse should not be optional? Maybe create an "IgnoreResponse"
-            fatalError("No expected response defined.")
-        }
-        guard let response = response as? HTTPURLResponse else {
-            fatalError("Could not cast URLResponse to HTTPURLResponse.")
-        }
-        // TODO: Fix the generics type system so this as? cast isn't necessary.
-        guard let value = try expectedResponse.handle(data: data, response: response) as? ResultType else {
-            fatalError("Could not cast response to correct type.")
-        }
-        return value
-    }
-}
-
-public extension Blueprint {
-    func resolve(_ variables: [String: String]) throws -> Self {
-        var copy = self
-        copy.path = Expression(try path.resolve(variables))
-        copy.headers = try Dictionary(uniqueKeysWithValues: headers.compactMap { key, value in
-            switch value {
-            case .required(let expression):
-                let expression = try expression.resolve(variables)
-                return (key, .required(Expression(expression)))
-            case .optional(let expression):
-                if expression.canResolve(variables) == false {
-                    return nil
-                }
-                else {
-                    let expression = try expression.resolve(variables)
-                    return (key, .optional(Expression(expression)))
-                }
-            }
-        })
-        return copy
-    }
 }
 
 public extension Parameter {
