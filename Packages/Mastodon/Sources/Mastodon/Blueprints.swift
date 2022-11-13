@@ -211,5 +211,27 @@ public extension MastodonBlueprints {
 //            expectedResponse: JSONDecoderResponse<Account>(decoder: JSONDecoder.mastodonDecoder)
 //        )
 
+        // Check relationships to other accounts
+        // TODO: define Relationship
+//        // TODO: Docs say to use a query like this - `id[]=1&id[]=2` - which is BIZARRE
+//        static let relationships = Blueprint(
+//            path: "/api/v1/accounts/relationships?id=\(lookup: "ids")",
+//            headers: [
+//                "Authorization": .required("Bearer \(lookup: "userToken")"),
+//            ],
+//            expectedResponse: JSONDecoderResponse<Relationship>(decoder: JSONDecoder.mastodonDecoder)
+//        )
+
+        // Search for matching accounts.
+        // TODO: Wait until query defined
+//        static let search = Blueprint(
+//            path: "/api/v1/accounts/search",
+//            headers: [
+//                "Authorization": .required("Bearer \(lookup: "userToken")"),
+//            ],
+//            query: xxxxx
+//            expectedResponse: JSONDecoderResponse<Account>(decoder: JSONDecoder.mastodonDecoder)
+//        )
+
     }
 }

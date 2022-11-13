@@ -10,6 +10,7 @@ public struct Blueprint <ResultType> {
     public var path: Expression
     public var method: Method
     public var headers: [String: Parameter]
+    // TODO: Represent query here.
     public var body: (any BodyProtocol)?
     public var expectedResponse: (any ResponseProtocol)?
 
