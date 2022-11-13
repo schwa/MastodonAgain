@@ -7,18 +7,13 @@ public struct Blueprint <ResultType> {
         case post = "POST"
     }
 
-    public enum Parameter {
-        case required(Expression)
-        case optional(Expression)
-    }
-
     public var path: Expression
     public var method: Method
     public var headers: [String: Parameter]
     public var body: (any BodyProtocol)?
     public var expectedResponse: (any ResponseProtocol)?
 
-    public init<Response>(path: Expression, method: Blueprint.Method, headers: [String: Blueprint.Parameter] = [:], body: (any BodyProtocol)? = nil, expectedResponse: Response) where Response: ResponseProtocol, Response.Value == ResultType {
+    public init<Response>(path: Expression, method: Blueprint.Method = .get, headers: [String: Parameter] = [:], body: (any BodyProtocol)? = nil, expectedResponse: Response) where Response: ResponseProtocol, Response.Value == ResultType {
         self.path = path
         self.method = method
         self.headers = headers
@@ -26,7 +21,7 @@ public struct Blueprint <ResultType> {
         self.expectedResponse = expectedResponse
     }
 
-    public init(path: Expression, method: Blueprint.Method, headers: [String: Blueprint.Parameter] = [:], body: (any BodyProtocol)? = nil) {
+    public init(path: Expression, method: Blueprint.Method = .get, headers: [String: Parameter] = [:], body: (any BodyProtocol)? = nil) {
         self.path = path
         self.method = method
         self.headers = headers
@@ -35,17 +30,25 @@ public struct Blueprint <ResultType> {
     }
 }
 
+public enum Parameter {
+    // TODO: Mark Parameter a protocol and have required and optional be structs with .static accessors.
+    // For example take a look at MastodonBluePrints.Accounts.Follow for how annoying this is right now
+    case required(Expression)
+    case optional(Expression)
+}
+
 public extension Blueprint {
     func handleResponse(data: Data, response: URLResponse) throws -> ResultType {
         guard let expectedResponse else {
-            fatalError()
+            // TODO: ExpectedResponse should not be optional? Maybe create an "IgnoreResponse"
+            fatalError("No expected response defined.")
         }
         guard let response = response as? HTTPURLResponse else {
-            fatalError()
+            fatalError("Could not cast URLResponse to HTTPURLResponse.")
         }
         // TODO: Fix the generics type system so this as? cast isn't necessary.
         guard let value = try expectedResponse.handle(data: data, response: response) as? ResultType else {
-            fatalError()
+            fatalError("Could not cast response to correct type.")
         }
         return value
     }
@@ -74,7 +77,7 @@ public extension Blueprint {
     }
 }
 
-public extension Blueprint.Parameter {
+public extension Parameter {
     var string: String {
         get throws {
             switch self {
@@ -90,6 +93,9 @@ public extension Blueprint.Parameter {
 // MARK: -
 
 // TODO: -> RequestBodyProtocol
+// TODO: this is broken as we're not LOOKING up the content at resolution time but rather at definition time.
+// TODO: URGENT URGENT
+@available(*, deprecated, message: "This is broken as hell.")
 public protocol BodyProtocol {
     associatedtype Output: DataProtocol
 

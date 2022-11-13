@@ -4,6 +4,16 @@ import TabularData
 
 public extension Service {
 
+    var variables: [String: String] {
+        get throws {
+            guard let token = authorization.token else {
+                fatalError("No host or token.")
+            }
+            return ["userToken": token.accessToken]
+        }
+    }
+
+
     func massFollow(csvFile: URL) async throws {
         let data = try DataFrame(contentsOfCSVFile: csvFile)
         guard let columnIndex = data.indexOfColumn("Account address") else {
@@ -25,18 +35,9 @@ public extension Service {
     }
 
     func myAccount() async throws -> Account {
-
-        // BLUEPRINT
-
-        guard let token = authorization.token else {
-            fatalError("No host or token.")
-        }
-        let blueprint = MastodonBlueprints.Apps.verify
-        let request = try URLRequest(url: baseURL, request: blueprint, variables: ["userToken": token.accessToken])
-        print(request.url)
-        print(request.allHTTPHeaderFields)
+        let blueprint = MastodonBlueprints.Accounts.verify
+        let request = try URLRequest(url: baseURL, request: blueprint, variables: variables)
         let (data, response) = try await session.validatedData(for: request)
-
         return try blueprint.handleResponse(data: data, response: response)
     }
 
