@@ -137,6 +137,11 @@ struct Avatar: View {
         .popover(isPresented: $isNoteEditorPresented) {
             AccountNoteEditor(relationship: relationship!, isPresenting: $isNoteEditorPresented)
         }
+        .onChange(of: isNoteEditorPresented) { _ in
+            Task {
+                await updateRelationship()
+            }
+        }
     }
 
     func updateRelationship() async {
@@ -543,35 +548,43 @@ struct AccountNoteEditor: View {
             TextField("Hello world", text: $note)
                 .frame(minWidth: 240)
             HStack {
-                Button("Save") { [note] in
-                    Task {
-                        await errorHandler {
-                            let result = try await instanceModel.service.perform(type: Relationship.self) { baseURL, token in
-                                MastodonAPI.Accounts.Note(baseURL: baseURL, token: token, id: relationship.id, comment: note)
-                            }
-                            await MainActor.run {
-                                isPresenting = false
-                            }
-                        }
-                    }
-                }
-                Button("Delete", role: .destructive) {
-                    Task {
-                        await errorHandler {
-                            let result = try await instanceModel.service.perform(type: Relationship.self) { baseURL, token in
-                                MastodonAPI.Accounts.Note(baseURL: baseURL, token: token, id: relationship.id, comment: nil)
-                            }
-                            await MainActor.run {
-                                isPresenting = false
-                            }
-                        }
-                    }
-                }
+                buttons
             }
         }
         .padding()
         .onAppear {
             note = relationship.note ?? ""
+        }
+    }
+
+    @ViewBuilder
+    var buttons: some View {
+        Button("Cancel") {
+            isPresenting = false
+        }
+        Button("Save") { [note] in
+            Task {
+                await errorHandler {
+                    let result = try await instanceModel.service.perform(type: Relationship.self) { baseURL, token in
+                        MastodonAPI.Accounts.Note(baseURL: baseURL, token: token, id: relationship.id, comment: note)
+                    }
+                    await MainActor.run {
+                        isPresenting = false
+                    }
+                }
+            }
+        }
+        Button("Delete", role: .destructive) {
+            Task {
+                await errorHandler {
+                    let result = try await instanceModel.service.perform(type: Relationship.self) { baseURL, token in
+                        MastodonAPI.Accounts.Note(baseURL: baseURL, token: token, id: relationship.id, comment: nil)
+                    }
+                    await MainActor.run {
+                        isPresenting = false
+                    }
+                }
+            }
         }
     }
 }

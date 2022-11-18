@@ -8,6 +8,9 @@ struct AccountInfoView: View {
     @State
     var account: Account?
 
+    @State
+    var relationship: Relationship?
+
     @Environment(\.errorHandler)
     var errorHandler
 
