@@ -157,6 +157,11 @@ public extension MastodonAPI {
             let baseURL: URL
             let token: Token
 
+            public init(baseURL: URL, token: Token) {
+                self.baseURL = baseURL
+                self.token = token
+            }
+
             public var request: some Request {
                 Method.get
                 baseURL
@@ -203,6 +208,12 @@ public extension MastodonAPI {
             let baseURL: URL
             let token: Token
             let id: Account.ID
+
+            public init(baseURL: URL, token: Token, id: Account.ID) {
+                self.baseURL = baseURL
+                self.token = token
+                self.id = id
+            }
 
             public var request: some Request {
                 Method.get

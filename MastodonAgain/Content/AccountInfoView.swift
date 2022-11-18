@@ -31,11 +31,9 @@ struct AccountInfoView: View {
 
     var body: some View {
         FetchableValueView(value: account, canRefresh: false) { [instanceModel, id] in
-            var account = await instanceModel.service.account(for: id)
-            if account == nil {
-                account = try await instanceModel.service.fetchAccount(for: id)
+            try await instanceModel.service.perform(type: Account.self) { baseURL, token in
+                MastodonAPI.Accounts.Retrieve(baseURL: baseURL, token: token, id: id)
             }
-            return account
         } content: { account in
             VStack {
                 VStack {
@@ -121,7 +119,9 @@ struct MeAccountInfoView: View {
 
     var body: some View {
         FetchableValueView { [instanceModel] in
-            try await instanceModel.service.myAccount()
+            try await instanceModel.service.perform(type: Account.self) { baseURL, token in
+                MastodonAPI.Accounts.Verify(baseURL: baseURL, token: token)
+            }
         } content: { account in
             AccountInfoView(account: account)
         }

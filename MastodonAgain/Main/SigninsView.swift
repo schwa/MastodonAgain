@@ -98,7 +98,9 @@ struct SignInView: View {
         if let host, case .authorized = authorization {
             Task {
                 let service = Service(host: host, authorization: authorization)
-                let account = try await service.myAccount()
+                let account = try await service.perform(type: Account.self) { baseURL, token in
+                    MastodonAPI.Accounts.Verify(baseURL: baseURL, token: token)
+                }
                 let (data, _) = try await URLSession.shared.data(for: URLRequest(url: account.avatar))
                 let signin = SignIn(host: host, authorization: authorization, account: account, avatar: try .init(source: .data(data)))
                 result(signin)

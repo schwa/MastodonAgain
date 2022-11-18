@@ -62,31 +62,31 @@ public actor Service {
     internal let session = URLSession.shared
     internal let decoder = JSONDecoder.mastodonDecoder
 
-    internal var datedStatuses: [Status.ID: Dated<Status>] = [:]
-    internal var datedAccounts: [Account.ID: Dated<Account>] = [:]
+    internal let storage: Storage
 
     public init(host: String, authorization: Authorization) {
         self.host = host
         self.authorization = authorization
+
+        do {
+            let path = (try FSPath.specialDirectory(.cachesDirectory) / host.replacing(".", with: "-")).withPathExtension(".storage.data")
+            self.storage = try Storage(path: path.path)
+        }
+        catch {
+            fatal(error: error)
+        }
     }
 
     public func update(_ value: Status) {
         // TODO: Insert by date
-        datedStatuses[value.id] = .init(value)
+        storage[value.id.rawValue, Dated<Status>.self] = .init(value)
     }
 
     public func update(_ other: some Collection<Status>) {
-        // TODO: Insert by date
         let now = Date.now
-        let other = other.map { Dated($0, date: now) }.map { ($0.content.id, $0) }
-        datedStatuses.merge(other) { _, rhs in
-            rhs
+        for value in other {
+            storage[value.id.rawValue, Dated<Status>.self] = Dated(value, date: now)
         }
-    }
-
-    public func update(_ value: Account) {
-        // TODO: Insert by date
-        datedAccounts[value.id] = .init(value)
     }
 }
 
@@ -107,7 +107,7 @@ public extension Service {
 public extension Service {
     @available(*, deprecated, message: "Use MastodonAPI directly")
     func status(for id: Status.ID) async -> Status? {
-        datedStatuses[id]?.content
+        storage[id.rawValue, Dated<Status>.self]?.content
     }
 
     // TODO: All this needs cleanup. Use URLPath to return a (pre-configured) URLRequest
@@ -120,23 +120,6 @@ public extension Service {
         let status = try await session.perform(MastodonAPI.Statuses.View(baseURL: baseURL, token: token, id: id)) as! Status
         update(status)
         return status
-    }
-
-    @available(*, deprecated, message: "Use MastodonAPI directly")
-    func account(for id: Account.ID) async -> Account? {
-        datedAccounts[id]?.content
-    }
-
-    // TODO: All this needs cleanup. Use URLPath to return a (pre-configured) URLRequest
-    @available(*, deprecated, message: "Use MastodonAPI directly")
-    func fetchAccount(for id: Account.ID) async throws -> Account {
-        guard let token = authorization.token else {
-            fatalError("No host or token.")
-        }
-        // swiftlint:disable:next force_cast
-        let account = try await session.perform(MastodonAPI.Accounts.Retrieve(baseURL: baseURL, token: token, id: id)) as! Account
-        update(account)
-        return account
     }
 
     @available(*, deprecated, message: "Use MastodonAPI directly")
