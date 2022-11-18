@@ -40,6 +40,7 @@ struct SigninsView: View {
                                 }
                                 isPresendingSigninSheet.wrappedValue = false
                             }
+                            .padding()
                             .frame(minWidth: 640, minHeight: 480)
                         }
                     }
@@ -51,12 +52,15 @@ struct SigninsView: View {
                 .buttonStyle(.bordered)
             }
             Form {
-                Text("Blah")
+                // TODO: TODO
+                Text("TODO: Info on selected signin here.")
             }
             .frame(maxWidth: .infinity)
         }
     }
 }
+
+// MARK: -
 
 struct SignInView: View {
     let result: (SignIn?) -> Void
@@ -68,7 +72,12 @@ struct SignInView: View {
     var authorization: Authorization = .unauthorized
 
     var body: some View {
-        Group {
+        VStack {
+            Text("Work in progress")
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.orange)
+
             if let host {
                 NewAuthorizationFlow(host: host, authorization: $authorization)
             }
@@ -76,6 +85,7 @@ struct SignInView: View {
                 HostPicker(host: $host)
             }
         }
+        .frame(maxHeight: .infinity)
         .onChange(of: host) { _ in
             update()
         }
@@ -123,11 +133,13 @@ struct HostPicker: View {
                 }
             }
             TextField("Host", text: $userHost)
+            .buttonStyle(.borderedProminent)
+            .disabled(userHost.isEmpty)
+        }
+        .toolbar {
             Button("Next...") {
                 host = userHost
             }
-            .buttonStyle(.borderedProminent)
-            .disabled(userHost.isEmpty)
         }
         .onChange(of: pickedHost) { pickedHost in
             userHost = pickedHost
@@ -197,19 +209,32 @@ struct NewAuthorizationFlow: View {
 
     @ViewBuilder
     func registeredView(_ application: RegisteredApplication) -> some View {
-        let url = URL(string: "https://\(host)/oauth/authorize?client_id=\(application.clientID)&scope=read+write+follow+push&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code")!
-        let request = URLRequest(url: url)
-        WebView(request: request)
-        Image(systemName: "arrow.down").font(.largeTitle)
-            .foregroundColor(.red)
-            .padding()
-        TextField("Authorisation Code", text: $authorizationCode)
-            .onSubmit {
+        VStack {
+            let url = URL(string: "https://\(host)/oauth/authorize?client_id=\(application.clientID)&scope=read+write+follow+push&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code")!
+            let request = URLRequest(url: url)
+            WebView(request: request)
+            Image(systemName: "arrow.down").font(.largeTitle)
+                .foregroundColor(.red)
+                .padding()
+            TextField("Authorisation Code", text: $authorizationCode)
+                .onSubmit {
+                    Task {
+                        try await getToken(with: application)
+                    }
+                }
+                .padding()
+        }
+        .toolbar {
+//            Button("Previous") {
+//                // TODO: We dont really have a good way of getting back.
+//            }
+            Button("Next") {
                 Task {
                     try await getToken(with: application)
                 }
             }
-            .padding()
+            .disabled(authorizationCode.isEmpty)
+        }
     }
 
     func register() async throws {
