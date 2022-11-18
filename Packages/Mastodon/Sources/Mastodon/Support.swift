@@ -2,8 +2,9 @@ import Everything
 import Foundation
 import RegexBuilder
 
-public enum MastodonError {
+public enum MastodonError: Error {
     case authorisationFailure
+    case generic(String)
 }
 
 public extension Token {
@@ -69,40 +70,9 @@ public func validate<T>(_ item: (T, URLResponse)) throws -> (T, URLResponse) {
     return (result, response)
 }
 
-public struct URLPath {
-    let rawValue: String
-}
-
-extension URLPath: Hashable {
-}
-
-extension URLPath: Comparable {
-    public static func < (lhs: URLPath, rhs: URLPath) -> Bool {
-        lhs.rawValue < rhs.rawValue
-    }
-}
-
-extension URLPath: ExpressibleByStringLiteral {
-    public init(stringLiteral value: String) {
-        rawValue = value
-    }
-}
-
-extension URLPath: ExpressibleByStringInterpolation {
-    public init(stringInterpolation: DefaultStringInterpolation) {
-        rawValue = stringInterpolation.description // TODO?????
-    }
-}
-
-extension URLPath: CustomStringConvertible {
-    public var description: String {
-        rawValue
-    }
-}
-
 public extension [String: String] {
     var formEncoded: Data {
-        //             client_name=Test+Application&redirect_uris=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&scopes=read+write+follow+push&website=https%3A%2F%2Fmyapp.example
+                //             client_name=Test+Application&redirect_uris=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&scopes=read+write+follow+push&website=https%3A%2F%2Fmyapp.example
 
         let bodyString = map { key, value in
             let key = key
@@ -119,11 +89,12 @@ public extension [String: String] {
     }
 }
 
-extension CharacterSet: ExpressibleByStringLiteral {
-    public init(stringLiteral value: String) {
-        self = CharacterSet(charactersIn: value)
-    }
-}
+// TODO: Already exposed by Blueprint
+//extension CharacterSet: ExpressibleByStringLiteral {
+//    public init(stringLiteral value: String) {
+//        self = CharacterSet(charactersIn: value)
+//    }
+//}
 
 public extension CharacterSet {
     static func + (lhs: CharacterSet, rhs: CharacterSet) -> CharacterSet {

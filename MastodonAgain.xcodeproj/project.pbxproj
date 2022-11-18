@@ -59,6 +59,7 @@
 		455AC885290D96F700137415 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		455AC887290D96F700137415 /* MastodonAgain.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MastodonAgain.entitlements; sourceTree = "<group>"; };
 		455AC889290D96F700137415 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		457ABA4129216CBE0018A276 /* Blueprint */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Blueprint; sourceTree = "<group>"; };
 		45A27F48291053FB00662B71 /* TimelineStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineStack.swift; sourceTree = "<group>"; };
 		45B45CC1291065870070F1C5 /* PagedContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PagedContentView.swift; sourceTree = "<group>"; };
 		45B45CC3291086660070F1C5 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
@@ -209,6 +210,7 @@
 		455AC891290D981A00137415 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
+				457ABA4129216CBE0018A276 /* Blueprint */,
 				45F1A2B7290E1B720093A8AC /* Mastodon */,
 			);
 			path = Packages;

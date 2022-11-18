@@ -1,4 +1,5 @@
 import AsyncAlgorithms
+import Blueprint
 import Everything
 import Foundation
 import os
@@ -90,6 +91,20 @@ public actor Service {
 }
 
 public extension Service {
+    func perform <RequestResponse, Result>(type: Result.Type, _ requestResponse: (URL, Token) -> RequestResponse) async throws -> Result where RequestResponse: Request & Response, Result: Decodable {
+        guard let token = authorization.token else {
+            fatalError("No host or token.")
+        }
+        let requestResponse = requestResponse(baseURL, token)
+        let result = try await session.perform(requestResponse)
+        guard let result = result as? Result else {
+            throw MastodonError.generic("Could not cast result to \(type).")
+        }
+        return result
+    }
+}
+
+public extension Service {
     func status(for id: Status.ID) async -> Status? {
         datedStatuses[id]?.content
     }
@@ -99,11 +114,7 @@ public extension Service {
         guard let token = authorization.token else {
             fatalError("No host or token.")
         }
-        // https://mastodon.example/api/v1/statuses/:id
-        let url = URL(string: "https://\(host)/api/v1/statuses/\(id.rawValue)")!
-        let request = URLRequest(url: url).headers(token.headers)
-        let (data, _) = try await session.validatedData(for: request)
-        let status = try decoder.decode(Status.self, from: data)
+        let status = try await session.perform(MastodonAPI.Statuses.View(baseURL: baseURL, token: token, id: id)) as! Status
         update(status)
         return status
     }
@@ -117,50 +128,53 @@ public extension Service {
         guard let token = authorization.token else {
             fatalError("No host or token.")
         }
-        // https://mastodon.example/api/v1/statuses/:id
-        let url = URL(string: "https://\(host)/api/v1/accounts/\(id.rawValue)")!
-        let request = URLRequest(url: url).headers(token.headers)
-        let (data, _) = try await session.validatedData(for: request)
-        let status = try decoder.decode(Account.self, from: data)
+        let account = try await session.perform(MastodonAPI.Accounts.Retrieve(baseURL: baseURL, token: token, id: id)) as! Account
+        update(account)
+        return account
+    }
+
+    func favorite(status id: Status.ID, set: Bool = true) async throws -> Status {
+        guard let token = authorization.token else {
+            fatalError("No host or token.")
+        }
+
+        let status: Status
+        if set {
+            status = try await session.perform(MastodonAPI.Statuses.Favourite(baseURL: baseURL, token: token, id: id)) as! Status
+        }
+        else {
+            status = try await session.perform(MastodonAPI.Statuses.Unfavourite(baseURL: baseURL, token: token, id: id)) as! Status
+        }
         update(status)
         return status
     }
 
-    func favorite(status: Status.ID, set: Bool = true) async throws -> Status {
+    func reblog(status id: Status.ID, set: Bool = true) async throws -> Status {
         guard let token = authorization.token else {
             fatalError("No host or token.")
         }
-        let verb = set ? "favourite" : "unfavourite"
-        let url = URL(string: "https://\(host)/api/v1/statuses/\(status.rawValue)/\(verb)")!
-        let request = URLRequest.post(url).headers(token.headers)
-        let (status, _) = try await session.json(Status.self, decoder: decoder, for: request)
-        // TODO: Check response
+        let status: Status
+        if set {
+            status = try await session.perform(MastodonAPI.Statuses.Reblog(baseURL: baseURL, token: token, id: id)) as! Status
+        }
+        else {
+            status = try await session.perform(MastodonAPI.Statuses.Unreblog(baseURL: baseURL, token: token, id: id)) as! Status
+        }
         update(status)
         return status
     }
 
-    func reblog(status: Status.ID, set: Bool = true) async throws -> Status {
+    func bookmark(status id: Status.ID, set: Bool = true) async throws -> Status {
         guard let token = authorization.token else {
             fatalError("No host or token.")
         }
-        let verb = set ? "reblog" : "unreblog"
-        let url = URL(string: "https://\(host)/api/v1/statuses/\(status.rawValue)/\(verb)")!
-        let request = URLRequest.post(url).headers(token.headers)
-        let (status, _) = try await session.json(Status.self, decoder: decoder, for: request)
-        // TODO: Check response
-        update(status)
-        return status
-    }
-
-    func bookmark(status: Status.ID, set: Bool = true) async throws -> Status {
-        guard let token = authorization.token else {
-            fatalError("No host or token.")
+        let status: Status
+        if set {
+            status = try await session.perform(MastodonAPI.Statuses.Bookmark(baseURL: baseURL, token: token, id: id)) as! Status
         }
-        let verb = set ? "bookmark" : "unbookmark"
-        let url = URL(string: "https://\(host)/api/v1/statuses/\(status.rawValue)/\(verb)")!
-        let request = URLRequest.post(url).headers(token.headers)
-        let (status, _) = try await session.json(Status.self, decoder: decoder, for: request)
-        // TODO: Check response
+        else {
+            status = try await session.perform(MastodonAPI.Statuses.Unbookmark(baseURL: baseURL, token: token, id: id)) as! Status
+        }
         update(status)
         return status
     }
