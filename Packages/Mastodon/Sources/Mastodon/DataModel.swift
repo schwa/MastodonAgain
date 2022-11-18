@@ -432,3 +432,33 @@ public struct Relationship: Codable {
         case note
     }
 }
+
+struct Instance: Codable {
+    struct Info: Codable {
+        let shortDescription, fullDescription: String
+        let topic: String?
+        let languages: [String]
+        let otherLanguagesAccepted: Bool
+        let federatesWith: String
+        //let prohibitedContent, categories: [Any?]
+    }
+
+    let id, name: String
+    let addedAt: Date?
+    let updatedAt, checkedAt: String
+    let uptime: Int
+    let up, dead: Bool
+    let version: String
+    let ipv6: Bool
+    let httpsScore: Int
+    let httpsRank: String
+    let obsScore: Int
+    let obsRank, users, statuses, connections: String
+    let openRegistrations: Bool
+    let info: Info
+    let thumbnail: String
+    let thumbnailProxy: String
+    let activeUsers: Int
+    let email, admin: String
+}
+

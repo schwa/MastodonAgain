@@ -463,10 +463,15 @@ struct WebView: View {
     }
 }
 
+// TODO: This needs a better name
+private let storedStorage = DataStorage()
+
 @propertyWrapper
+// TODO: This doesn't work as well as it should. The inner ObservableObject allows it to work "magically" inside SwiftUI Views but causes failure runtime warnings ourside of views.
 struct Stored<Value>: DynamicProperty where Value: Codable {
     let key: String
     let defaultValue: Value
+    let storage: DataStorage
 
     class Cache: ObservableObject {
         @Published
@@ -480,7 +485,7 @@ struct Stored<Value>: DynamicProperty where Value: Codable {
     var wrappedValue: Value {
         get {
             do {
-                let value = try Storage.shared[key].map { try JSONDecoder().decode(Value.self, from: $0) } ?? defaultValue
+                let value = try storage[key].map { try JSONDecoder().decode(Value.self, from: $0) } ?? defaultValue
                 return value
             }
             catch {
@@ -490,7 +495,7 @@ struct Stored<Value>: DynamicProperty where Value: Codable {
         nonmutating set {
             do {
                 let data = try JSONEncoder().encode(newValue)
-                Storage.shared[key] = data
+                storage[key] = data
                 cache.value = newValue
             }
             catch {
@@ -502,6 +507,7 @@ struct Stored<Value>: DynamicProperty where Value: Codable {
     init(wrappedValue: Value, _ key: String) {
         defaultValue = wrappedValue
         self.key = key
+        self.storage = storedStorage
     }
 }
 

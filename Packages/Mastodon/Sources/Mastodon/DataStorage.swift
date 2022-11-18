@@ -4,9 +4,7 @@ import os
 
 private let logger: Logger? = Logger()
 
-public class Storage {
-    public static let shared = Storage()
-
+public class DataStorage {
     public var items: [String: Data] = [:]
 
     public let path = FSPath.applicationSpecificSupportDirectory / "storage.plist"
@@ -60,7 +58,7 @@ public class Storage {
     }
 }
 
-public extension Storage {
+public extension DataStorage {
     subscript<T>(key: String) -> T? where T: Codable {
         get {
             do {
