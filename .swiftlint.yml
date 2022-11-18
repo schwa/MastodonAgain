@@ -72,7 +72,7 @@ only_rules:
     - for_where
     - force_cast
     - force_try
-    - force_unwrapping
+    #- force_unwrapping
     - function_body_length
     # - function_default_parameter_at_end
     - function_parameter_count
@@ -81,8 +81,8 @@ only_rules:
     - identical_operands
     # - identifier_name
     - implicit_getter
-    # - implicit_return
-    # - implicitly_unwrapped_optional
+    - implicit_return
+    - implicitly_unwrapped_optional
     - inclusive_language
     # - indentation_width
     - inert_defer

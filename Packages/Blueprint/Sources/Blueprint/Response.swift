@@ -29,7 +29,8 @@ extension Never: Response {
     public typealias Result = Never
 
     public var response: Never {
-        return uncallable() // Return is necessary alas
+        // swiftlint:disable:next implicit_return
+        return uncallable() // Return is necessary alas to short circule the @resultBuilder
     }
 
     public func canProcess(data: Data, urlResponse: URLResponse) -> Bool {
@@ -103,7 +104,7 @@ extension IfStatus: Response {
 
     public func canProcess(data: Data, urlResponse: URLResponse) -> Bool {
         guard let urlResponse = urlResponse as? HTTPURLResponse else {
-            fatalError() // TODO: throw
+            fatalError("Expected response to be a HTTPURLResponse. It wasn't.")
         }
         return codes.contains(urlResponse.statusCode)
     }

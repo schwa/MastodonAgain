@@ -105,11 +105,13 @@ public extension Service {
 }
 
 public extension Service {
+    @available(*, deprecated, message: "Use MastodonAPI directly")
     func status(for id: Status.ID) async -> Status? {
         datedStatuses[id]?.content
     }
 
     // TODO: All this needs cleanup. Use URLPath to return a (pre-configured) URLRequest
+    @available(*, deprecated, message: "Use MastodonAPI directly")
     func fetchStatus(for id: Status.ID) async throws -> Status {
         guard let token = authorization.token else {
             fatalError("No host or token.")
@@ -120,11 +122,13 @@ public extension Service {
         return status
     }
 
+    @available(*, deprecated, message: "Use MastodonAPI directly")
     func account(for id: Account.ID) async -> Account? {
         datedAccounts[id]?.content
     }
 
     // TODO: All this needs cleanup. Use URLPath to return a (pre-configured) URLRequest
+    @available(*, deprecated, message: "Use MastodonAPI directly")
     func fetchAccount(for id: Account.ID) async throws -> Account {
         guard let token = authorization.token else {
             fatalError("No host or token.")
@@ -135,6 +139,7 @@ public extension Service {
         return account
     }
 
+    @available(*, deprecated, message: "Use MastodonAPI directly")
     func favorite(status id: Status.ID, set: Bool = true) async throws -> Status {
         guard let token = authorization.token else {
             fatalError("No host or token.")
@@ -153,6 +158,7 @@ public extension Service {
         return status
     }
 
+    @available(*, deprecated, message: "Use MastodonAPI directly")
     func reblog(status id: Status.ID, set: Bool = true) async throws -> Status {
         guard let token = authorization.token else {
             fatalError("No host or token.")
@@ -170,6 +176,7 @@ public extension Service {
         return status
     }
 
+    @available(*, deprecated, message: "Use MastodonAPI directly")
     func bookmark(status id: Status.ID, set: Bool = true) async throws -> Status {
         guard let token = authorization.token else {
             fatalError("No host or token.")
@@ -190,6 +197,7 @@ public extension Service {
 
 public extension Service {
     // https://mastodon.example/api/v1/statuses
+    @available(*, deprecated, message: "Use MastodonAPI directly")
     func postStatus(_ newPost: NewPost) async throws -> Status {
         guard let token = authorization.token else {
             fatalError("No host or token.")
@@ -207,6 +215,7 @@ public extension Service {
         return status
     }
 
+    @available(*, deprecated, message: "Use MastodonAPI directly")
     func uploadAttachment(file: URL, description: String) async throws -> MediaAttachment {
         guard let token = authorization.token else {
             fatalError("No host or token.")

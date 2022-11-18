@@ -60,7 +60,7 @@ extension Array: Request where Element: Request {
 
 extension FormParameter: Request {
     public func apply(request: inout PartialRequest) throws {
-        fatalError()
+        unimplemented()
     }
 }
 

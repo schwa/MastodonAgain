@@ -35,14 +35,14 @@ struct RedlineModifier: ViewModifier {
                         }
                     }
                 symbols: {
-                        Text(verbatim: "\(proxy.size.width, format: .number)")
-                            .padding(1)
-                            .background(.thickMaterial)
-                            .tag("width")
-                        Text(verbatim: "\(proxy.size.height, format: .number)")
-                            .padding(1)
-                            .background(.thickMaterial)
-                            .tag("height")
+                    Text(verbatim: "\(proxy.size.width, format: .number)")
+                        .padding(1)
+                        .background(.thickMaterial)
+                        .tag("width")
+                    Text(verbatim: "\(proxy.size.height, format: .number)")
+                        .padding(1)
+                        .background(.thickMaterial)
+                        .tag("height")
                     }
                 }
             }
@@ -306,11 +306,11 @@ extension Path {
 }
 
 extension FSPath {
-    #if os(macOS)
-        func reveal() {
-            NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: "")
-        }
-    #endif
+#if os(macOS)
+    func reveal() {
+        NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: "")
+    }
+#endif
 }
 
 struct DebugDescriptionView<Value>: View {
@@ -553,7 +553,7 @@ struct AccountNoteEditor: View {
                 Button("Save") { [note] in
                     Task {
                         await errorHandler {
-                            let result = try await instanceModel.service.perform(type: Relationship.self) { baseURL, token in
+                            _ = try await instanceModel.service.perform(type: Relationship.self) { baseURL, token in
                                 MastodonAPI.Accounts.Note(baseURL: baseURL, token: token, id: relationship.id, comment: note)
                             }
                             await MainActor.run {
@@ -565,7 +565,7 @@ struct AccountNoteEditor: View {
                 Button("Delete", role: .destructive) {
                     Task {
                         await errorHandler {
-                            let result = try await instanceModel.service.perform(type: Relationship.self) { baseURL, token in
+                            _ = try await instanceModel.service.perform(type: Relationship.self) { baseURL, token in
                                 MastodonAPI.Accounts.Note(baseURL: baseURL, token: token, id: relationship.id, comment: nil)
                             }
                             await MainActor.run {
@@ -587,13 +587,13 @@ struct ImageToggleStyle: ToggleStyle {
     func makeBody(configuration: Configuration) -> some View {
         Button { configuration.isOn.toggle() }
     label: {
-                if configuration.isOn {
-                    Image(systemName: "ladybug").foregroundColor(.red).symbolVariant(.circle)
-                }
-                else {
-                    Image(systemName: "ladybug")
-                }
-            }
+        if configuration.isOn {
+            Image(systemName: "ladybug").foregroundColor(.red).symbolVariant(.circle)
+        }
+        else {
+            Image(systemName: "ladybug")
+        }
+        }
     }
 }
 

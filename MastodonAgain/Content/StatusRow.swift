@@ -42,15 +42,17 @@ struct StatusRow: View, Sendable {
                 Text("reblogged")
             }
             Spacer()
-            Button {
-                openURL(status.url!)
-            } label: {
-                Text(status.created, style: .relative).foregroundColor(.secondary)
+            if let url = status.url {
+                Button {
+                    openURL(url)
+                } label: {
+                    Text(status.created, style: .relative).foregroundColor(.secondary)
+                }
+#if os(macOS)
+                .buttonStyle(.link)
+#endif
+                .fixedSize()
             }
-            #if os(macOS)
-            .buttonStyle(.link)
-            #endif
-            .fixedSize()
         }
     }
 
@@ -275,7 +277,6 @@ struct StatusActions: View {
 
     @Environment(\.errorHandler)
     var errorHandler
-
 
     @State
     var isDebugPopoverPresented = false

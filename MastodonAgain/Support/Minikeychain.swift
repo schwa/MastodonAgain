@@ -176,7 +176,7 @@ extension SecureStorage where Value: Codable {
         }, reverse: {
             do {
                 guard let data = Data(base64Encoded: $0) else {
-                    fatalError()
+                    fatalError("Could not base64 encode data.")
                 }
                 return try JSONDecoder().decode(Value.self, from: data)
             }
