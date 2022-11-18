@@ -110,6 +110,8 @@ struct AccountInfoView: View {
     }
 }
 
+// MARK: -
+
 struct MeAccountInfoView: View {
     @EnvironmentObject
     var appModel: AppModel

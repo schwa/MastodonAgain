@@ -575,3 +575,90 @@ struct AccountNoteEditor: View {
         }
     }
 }
+
+struct ImageToggleStyle: ToggleStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        Button { configuration.isOn.toggle() }
+    label: {
+        if configuration.isOn {
+            Image(systemName: "ladybug").foregroundColor(.red).symbolVariant(.circle)
+        }
+        else {
+            Image(systemName: "ladybug")
+        }
+    }
+    }
+}
+
+// TODO: Hack
+extension UUID: RawRepresentable {
+    public init?(rawValue: String) {
+        self = UUID(uuidString: rawValue)!
+    }
+
+    public var rawValue: String {
+        uuidString
+    }
+}
+
+extension CaseIterable where Self: Equatable {
+    func nextWrapping() -> Self {
+        next(wraps: true)! // TODO: can improve this
+    }
+
+    func next(wraps: Bool = false) -> Self? {
+        let allCases = Self.allCases
+        let index = allCases.index(after: allCases.firstIndex(of: self)!)
+        if index == allCases.endIndex {
+            return wraps ? allCases.first! : nil
+        }
+        else {
+            return allCases[index]
+        }
+    }
+}
+
+
+extension Collection {
+    func nilify() -> Self? {
+        if isEmpty {
+            return nil
+        }
+        else {
+            return self
+        }
+    }
+}
+
+extension Text {
+    init(_ account: Account) {
+        var text = Text("")
+        if !account.displayName.isEmpty {
+            // swiftlint:disable shorthand_operator
+            text = text + Text("\(account.displayName)").bold()
+        }
+        self = text + Text(" ") + Text("@\(account.acct)")
+            .foregroundColor(.secondary)
+    }
+}
+
+extension Collection<Text> {
+    func joined(separator: Text) -> Text {
+        reduce(Text("")) { partialResult, element in
+            partialResult + separator + element
+        }
+    }
+}
+
+extension NSItemProvider: @unchecked Sendable {
+}
+
+extension Locale {
+    var topLevelIdentifier: String {
+        String(identifier.prefix(upTo: identifier.firstIndex(of: "_") ?? identifier.endIndex))
+    }
+
+    static var availableTopLevelIdentifiers: [String] {
+        Locale.availableIdentifiers.filter({ !$0.contains("_") })
+    }
+}

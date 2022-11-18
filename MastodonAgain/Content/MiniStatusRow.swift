@@ -54,11 +54,3 @@ struct MiniStatusRow: View, Sendable {
         }
     }
 }
-
-extension Collection<Text> {
-    func joined(separator: Text) -> Text {
-        reduce(Text("")) { partialResult, element in
-            partialResult + separator + element
-        }
-    }
-}

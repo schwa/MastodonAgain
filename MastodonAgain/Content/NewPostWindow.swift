@@ -3,9 +3,6 @@ import Foundation
 import Mastodon
 import SwiftUI
 
-extension NSItemProvider: @unchecked Sendable {
-}
-
 enum NewPostWindow: Codable, Hashable {
     case empty
     case reply(Status.ID) // TODO: Make full status?
@@ -146,15 +143,5 @@ struct NewPostView: View {
             }
         }
         .disabled(newPost.status.isEmpty || newPost.status.count > 500) // TODO: get limit from instance?
-    }
-}
-
-extension Locale {
-    var topLevelIdentifier: String {
-        String(identifier.prefix(upTo: identifier.firstIndex(of: "_") ?? identifier.endIndex))
-    }
-
-    static var availableTopLevelIdentifiers: [String] {
-        Locale.availableIdentifiers.filter({ !$0.contains("_") })
     }
 }

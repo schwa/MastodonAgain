@@ -46,14 +46,3 @@ class AppModel: ObservableObject {
         }
     }
 }
-
-// TODO: Hack
-extension UUID: RawRepresentable {
-    public init?(rawValue: String) {
-        self = UUID(uuidString: rawValue)!
-    }
-
-    public var rawValue: String {
-        uuidString
-    }
-}

@@ -109,6 +109,8 @@ struct StatusRow: View, Sendable {
     }
 }
 
+// MARK: -
+
 struct StatusActionButton: View {
     let count: Int?
     let label: String
@@ -168,17 +170,7 @@ struct StatusActionButton: View {
     }
 }
 
-extension Text {
-    init(_ account: Account) {
-        var text = Text("")
-        if !account.displayName.isEmpty {
-            // swiftlint:disable shorthand_operator
-            text = text + Text("\(account.displayName)").bold()
-        }
-        self = text + Text(" ") + Text("@\(account.acct)")
-            .foregroundColor(.secondary)
-    }
-}
+// MARK: -
 
 struct StatusContent<Status>: View where Status: StatusProtocol {
     @EnvironmentObject
@@ -230,6 +222,8 @@ struct StatusContent<Status>: View where Status: StatusProtocol {
     }
 }
 
+// MARK: -
+
 struct SensitiveContentModifier: ViewModifier {
     let sensitive: Bool
 
@@ -253,16 +247,7 @@ extension View {
     }
 }
 
-extension Collection {
-    func nilify() -> Self? {
-        if isEmpty {
-            return nil
-        }
-        else {
-            return self
-        }
-    }
-}
+// MARK: -
 
 struct StatusActions: View {
     @Binding

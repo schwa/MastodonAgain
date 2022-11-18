@@ -58,10 +58,6 @@ struct SigninsView: View {
     }
 }
 
-// struct Host {
-//    var host: String
-// }
-
 struct SignInView: View {
     let result: (SignIn?) -> Void
 
@@ -108,6 +104,8 @@ struct HostPicker: View {
         "fosstodon.org",
     ]
 
+// TODO: PickedHost, userhost, host? Rename these!
+
     @State
     var pickedHost: String = "mastodon.social"
 
@@ -125,6 +123,11 @@ struct HostPicker: View {
                 }
             }
             TextField("Host", text: $userHost)
+            Button("Next...") {
+                host = userHost
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(userHost.isEmpty)
         }
         .onChange(of: pickedHost) { pickedHost in
             userHost = pickedHost
