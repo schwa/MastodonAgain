@@ -35,7 +35,6 @@ extension Form: Request {
         .joined(separator: "&")
         request.headers.append(.init(name: "Content-Type", value: "application/x-www-form-urlencoded; charset=utf-8"))
         request.body = bodyString.data(using: .utf8)!
-
     }
 }
 
@@ -677,7 +676,6 @@ public extension MastodonAPI {
         }
 
         public struct Context: Request, Response {
-
             public struct Context_: Codable {
                 let ancestors: [Status]
                 let descendants: [Status]

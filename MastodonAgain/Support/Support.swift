@@ -43,7 +43,7 @@ struct RedlineModifier: ViewModifier {
                         .padding(1)
                         .background(.thickMaterial)
                         .tag("height")
-                }
+                    }
                 }
             }
     }
@@ -155,11 +155,8 @@ struct Avatar: View {
         catch {
             appLogger?.error("Error \(error)")
         }
-
     }
-
 }
-
 
 struct RequestDebugView: View {
     let request: URLRequest
@@ -586,7 +583,7 @@ struct ImageToggleStyle: ToggleStyle {
         else {
             Image(systemName: "ladybug")
         }
-    }
+        }
     }
 }
 
@@ -617,7 +614,6 @@ extension CaseIterable where Self: Equatable {
         }
     }
 }
-
 
 extension Collection {
     func nilify() -> Self? {
