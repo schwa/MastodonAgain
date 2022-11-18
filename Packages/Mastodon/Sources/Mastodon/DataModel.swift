@@ -1,5 +1,6 @@
 import Everything
 import Foundation
+import SwiftUI
 
 // swiftlint:disable file_length
 
@@ -467,4 +468,26 @@ public struct List: Codable {
     public typealias ID = Tagged<List, String>
     public var id: ID
     public var title: String
+}
+
+public struct SignIn: Codable, Identifiable {
+    public var id: String {
+        name
+    }
+
+    public var name: String {
+        "@\(account.acct)@\(host)"
+    }
+
+    public var host: String
+    public var authorization: Authorization
+    public var account: Account
+    public var avatar: Resource<Image>
+
+    public init(host: String, authorization: Authorization, account: Account, avatar: Resource<Image>) {
+        self.host = host
+        self.authorization = authorization
+        self.account = account
+        self.avatar = avatar
+    }
 }
