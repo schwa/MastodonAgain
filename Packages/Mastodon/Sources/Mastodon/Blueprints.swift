@@ -8,7 +8,7 @@ import Foundation
 // https://docs.joinmastodon.org/methods/apps/
 
 func standardResponse<T>(_ type: T.Type) -> some Response where T: Decodable {
-    return IfStatus(200) { data, _ in
+    IfStatus(200) { data, _ in
         try JSONDecoder.mastodonDecoder.decode(T.self, from: data)
     }
 }
@@ -41,7 +41,7 @@ extension Form: Request {
 @resultBuilder
 enum FormBuilder {
     static func buildBlock(_ components: FormParameter?...) -> [FormParameter] {
-        return components.compactMap { $0 }
+        components.compactMap { $0 }
     }
 }
 
@@ -198,6 +198,7 @@ public extension MastodonAPI {
                 standardResponse(Application.self)
             }
         }
+
         public struct Retrieve: Request, Response {
             let baseURL: URL
             let token: Token
@@ -233,12 +234,12 @@ public extension MastodonAPI {
                 baseURL
                 URLPath("/api/v1/accounts/\(id.rawValue)/statuses")
                 Header(name: "Authorization", value: "Bearer \(token.accessToken)")
-                maxID.map { URLQueryItem(name: "max_id", value: $0.rawValue ) }
-                sinceID.map { URLQueryItem(name: "since_id", value: $0.rawValue ) }
-                limit.map { URLQueryItem(name: "limit", value: String($0) ) }
-                minID.map { URLQueryItem(name: "min_id", value: $0.rawValue ) }
-                excludeReblogs.map { URLQueryItem(name: "exclude_reblogs", value: String($0) ) }
-                tagged.map { URLQueryItem(name: "tagged", value: String($0) ) }
+                maxID.map { URLQueryItem(name: "max_id", value: $0.rawValue) }
+                sinceID.map { URLQueryItem(name: "since_id", value: $0.rawValue) }
+                limit.map { URLQueryItem(name: "limit", value: String($0)) }
+                minID.map { URLQueryItem(name: "min_id", value: $0.rawValue) }
+                excludeReblogs.map { URLQueryItem(name: "exclude_reblogs", value: String($0)) }
+                tagged.map { URLQueryItem(name: "tagged", value: String($0)) }
             }
 
             public var response: some Response {
@@ -259,9 +260,9 @@ public extension MastodonAPI {
                 baseURL
                 URLPath("/api/v1/accounts/\(id.rawValue)/followers")
                 Header(name: "Authorization", value: "Bearer \(token.accessToken)")
-                maxID.map { URLQueryItem(name: "max_id", value: $0.rawValue ) }
-                sinceID.map { URLQueryItem(name: "since_id", value: $0.rawValue ) }
-                limit.map { URLQueryItem(name: "limit", value: String($0) ) }
+                maxID.map { URLQueryItem(name: "max_id", value: $0.rawValue) }
+                sinceID.map { URLQueryItem(name: "since_id", value: $0.rawValue) }
+                limit.map { URLQueryItem(name: "limit", value: String($0)) }
             }
 
             public var response: some Response {
@@ -291,9 +292,9 @@ public extension MastodonAPI {
                 baseURL
                 URLPath("/api/v1/accounts/\(id.rawValue)/following")
                 Header(name: "Authorization", value: "Bearer \(token.accessToken)")
-                maxID.map { URLQueryItem(name: "max_id", value: $0.rawValue ) }
-                sinceID.map { URLQueryItem(name: "since_id", value: $0.rawValue ) }
-                limit.map { URLQueryItem(name: "limit", value: String($0) ) }
+                maxID.map { URLQueryItem(name: "max_id", value: $0.rawValue) }
+                sinceID.map { URLQueryItem(name: "since_id", value: $0.rawValue) }
+                limit.map { URLQueryItem(name: "limit", value: String($0)) }
             }
 
             public var response: some Response {

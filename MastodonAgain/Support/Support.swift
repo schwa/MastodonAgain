@@ -35,14 +35,14 @@ struct RedlineModifier: ViewModifier {
                         }
                     }
                 symbols: {
-                    Text(verbatim: "\(proxy.size.width, format: .number)")
-                        .padding(1)
-                        .background(.thickMaterial)
-                        .tag("width")
-                    Text(verbatim: "\(proxy.size.height, format: .number)")
-                        .padding(1)
-                        .background(.thickMaterial)
-                        .tag("height")
+                        Text(verbatim: "\(proxy.size.width, format: .number)")
+                            .padding(1)
+                            .background(.thickMaterial)
+                            .tag("width")
+                        Text(verbatim: "\(proxy.size.height, format: .number)")
+                            .padding(1)
+                            .background(.thickMaterial)
+                            .tag("height")
                     }
                 }
             }
@@ -306,11 +306,11 @@ extension Path {
 }
 
 extension FSPath {
-#if os(macOS)
-    func reveal() {
-        NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: "")
-    }
-#endif
+    #if os(macOS)
+        func reveal() {
+            NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: "")
+        }
+    #endif
 }
 
 struct DebugDescriptionView<Value>: View {
@@ -577,13 +577,13 @@ struct ImageToggleStyle: ToggleStyle {
     func makeBody(configuration: Configuration) -> some View {
         Button { configuration.isOn.toggle() }
     label: {
-        if configuration.isOn {
-            Image(systemName: "ladybug").foregroundColor(.red).symbolVariant(.circle)
-        }
-        else {
-            Image(systemName: "ladybug")
-        }
-        }
+                if configuration.isOn {
+                    Image(systemName: "ladybug").foregroundColor(.red).symbolVariant(.circle)
+                }
+                else {
+                    Image(systemName: "ladybug")
+                }
+            }
     }
 }
 

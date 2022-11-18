@@ -72,7 +72,7 @@ public func validate<T>(_ item: (T, URLResponse)) throws -> (T, URLResponse) {
 
 public extension [String: String] {
     var formEncoded: Data {
-                //             client_name=Test+Application&redirect_uris=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&scopes=read+write+follow+push&website=https%3A%2F%2Fmyapp.example
+        //             client_name=Test+Application&redirect_uris=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&scopes=read+write+follow+push&website=https%3A%2F%2Fmyapp.example
 
         let bodyString = map { key, value in
             let key = key
@@ -90,11 +90,11 @@ public extension [String: String] {
 }
 
 // TODO: Already exposed by Blueprint
-//extension CharacterSet: ExpressibleByStringLiteral {
+// extension CharacterSet: ExpressibleByStringLiteral {
 //    public init(stringLiteral value: String) {
 //        self = CharacterSet(charactersIn: value)
 //    }
-//}
+// }
 
 public extension CharacterSet {
     static func + (lhs: CharacterSet, rhs: CharacterSet) -> CharacterSet {

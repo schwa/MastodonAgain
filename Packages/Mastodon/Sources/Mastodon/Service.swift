@@ -91,7 +91,7 @@ public actor Service {
 }
 
 public extension Service {
-    func perform <RequestResponse, Result>(type: Result.Type, _ requestResponse: (URL, Token) -> RequestResponse) async throws -> Result where RequestResponse: Request & Response, Result: Decodable {
+    func perform<Result>(type: Result.Type, _ requestResponse: (URL, Token) -> some Request & Response) async throws -> Result where Result: Decodable {
         guard let token = authorization.token else {
             fatalError("No host or token.")
         }

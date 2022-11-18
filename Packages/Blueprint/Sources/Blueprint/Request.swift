@@ -24,7 +24,7 @@ public extension Request where RequestContent == Never {
 @resultBuilder
 public enum RequestBuilder {
     public static func buildBlock(_ components: (any Request)?...) -> CompositeRequest {
-        return CompositeRequest(children: components.compactMap({ $0 }))
+        CompositeRequest(children: components.compactMap({ $0 }))
     }
 }
 

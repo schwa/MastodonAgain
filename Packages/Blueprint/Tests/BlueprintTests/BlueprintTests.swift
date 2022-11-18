@@ -1,5 +1,5 @@
-import XCTest
 import Blueprint
+import XCTest
 
 public enum MastodonAPI {
     struct Application: Codable, Hashable {
@@ -50,7 +50,7 @@ class MyTests: XCTestCase {
     }
 }
 
-func test <R>(_ requestResponse: R, data: Data, urlResponse: URLResponse) throws -> R.ResponseContent.Result where R: Request & Response {
+func test<R>(_ requestResponse: R, data: Data, urlResponse: URLResponse) throws -> R.ResponseContent.Result where R: Request & Response {
     let urlRequest = try URLRequest(requestResponse)
     let result = try requestResponse.response.process(data: data, urlResponse: urlResponse)
     return result

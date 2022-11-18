@@ -15,7 +15,7 @@ public extension URLRequest {
 }
 
 public extension URLSession {
-    func perform <R>(_ requestResponse: R) async throws -> R.ResponseContent.Result where R: Request, R: Response {
+    func perform<R>(_ requestResponse: R) async throws -> R.ResponseContent.Result where R: Request, R: Response {
         var partialRequest = PartialRequest()
         try requestResponse.apply(request: &partialRequest)
         let urlRequest = try URLRequest(partialRequest)

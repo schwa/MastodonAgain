@@ -1,7 +1,7 @@
 import Foundation
 import UniformTypeIdentifiers
 
-public struct JSONBody <Content> where Content: Codable {
+public struct JSONBody<Content> where Content: Codable {
     public let contentType = "application/json"
     public let content: Content
     public let encoder: JSONEncoder
@@ -12,7 +12,7 @@ public struct JSONBody <Content> where Content: Codable {
     }
 
     public func toData() throws -> some DataProtocol {
-        return try JSONEncoder().encode(content)
+        try JSONEncoder().encode(content)
     }
 }
 
@@ -35,7 +35,7 @@ public struct FormBody {
                 .addingPercentEncoding(withAllowedCharacters: .alphanumerics + .punctuationCharacters + "+")!
             return "\(key)=\(value)"
         }
-            .joined(separator: "&")
+        .joined(separator: "&")
         return bodyString.data(using: .utf8)!
     }
 }
@@ -49,7 +49,7 @@ public struct MultipartForm {
         }
 
         public static func value(_ value: String) -> FormValue {
-            return FormValue { name in
+            FormValue { name in
                 let lines = [
                     "Content-Disposition: form-data; name=\"\(name)\"",
                     "",
@@ -61,7 +61,7 @@ public struct MultipartForm {
         }
 
         public static func file(filename: String, mimetype: String, content: Data) -> FormValue {
-            return FormValue { name in
+            FormValue { name in
                 let lines = [
                     "Content-Disposition: form-data; name=\"\(name)\"; filename=\"\(filename)\"",
                     "Content-Type: \(mimetype)",

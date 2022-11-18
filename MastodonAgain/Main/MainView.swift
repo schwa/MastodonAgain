@@ -107,4 +107,3 @@ enum MainTabs: String, CaseIterable {
 //        Label("Me", systemImage: "person.text.rectangle").badge(1).tag(MainTabs.me)
 //        Label("Canned Timeline", systemImage: "oilcan").tag(MainTabs.cannedTimeline)
 }
-

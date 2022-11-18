@@ -14,13 +14,13 @@ public protocol Response {
 
 public extension Response {
     func canProcess(data: Data, urlResponse: URLResponse) -> Bool {
-        return self.response.canProcess(data: data, urlResponse: urlResponse)
+        response.canProcess(data: data, urlResponse: urlResponse)
     }
 }
 
 public extension Response where ResponseContent.Result == Result {
     func process(data: Data, urlResponse: URLResponse) throws -> Result {
-        try self.response.process(data: data, urlResponse: urlResponse)
+        try response.process(data: data, urlResponse: urlResponse)
     }
 }
 
@@ -35,6 +35,7 @@ extension Never: Response {
     public func canProcess(data: Data, urlResponse: URLResponse) -> Bool {
         uncallable()
     }
+
     public func process(data: Data, urlResponse: URLResponse) throws -> Never {
         uncallable()
     }
@@ -42,7 +43,7 @@ extension Never: Response {
 
 public extension Response where ResponseContent == Never {
     var response: Never {
-        return uncallable()
+        uncallable()
     }
 }
 
@@ -50,6 +51,7 @@ public extension Response where Result == Never {
     func canProcess(data: Data, urlResponse: URLResponse) -> Bool {
         uncallable()
     }
+
     func process(data: Data, urlResponse: URLResponse) throws -> Never {
         uncallable()
     }
@@ -57,14 +59,14 @@ public extension Response where Result == Never {
 
 @resultBuilder
 public enum ResponseBuilder {
-    public static func buildBlock <C>(_ components: C?...) -> CompositeResponse<C> where C: Response {
+    public static func buildBlock<C>(_ components: C?...) -> CompositeResponse<C> where C: Response {
         CompositeResponse(components: components.compactMap { $0 })
     }
 }
 
 // MARK: -
 
-public struct CompositeResponse <C> where C: Response {
+public struct CompositeResponse<C> where C: Response {
     public typealias Result = C.Result
     public let components: [C]
 }
@@ -86,12 +88,12 @@ extension CompositeResponse: Response {
 
 // MARK: -
 
-public struct IfStatus <Result> {
+public struct IfStatus<Result> {
     let codes: Set<Int>
     let block: (_ data: Data, _ urlResponse: URLResponse) throws -> Result
 
     public init(_ code: Int, block: @escaping (_ data: Data, _ urlResponse: URLResponse) throws -> Result) {
-        self.codes = [code]
+        codes = [code]
         self.block = block
     }
 }
@@ -113,7 +115,7 @@ extension IfStatus: Response {
 
 // MARK: -
 
-public struct ConstantResponse <Result> {
+public struct ConstantResponse<Result> {
     let value: Result
 
     public init(_ value: Result) {
@@ -121,7 +123,7 @@ public struct ConstantResponse <Result> {
     }
 }
 
-//extension ConstantResponse: Response {
+// extension ConstantResponse: Response {
 //    public typealias ResponseContent = Never
 //
 //    public func canProcess(data: Data, urlResponse: URLResponse) throws -> Bool {
@@ -131,4 +133,4 @@ public struct ConstantResponse <Result> {
 //    public func process(data: Data, urlResponse: URLResponse) throws -> Result {
 //        return value
 //    }
-//}
+// }

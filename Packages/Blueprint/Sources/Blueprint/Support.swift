@@ -22,7 +22,7 @@ extension CharacterSet {
 
 extension Character {
     static func random(in set: String) -> Character {
-        return set.randomElement()!
+        set.randomElement()!
     }
 }
 
@@ -42,7 +42,7 @@ public struct URLPath: Hashable {
     public let rawValue: String
 
     public init(_ path: String) {
-        self.rawValue = path
+        rawValue = path
     }
 }
 

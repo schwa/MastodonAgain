@@ -103,4 +103,3 @@ struct TimelineView: View, Sendable {
         }
     }
 }
-

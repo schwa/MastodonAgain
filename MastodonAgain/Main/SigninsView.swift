@@ -104,7 +104,7 @@ struct HostPicker: View {
         "fosstodon.org",
     ]
 
-// TODO: PickedHost, userhost, host? Rename these!
+    // TODO: PickedHost, userhost, host? Rename these!
 
     @State
     var pickedHost: String = "mastodon.social"

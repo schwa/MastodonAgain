@@ -109,4 +109,3 @@ struct MyGroupBoxStyle: GroupBoxStyle {
         .groupBoxStyle(.automatic)
     }
 }
-

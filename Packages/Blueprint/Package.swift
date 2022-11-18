@@ -10,7 +10,7 @@ let package = Package(
         .iOS(.v16),
     ],
     products: [
-        .library(name: "Blueprint", targets: ["Blueprint"])
+        .library(name: "Blueprint", targets: ["Blueprint"]),
     ],
     dependencies: [
         .package(url: "https://github.com/schwa/Everything.git", branch: "main"),
@@ -19,6 +19,7 @@ let package = Package(
         .target(name: "Blueprint", dependencies: ["Everything"]),
         .testTarget(
             name: "BlueprintTests",
-            dependencies: ["Blueprint"]),
+            dependencies: ["Blueprint"]
+        ),
     ]
 )
