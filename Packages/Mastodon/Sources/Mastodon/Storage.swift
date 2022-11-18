@@ -12,7 +12,7 @@ public class Storage {
     public let path = FSPath.applicationSpecificSupportDirectory / "storage.plist"
 
     public init() {
-        try! load()
+        try? load()
     }
 
     public subscript(key: String) -> Data? {
@@ -30,8 +30,12 @@ public class Storage {
                 items[key] = newValue
                 logger?.debug("Erasing data for key: \(key)")
             }
-
-            try! save()
+            do {
+                try save()
+            }
+            catch {
+                fatal(error: error)
+            }
         }
     }
 
@@ -46,27 +50,42 @@ public class Storage {
 
     public func save() throws {
         logger?.debug("Storage.save")
-        let data = try! PropertyListEncoder().encode(items)
-        try data.write(to: path.url)
+        do {
+            let data = try PropertyListEncoder().encode(items)
+            try data.write(to: path.url)
+        }
+        catch {
+            fatal(error: error)
+        }
     }
 }
 
 public extension Storage {
     subscript<T>(key: String) -> T? where T: Codable {
         get {
-            guard let data = self[key] else {
-                return nil
+            do {
+                guard let data = self[key] else {
+                    return nil
+                }
+                let value = try JSONDecoder().decode(T.self, from: data)
+                return value
             }
-            let value = try! JSONDecoder().decode(T.self, from: data)
-            return value
+            catch {
+                fatal(error: error)
+            }
         }
         set {
-            if let newValue {
-                let data = try! JSONEncoder().encode(newValue)
-                self[key] = data
+            do {
+                if let newValue {
+                    let data = try JSONEncoder().encode(newValue)
+                    self[key] = data
+                }
+                else {
+                    self[key] = nil
+                }
             }
-            else {
-                self[key] = nil
+            catch {
+                fatal(error: error)
             }
         }
     }

@@ -14,6 +14,7 @@ public extension Service {
         // TODO: Are all empty statuses the same even if they have different Cursors?
         var cursor = PagedContent<Status>.Page.Cursor()
         if let link = response.allHeaderFields["Link"] {
+            // swiftlint:disable:next force_cast
             let link = link as! String
             let links = try processLinks(string: link)
             if let previous = links["prev"] {

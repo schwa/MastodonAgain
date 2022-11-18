@@ -70,9 +70,9 @@ only_rules:
     - first_where
     - flatmap_over_map_reduce
     - for_where
-    # - force_cast
-    # - force_try
-    # - force_unwrapping
+    - force_cast
+    - force_try
+    - force_unwrapping
     - function_body_length
     # - function_default_parameter_at_end
     - function_parameter_count

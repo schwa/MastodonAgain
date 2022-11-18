@@ -15,6 +15,7 @@ public extension URLRequest {
 }
 
 public extension URLSession {
+    @available(*, deprecated, message: "Not acutally deprecated but we have better alernatives right now.")
     func perform<R>(_ requestResponse: R) async throws -> R.ResponseContent.Result where R: Request, R: Response {
         var partialRequest = PartialRequest()
         try requestResponse.apply(request: &partialRequest)

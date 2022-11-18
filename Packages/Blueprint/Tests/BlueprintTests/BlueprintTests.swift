@@ -43,6 +43,7 @@ class MyTests: XCTestCase {
         let data = try JSONEncoder().encode(MastodonAPI.Application())
         let result = try verify.response.process(data: data, urlResponse: urlResponse)
         print(type(of: result))
+        // swiftlint:disable force_cast
         XCTAssertEqual(result as! MastodonAPI.Application, MastodonAPI.Application())
 
         let result2 = try test(verify, data: data, urlResponse: urlResponse)

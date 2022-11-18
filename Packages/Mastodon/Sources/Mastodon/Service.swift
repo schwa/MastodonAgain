@@ -114,6 +114,7 @@ public extension Service {
         guard let token = authorization.token else {
             fatalError("No host or token.")
         }
+        // swiftlint:disable:next force_cast
         let status = try await session.perform(MastodonAPI.Statuses.View(baseURL: baseURL, token: token, id: id)) as! Status
         update(status)
         return status
@@ -128,6 +129,7 @@ public extension Service {
         guard let token = authorization.token else {
             fatalError("No host or token.")
         }
+        // swiftlint:disable:next force_cast
         let account = try await session.perform(MastodonAPI.Accounts.Retrieve(baseURL: baseURL, token: token, id: id)) as! Account
         update(account)
         return account
@@ -140,9 +142,11 @@ public extension Service {
 
         let status: Status
         if set {
+            // swiftlint:disable:next force_cast
             status = try await session.perform(MastodonAPI.Statuses.Favourite(baseURL: baseURL, token: token, id: id)) as! Status
         }
         else {
+            // swiftlint:disable:next force_cast
             status = try await session.perform(MastodonAPI.Statuses.Unfavourite(baseURL: baseURL, token: token, id: id)) as! Status
         }
         update(status)
@@ -155,9 +159,11 @@ public extension Service {
         }
         let status: Status
         if set {
+            // swiftlint:disable:next force_cast
             status = try await session.perform(MastodonAPI.Statuses.Reblog(baseURL: baseURL, token: token, id: id)) as! Status
         }
         else {
+            // swiftlint:disable:next force_cast
             status = try await session.perform(MastodonAPI.Statuses.Unreblog(baseURL: baseURL, token: token, id: id)) as! Status
         }
         update(status)
@@ -170,9 +176,11 @@ public extension Service {
         }
         let status: Status
         if set {
+            // swiftlint:disable:next force_cast
             status = try await session.perform(MastodonAPI.Statuses.Bookmark(baseURL: baseURL, token: token, id: id)) as! Status
         }
         else {
+            // swiftlint:disable:next force_cast
             status = try await session.perform(MastodonAPI.Statuses.Unbookmark(baseURL: baseURL, token: token, id: id)) as! Status
         }
         update(status)

@@ -31,13 +31,13 @@ struct MiniStatusRow: View, Sendable {
                     Avatar(account: reblog.account).frame(width: 20, height: 20)
                 }
                 Text(reblog.account.displayName).bold()
-                Text(reblog.attributedContent).padding(2).background(Color.blue.opacity(0.1)).lineLimit(1)
+                (try? reblog.attributedContent).map { Text($0).padding(2).background(Color.blue.opacity(0.1)).lineLimit(1) }
+
             }
             else {
                 Avatar(account: status.account).frame(width: 20, height: 20)
-
-                Text(status.account.displayName).bold()
-                Text(status.attributedContent).lineLimit(1)
+                    Text(status.account.displayName).bold()
+                    (try? status.attributedContent).map { Text($0).lineLimit(1) }
             }
             if !status.mediaAttachments.isEmpty || (status.reblog?.mediaAttachments.isEmpty ?? false) {
                 Image(systemName: "photo")

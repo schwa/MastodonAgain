@@ -199,8 +199,13 @@ struct StatusContent<Status>: View where Status: StatusProtocol {
                 .controlSize(.small)
             }
             VStack(alignment: .leading) {
-                Text(appModel.useMarkdownContent ? status.markdownContent : status.attributedContent)
-                    .textSelection(.enabled)
+                // TODO: Gross.
+                if appModel.useMarkdownContent {
+                    (try? status.markdownContent).map { Text($0).textSelection(.enabled) }
+                }
+                else {
+                    (try? status.attributedContent).map { Text($0).textSelection(.enabled) }
+                }
                 if !status.mediaAttachments.isEmpty {
                     MediaStack(attachments: status.mediaAttachments)
                 }
@@ -268,6 +273,10 @@ struct StatusActions: View {
     @Environment(\.openWindow)
     var openWindow
 
+    @Environment(\.errorHandler)
+    var errorHandler
+
+
     @State
     var isDebugPopoverPresented = false
 
@@ -302,12 +311,14 @@ struct StatusActions: View {
         let resolvedStatus: any StatusProtocol = status.reblog ?? status
         let reblogged = resolvedStatus.reblogged ?? false
         StatusActionButton(count: resolvedStatus.reblogsCount, label: "reblog", systemImage: "arrow.2.squarepath", isOn: reblogged) { [instanceModel, status] in
-            // TODO: what status do we get back here?
-            _ = try! await instanceModel.service.reblog(status: resolvedStatus.id, set: !reblogged)
-            // TODO: Because of uncertainty of previous TODO - fetch a fresh status
-            let newStatus = try! await instanceModel.service.fetchStatus(for: status.id)
-            await MainActor.run {
-                self.status = newStatus
+            await errorHandler {
+                // TODO: what status do we get back here?
+                _ = try await instanceModel.service.reblog(status: resolvedStatus.id, set: !reblogged)
+                // TODO: Because of uncertainty of previous TODO - fetch a fresh status
+                let newStatus = try await instanceModel.service.fetchStatus(for: status.id)
+                await MainActor.run {
+                    self.status = newStatus
+                }
             }
         }
     }
@@ -323,12 +334,14 @@ struct StatusActions: View {
         let resolvedStatus: any StatusProtocol = status.reblog ?? status
         let favourited = resolvedStatus.favourited ?? false
         StatusActionButton(count: resolvedStatus.favouritesCount, label: "Favourite", systemImage: "star", isOn: favourited) { [instanceModel, status] in
-            // TODO: what status do we get back here?
-            _ = try! await instanceModel.service.favorite(status: resolvedStatus.id, set: !favourited)
-            // TODO: Because of uncertainty of previous TODO - fetch a fresh status
-            let newStatus = try! await instanceModel.service.fetchStatus(for: status.id)
-            await MainActor.run {
-                self.status = newStatus
+            await errorHandler {
+                // TODO: what status do we get back here?
+                _ = try await instanceModel.service.favorite(status: resolvedStatus.id, set: !favourited)
+                // TODO: Because of uncertainty of previous TODO - fetch a fresh status
+                let newStatus = try await instanceModel.service.fetchStatus(for: status.id)
+                await MainActor.run {
+                    self.status = newStatus
+                }
             }
         }
     }
@@ -338,12 +351,14 @@ struct StatusActions: View {
         let resolvedStatus: any StatusProtocol = status.reblog ?? status
         let bookmarked = resolvedStatus.bookmarked ?? false
         StatusActionButton(label: "Bookmark", systemImage: "bookmark", isOn: bookmarked) { [instanceModel, status] in
-            // TODO: what status do we get back here?
-            _ = try! await instanceModel.service.bookmark(status: resolvedStatus.id, set: !bookmarked)
-            // TODO: Because of uncertainty of previous TODO - fetch a fresh status
-            let newStatus = try! await instanceModel.service.fetchStatus(for: status.id)
-            await MainActor.run {
-                self.status = newStatus
+            await errorHandler {
+                // TODO: what status do we get back here?
+                _ = try await instanceModel.service.bookmark(status: resolvedStatus.id, set: !bookmarked)
+                // TODO: Because of uncertainty of previous TODO - fetch a fresh status
+                let newStatus = try await instanceModel.service.fetchStatus(for: status.id)
+                await MainActor.run {
+                    self.status = newStatus
+                }
             }
         }
     }

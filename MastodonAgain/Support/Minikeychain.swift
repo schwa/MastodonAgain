@@ -1,3 +1,4 @@
+import Everything
 import Foundation
 import os
 import Security
@@ -165,8 +166,23 @@ class SecureStorage<Value> {
 
 extension SecureStorage where Value: Codable {
     convenience init(_ key: String) {
-        self.init(key, converter: { try! JSONEncoder().encode($0).base64EncodedString() }, reverse: {
-            try! JSONDecoder().decode(Value.self, from: Data(base64Encoded: $0)!)
+        self.init(key, converter: {
+            do {
+                return try JSONEncoder().encode($0).base64EncodedString()
+            }
+            catch {
+                fatal(error: error)
+            }
+        }, reverse: {
+            do {
+                guard let data = Data(base64Encoded: $0) else {
+                    fatalError()
+                }
+                return try JSONDecoder().decode(Value.self, from: data)
+            }
+            catch {
+                fatal(error: error)
+            }
         })
     }
 }

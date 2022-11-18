@@ -176,30 +176,37 @@ public extension URLSession {
 
 public extension StatusProtocol {
     var markdownContent: AttributedString {
-        guard !content.isEmpty else {
-            return AttributedString()
+        get throws {
+            guard !content.isEmpty else {
+                return AttributedString()
+            }
+            let pattern = #/^<p>(.+)</p>$/#
+            let match = content.firstMatch(of: pattern)!
+            let (_, content) = match.output
+
+            var options = AttributedString.MarkdownParsingOptions()
+            options.languageCode = language.nilify()
+            options.allowsExtendedAttributes = true
+            options.appliesSourcePositionAttributes = true
+            options.failurePolicy = .throwError
+            options.interpretedSyntax = .full
+
+            // TODO: Danger danger
+            return try AttributedString(markdown: String(content), options: options, baseURL: nil)
         }
-        let pattern = #/^<p>(.+)</p>$/#
-        let match = content.firstMatch(of: pattern)!
-        let (_, content) = match.output
-
-        var options = AttributedString.MarkdownParsingOptions()
-        options.languageCode = language.nilify()
-        options.allowsExtendedAttributes = true
-        options.appliesSourcePositionAttributes = true
-        options.failurePolicy = .throwError
-        options.interpretedSyntax = .full
-
-        // TODO: Danger danger
-        return try! AttributedString(markdown: String(content), options: options, baseURL: nil)
     }
 
     var attributedContent: AttributedString {
-        #if os(macOS)
+        get throws {
+#if os(macOS)
             let header = #"<meta charset="UTF-8">"#
             let html = header + content
-            let htmlData = html.data(using: .utf8)!
-            let nsAttributedContent = NSAttributedString(html: htmlData, documentAttributes: nil)!
+            guard let htmlData = html.data(using: .utf8) else {
+                throw MastodonError.generic("Could not decode UTF-8 encoded data.")
+            }
+            guard let nsAttributedContent = NSAttributedString(html: htmlData, documentAttributes: nil) else {
+                throw MastodonError.generic("Could create HTML from data.")
+            }
             var attributedContent = AttributedString(nsAttributedContent)
             var container = AttributeContainer()
             container[AttributeScopes.SwiftUIAttributes.FontAttribute.self] = .body
@@ -209,9 +216,10 @@ public extension StatusProtocol {
                 attributedContent.characters.removeLast()
             }
             return attributedContent
-        #elseif os(iOS)
+#elseif os(iOS)
             return AttributedString() // TODO: Placeholder
-        #endif
+#endif
+        }
     }
 }
 
@@ -254,7 +262,9 @@ public extension MediaAttachment.Meta.Size {
 extension URLSession {
     func validatedData(for request: URLRequest) async throws -> (Data, HTTPURLResponse) {
         let (data, response) = try await data(for: request)
-        let httpResponse = response as! HTTPURLResponse
+        guard let httpResponse = response as? HTTPURLResponse else {
+            fatalError("Expected response to be a HTTPURLResponse. Boy was I wrong.")
+        }
         switch httpResponse.statusCode {
         case 200 ..< 299:
             return (data, httpResponse)

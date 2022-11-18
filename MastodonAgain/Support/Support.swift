@@ -479,13 +479,23 @@ struct Stored<Value>: DynamicProperty where Value: Codable {
     @MainActor
     var wrappedValue: Value {
         get {
-            let value = Storage.shared[key].map { try! JSONDecoder().decode(Value.self, from: $0) } ?? defaultValue
-            return value
+            do {
+                let value = try Storage.shared[key].map { try JSONDecoder().decode(Value.self, from: $0) } ?? defaultValue
+                return value
+            }
+            catch {
+                fatal(error: error)
+            }
         }
         nonmutating set {
-            let data = try! JSONEncoder().encode(newValue)
-            Storage.shared[key] = data
-            cache.value = newValue
+            do {
+                let data = try JSONEncoder().encode(newValue)
+                Storage.shared[key] = data
+                cache.value = newValue
+            }
+            catch {
+                fatal(error: error)
+            }
         }
     }
 

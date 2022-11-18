@@ -25,6 +25,7 @@ public extension Service {
         guard let token = authorization.token else {
             fatalError("No host or token.")
         }
+        // swiftlint:disable:next force_cast
         return try await session.perform(MastodonAPI.Accounts.Verify(baseURL: baseURL, token: token)) as! Account
     }
 
@@ -32,6 +33,7 @@ public extension Service {
         guard let token = authorization.token else {
             fatalError("No host or token.")
         }
+        // swiftlint:disable:next force_cast
         let results = try await session.perform(MastodonAPI.Accounts.Search(baseURL: baseURL, token: token, query: username, limit: 1, resolve: true)) as! [Account]
         return results.first
     }
@@ -41,6 +43,7 @@ public extension Service {
         guard let token = authorization.token else {
             fatalError("No host or token.")
         }
+        // swiftlint:disable:next force_cast
         return try await session.perform(MastodonAPI.Accounts.Following(baseURL: baseURL, token: token, id: account.id, limit: 1000)) as! [Account]
     }
 
