@@ -5,8 +5,6 @@ import Foundation
 // swiftlint:disable file_length
 // swiftlint:disable type_body_length
 
-// https://docs.joinmastodon.org/methods/apps/
-
 func standardResponse<T>(_ type: T.Type) -> some Response where T: Decodable {
     IfStatus(200) { data, _ in
         try JSONDecoder.mastodonDecoder.decode(T.self, from: data)
@@ -70,6 +68,8 @@ public enum MastodonAPI {
 }
 
 // MARK: -
+
+// https://docs.joinmastodon.org/methods/apps/
 
 public extension MastodonAPI {
     enum Apps {
@@ -329,10 +329,6 @@ public extension MastodonAPI {
 
         public struct Lists: Request, Response {
             // TODO: Move
-            public struct List: Codable {
-                let id: String // TODO: Make tagged.
-                let title: String
-            }
 
             let baseURL: URL
             let token: Token
@@ -346,7 +342,7 @@ public extension MastodonAPI {
             }
 
             public var response: some Response {
-                standardResponse([List].self)
+                standardResponse([Mastodon.List].self)
             }
         }
 
@@ -623,6 +619,8 @@ public extension MastodonAPI {
 }
 
 // MARK: -
+
+// https://docs.joinmastodon.org/methods/statuses/
 
 public extension MastodonAPI {
     enum Statuses {
@@ -902,4 +900,221 @@ public extension MastodonAPI {
             }
         }
     }
+}
+
+// https://docs.joinmastodon.org/methods/timelines/
+
+public extension MastodonAPI {
+    enum Timelimes {
+        public struct Public: Request, Response {
+            let baseURL: URL
+            let token: Token
+            let local: Bool?
+            let remote: Bool?
+            let onlyMedia: Bool?
+            let maxID: Status.ID?
+            let sinceID: Status.ID?
+            let minID: Status.ID?
+            let limit: Int?
+
+            public var request: some Request {
+                Method.get
+                baseURL
+                URLPath("/api/v1/timelines/public")
+                local.map { URLQueryItem(name: "local", value: String($0)) }
+                remote.map { URLQueryItem(name: "remote", value: String($0)) }
+                onlyMedia.map { URLQueryItem(name: "only_media", value: String($0)) }
+                maxID.map { URLQueryItem(name: "max_id", value: $0.rawValue) }
+                sinceID.map { URLQueryItem(name: "since_id", value: $0.rawValue) }
+                minID.map { URLQueryItem(name: "min_id", value: $0.rawValue) }
+                limit.map { URLQueryItem(name: "limit", value: String($0)) }
+                Header(name: "Authorization", value: "Bearer \(token.accessToken)")
+            }
+
+            public var response: some Response {
+                standardResponse(Status.self)
+            }
+        }
+
+        public struct Hashtag: Request, Response {
+            let baseURL: URL
+            let token: Token
+            let hashtag: String
+            let local: Bool?
+            let onlyMedia: Bool?
+            let maxID: Status.ID?
+            let sinceID: Status.ID?
+            let minID: Status.ID?
+            let limit: Int?
+
+            public var request: some Request {
+                Method.get
+                baseURL
+                URLPath("/api/v1/timelines/tag/\(hashtag)")
+                local.map { URLQueryItem(name: "local", value: String($0)) }
+                onlyMedia.map { URLQueryItem(name: "only_media", value: String($0)) }
+                maxID.map { URLQueryItem(name: "max_id", value: $0.rawValue) }
+                sinceID.map { URLQueryItem(name: "since_id", value: $0.rawValue) }
+                minID.map { URLQueryItem(name: "min_id", value: $0.rawValue) }
+                limit.map { URLQueryItem(name: "limit", value: String($0)) }
+                Header(name: "Authorization", value: "Bearer \(token.accessToken)")
+            }
+
+            public var response: some Response {
+                standardResponse(Status.self)
+            }
+        }
+
+        public struct Home: Request, Response {
+            let baseURL: URL
+            let token: Token
+            let local: Bool?
+            let maxID: Status.ID?
+            let sinceID: Status.ID?
+            let minID: Status.ID?
+            let limit: Int?
+
+            public var request: some Request {
+                Method.get
+                baseURL
+                URLPath("/api/v1/timelines/home")
+                local.map { URLQueryItem(name: "local", value: String($0)) }
+                maxID.map { URLQueryItem(name: "max_id", value: $0.rawValue) }
+                sinceID.map { URLQueryItem(name: "since_id", value: $0.rawValue) }
+                minID.map { URLQueryItem(name: "min_id", value: $0.rawValue) }
+                limit.map { URLQueryItem(name: "limit", value: String($0)) }
+                Header(name: "Authorization", value: "Bearer \(token.accessToken)")
+            }
+
+            public var response: some Response {
+                standardResponse(Status.self)
+            }
+        }
+
+        public struct List: Request, Response {
+            let baseURL: URL
+            let token: Token
+            let id: Mastodon.List.ID
+            let maxID: Status.ID?
+            let sinceID: Status.ID?
+            let minID: Status.ID?
+            let limit: Int?
+
+            public var request: some Request {
+                Method.get
+                baseURL
+                URLPath("/api/v1/timelines/list/\(id.rawValue)")
+                maxID.map { URLQueryItem(name: "max_id", value: $0.rawValue) }
+                sinceID.map { URLQueryItem(name: "since_id", value: $0.rawValue) }
+                minID.map { URLQueryItem(name: "min_id", value: $0.rawValue) }
+                limit.map { URLQueryItem(name: "limit", value: String($0)) }
+                Header(name: "Authorization", value: "Bearer \(token.accessToken)")
+            }
+
+            public var response: some Response {
+                standardResponse(Status.self)
+            }
+        }
+    }
+}
+
+// https://docs.joinmastodon.org/methods/notifications/
+
+public extension MastodonAPI {
+    enum Notifications {
+        public struct GetAll: Request, Response {
+            let baseURL: URL
+            let token: Token
+            let maxID: Status.ID?
+            let sinceID: Status.ID?
+            let minID: Status.ID?
+            let limit: Int?
+            let excludeTypes: [NotificationType]?
+            let from: Account.ID?
+
+            public var request: some Request {
+                Method.get
+                baseURL
+                URLPath("/api/v1/notifications")
+                maxID.map { URLQueryItem(name: "max_id", value: $0.rawValue) }
+                sinceID.map { URLQueryItem(name: "since_id", value: $0.rawValue) }
+                minID.map { URLQueryItem(name: "min_id", value: $0.rawValue) }
+                limit.map { URLQueryItem(name: "limit", value: String($0)) }
+                excludeTypes.map { URLQueryItem(name: "limit", value: "[" + $0.map { $0.rawValue }.joined(separator: ",") + "]") }
+                from.map { URLQueryItem(name: "account_id", value: $0.rawValue) }
+                Header(name: "Authorization", value: "Bearer \(token.accessToken)")
+            }
+
+            public var response: some Response {
+                standardResponse([Notification].self)
+            }
+        }
+
+        public struct Single: Request, Response {
+            let baseURL: URL
+            let token: Token
+            let id: Notification.ID
+
+            public var request: some Request {
+                Method.get
+                baseURL
+                URLPath("/api/v1/notifications/\(id.rawValue)")
+                Header(name: "Authorization", value: "Bearer \(token.accessToken)")
+            }
+
+            public var response: some Response {
+                standardResponse(Notification.self)
+            }
+        }
+
+        public struct Clear: Request, Response {
+            let baseURL: URL
+            let token: Token
+
+            public var request: some Request {
+                Method.post
+                baseURL
+                URLPath("/api/v1/notifications/clear")
+                Header(name: "Authorization", value: "Bearer \(token.accessToken)")
+            }
+
+            public var response: some Response {
+                standardResponse(Notification.self) // TODO: Empty
+            }
+        }
+
+        public struct Dismiss: Request, Response {
+            let baseURL: URL
+            let token: Token
+            let id: Notification.ID
+
+            public var request: some Request {
+                Method.post
+                baseURL
+                URLPath("/api/v1/notifications/\(id.rawValue)/dismiss")
+                Header(name: "Authorization", value: "Bearer \(token.accessToken)")
+            }
+
+            public var response: some Response {
+                standardResponse(Notification.self) // TODO: Empty
+            }
+        }
+    }
+}
+
+public enum NotificationType: String, Codable {
+    case follow
+    case favourite
+    case reblog
+    case mention
+    case poll
+    case followRequest = "follow_request"
+}
+
+public struct Notification: Identifiable, Codable {
+    public typealias ID = Tagged<Notification, String>
+
+    public var id: ID
+
+    // TODO:
 }

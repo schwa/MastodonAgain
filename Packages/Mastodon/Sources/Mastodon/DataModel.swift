@@ -435,30 +435,36 @@ public struct Relationship: Codable {
 
 struct Instance: Codable {
     struct Info: Codable {
-        let shortDescription, fullDescription: String
-        let topic: String?
-        let languages: [String]
-        let otherLanguagesAccepted: Bool
-        let federatesWith: String
-        //let prohibitedContent, categories: [Any?]
+        var shortDescription, fullDescription: String
+        var topic: String?
+        var languages: [String]
+        var otherLanguagesAccepted: Bool
+        var federatesWith: String
+        var prohibitedContent, categories: [String]?
     }
 
-    let id, name: String
-    let addedAt: Date?
-    let updatedAt, checkedAt: String
-    let uptime: Int
-    let up, dead: Bool
-    let version: String
-    let ipv6: Bool
-    let httpsScore: Int
-    let httpsRank: String
-    let obsScore: Int
-    let obsRank, users, statuses, connections: String
-    let openRegistrations: Bool
-    let info: Info
-    let thumbnail: String
-    let thumbnailProxy: String
-    let activeUsers: Int
-    let email, admin: String
+    var id, name: String
+    var addedAt: Date?
+    var updatedAt, checkedAt: String
+    var uptime: Int
+    var up, dead: Bool
+    var version: String
+    var ipv6: Bool
+    var httpsScore: Int
+    var httpsRank: String
+    var obsScore: Int
+    var obsRank, users, statuses, connections: String
+    var openRegistrations: Bool
+    var info: Info
+    var thumbnail: String
+    var thumbnailProxy: String
+    var activeUsers: Int
+    var email, admin: String
 }
 
+
+public struct List: Codable {
+    public typealias ID = Tagged<List, String>
+    public var id: ID
+    public var title: String
+}
