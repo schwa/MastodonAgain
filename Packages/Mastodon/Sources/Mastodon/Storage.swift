@@ -178,6 +178,7 @@ internal class StorageLog {
 }
 
 extension iovec {
+    // swiftlint:disable:next implicitly_unwrapped_optional
     init(iov_base: UnsafeRawPointer!, iov_len: Int) {
         self = iovec(iov_base: UnsafeMutableRawPointer(mutating: iov_base), iov_len: iov_len)
     }

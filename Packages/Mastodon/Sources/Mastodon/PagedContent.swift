@@ -20,6 +20,7 @@ public protocol FetchProtocol: Sendable {
 // MARK: -
 
 public struct Page<Fetch>: Identifiable, Sendable where Fetch: FetchProtocol {
+    public typealias Fetch = Fetch
     public typealias Element = Fetch.Element
 
     public let id: CompositeHash<Element.ID>
@@ -71,15 +72,16 @@ public struct PagedContent<Fetch>: Identifiable, Sendable where Fetch: FetchProt
 
 // MARK: -
 
-extension Page<Service.Fetch>.ID: CustomDebugStringConvertible {
-    public var debugDescription: String {
-        // TODO: Expand this.
-        FunHash(self).rawValue
-    }
+extension Page: Codable where Fetch: Codable, Element.ID: Codable, Element: Codable {
 }
+
+extension PagedContent: Codable where Page: Codable {
+}
+
+// MARK: -
 
 extension Page: CustomDebugStringConvertible {
     public var debugDescription: String {
-        "Page <\(Element.self)> (id: \(FunHash(id)), previous: \(previous), next: \(next), elements: \(elements.count))"
+        "Page <\(Element.self)> (id: \(FunHash(id)), previous: \(String(describing: previous)), next: \(String(describing: next)), elements: \(elements.count))"
     }
 }

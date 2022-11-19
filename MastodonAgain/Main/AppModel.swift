@@ -24,11 +24,9 @@ class AppModel: ObservableObject {
     @Stored("Signins")
     var signins: [SignIn] = []
 
-//    @available(*, deprecated, message: "currentSigninID is deprecated")
     @AppStorage("currentSigninID")
-    var currentSigninID: SignIn.ID?
+    private var currentSigninID: SignIn.ID?
 
-    @available(*, deprecated, message: "currentSignin is deprecated")
     var currentSignin: SignIn? {
         get {
             guard let currentSigninID else {

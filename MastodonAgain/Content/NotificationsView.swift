@@ -41,8 +41,6 @@ struct NotificationTypeView: View {
             default:
                 Text(verbatim: "\(notification.type)")
             }
-
-
         }
         .task {
             await errorHandler {

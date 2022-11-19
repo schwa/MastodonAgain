@@ -20,7 +20,7 @@ extension CompositeHash: Comparable where Element: Comparable {
         for (lhs, rhs) in zip(lhs, rhs) {
             switch (lhs, rhs) {
             case (.none, .none):
-                fatalError()
+                fatalError("Should be impossible to be get here.")
             case (.some, .none):
                 return false
             case (.none, .some):
@@ -32,7 +32,7 @@ extension CompositeHash: Comparable where Element: Comparable {
                 else if lhs > rhs {
                     return false
                 }
-                else if rhs == rhs {
+                else {
                     continue
                 }
             }
