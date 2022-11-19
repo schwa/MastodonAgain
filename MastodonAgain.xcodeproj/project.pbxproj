@@ -13,6 +13,7 @@
 		45202011290F8DC600469569 /* NewPostWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45202010290F8DC600469569 /* NewPostWindow.swift */; };
 		452020132910281300469569 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452020122910281300469569 /* MainView.swift */; };
 		4520201529104D7D00469569 /* canned_timeline.json in Resources */ = {isa = PBXBuildFile; fileRef = 4520201429104D7D00469569 /* canned_timeline.json */; };
+		4529E98229286D0300ABFA42 /* NotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4529E98129286D0300ABFA42 /* NotificationsView.swift */; };
 		453BB94A292720A800FAA259 /* SigninPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 453BB949292720A800FAA259 /* SigninPicker.swift */; };
 		455AC882290D96F600137415 /* MastodonAgainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455AC881290D96F600137415 /* MastodonAgainApp.swift */; };
 		455AC884290D96F600137415 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455AC883290D96F600137415 /* ContentView.swift */; };
@@ -54,6 +55,7 @@
 		45202010290F8DC600469569 /* NewPostWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostWindow.swift; sourceTree = "<group>"; };
 		452020122910281300469569 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		4520201429104D7D00469569 /* canned_timeline.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = canned_timeline.json; sourceTree = "<group>"; };
+		4529E98129286D0300ABFA42 /* NotificationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsView.swift; sourceTree = "<group>"; };
 		453BB949292720A800FAA259 /* SigninPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigninPicker.swift; sourceTree = "<group>"; };
 		455AC87E290D96F600137415 /* MastodonAgain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MastodonAgain.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		455AC881290D96F600137415 /* MastodonAgainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonAgainApp.swift; sourceTree = "<group>"; };
@@ -119,6 +121,7 @@
 				4520200E290F87A200469569 /* MediaStack.swift */,
 				45FDAF83291714F40073E8E0 /* StatusInfoView.swift */,
 				45202010290F8DC600469569 /* NewPostWindow.swift */,
+				4529E98129286D0300ABFA42 /* NotificationsView.swift */,
 			);
 			path = Content;
 			sourceTree = "<group>";
@@ -349,6 +352,7 @@
 				45F1A2C3290E4FF60093A8AC /* AppSettings.swift in Sources */,
 				4514349D29184E05004A9208 /* SigninsView.swift in Sources */,
 				45F1A2B6290E0F4B0093A8AC /* Support.swift in Sources */,
+				4529E98229286D0300ABFA42 /* NotificationsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

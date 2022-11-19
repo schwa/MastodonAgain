@@ -35,7 +35,7 @@ struct MainView: View {
             case .me:
                 TimelineStack(root: .me)
             default:
-                unimplemented()
+                NotificationsView()
             }
         }
         .toolbar {
@@ -54,6 +54,7 @@ enum MainTabs: String, CaseIterable {
 //    case search
     case me
 //    case cannedTimeline
+    case notifications
 
     var timelineType: TimelineType? {
         switch self {
@@ -82,6 +83,8 @@ enum MainTabs: String, CaseIterable {
 //            return "Search"
         case (.me, nil):
             return "Me"
+        case (.notifications, nil):
+            return "Notifications"
         default:
             fatalError("Fallthrough")
         }

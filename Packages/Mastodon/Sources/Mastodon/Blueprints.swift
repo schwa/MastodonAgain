@@ -989,8 +989,19 @@ public extension MastodonAPI {
             let sinceID: Status.ID?
             let minID: Status.ID?
             let limit: Int?
-            let excludeTypes: [NotificationType]?
+            let types: [NotificationType]?
             let from: Account.ID?
+
+            public init(baseURL: URL, token: Token, maxID: Status.ID? = nil, sinceID: Status.ID? = nil, minID: Status.ID? = nil, limit: Int? = nil, types: [NotificationType]? = nil, from: Account.ID? = nil) {
+                self.baseURL = baseURL
+                self.token = token
+                self.maxID = maxID
+                self.sinceID = sinceID
+                self.minID = minID
+                self.limit = limit
+                self.types = types
+                self.from = from
+            }
 
             public var request: some Request {
                 Method.get
@@ -1000,7 +1011,12 @@ public extension MastodonAPI {
                 sinceID.map { URLQueryItem(name: "since_id", value: $0.rawValue) }
                 minID.map { URLQueryItem(name: "min_id", value: $0.rawValue) }
                 limit.map { URLQueryItem(name: "limit", value: String($0)) }
-                excludeTypes.map { URLQueryItem(name: "limit", value: "[" + $0.map { $0.rawValue }.joined(separator: ",") + "]") }
+//                excludeTypes.map { URLQueryItem(name: "exclude_types", value: $0.map { $0.rawValue }.joined(separator: ",")) }
+                types.map { types in
+                    types.map { type in
+                        URLQueryItem(name: "types[]", value: type.rawValue)
+                    }
+                }
                 from.map { URLQueryItem(name: "account_id", value: $0.rawValue) }
                 Header(name: "Authorization", value: "Bearer \(token.accessToken)")
             }
@@ -1062,7 +1078,7 @@ public extension MastodonAPI {
     }
 }
 
-public enum NotificationType: String, Codable {
+public enum NotificationType: String, Codable, CaseIterable {
     case follow
     case favourite
     case reblog
@@ -1075,6 +1091,8 @@ public struct Notification: Identifiable, Codable {
     public typealias ID = Tagged<Notification, String>
 
     public var id: ID
-
-    // TODO:
+    public var type: NotificationType
+    public var created_at: Date
+    public var account: Account?
+    public var status: Status?
 }
