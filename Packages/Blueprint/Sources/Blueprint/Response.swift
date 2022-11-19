@@ -30,7 +30,7 @@ extension Never: Response {
 
     public var response: Never {
         // swiftlint:disable:next implicit_return
-        uncallable() // Return is necessary alas to short circule the @resultBuilder
+        return uncallable() // Return is necessary alas to short circule the @resultBuilder
     }
 
     public func canProcess(data: Data, urlResponse: URLResponse) -> Bool {
