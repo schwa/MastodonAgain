@@ -11,57 +11,6 @@ func standardResponse<T>(_ type: T.Type) -> some Response where T: Decodable {
     }
 }
 
-public struct Form {
-    let parameters: [FormParameter]
-
-    init(@FormBuilder _ parameters: () -> [FormParameter]) {
-        self.parameters = parameters()
-    }
-}
-
-extension Form: Request {
-    public func apply(request: inout PartialRequest) throws {
-        let bodyString = parameters.map { parameter in
-            let key = parameter.name
-                .replacing(" ", with: "+")
-                .addingPercentEncoding(withAllowedCharacters: .alphanumerics + .punctuationCharacters + "+")!
-            let value = parameter.value ?? ""
-                .replacing(" ", with: "+")
-                .addingPercentEncoding(withAllowedCharacters: .alphanumerics + .punctuationCharacters + "+")!
-            return "\(key)=\(value)"
-        }
-        .joined(separator: "&")
-        request.headers.append(.init(name: "Content-Type", value: "application/x-www-form-urlencoded; charset=utf-8"))
-        request.body = bodyString.data(using: .utf8)!
-    }
-}
-
-@resultBuilder
-enum FormBuilder {
-    static func buildBlock(_ components: FormParameter?...) -> [FormParameter] {
-        components.compactMap { $0 }
-    }
-}
-
-public struct FormParameter {
-    let name: String
-    let value: String?
-}
-
-extension Array: Request where Element: Request {
-    public func apply(request: inout PartialRequest) throws {
-        try forEach { element in
-            try element.apply(request: &request)
-        }
-    }
-}
-
-extension FormParameter: Request {
-    public func apply(request: inout PartialRequest) throws {
-        unimplemented()
-    }
-}
-
 // MARK: -
 
 public enum MastodonAPI {
