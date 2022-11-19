@@ -14,7 +14,7 @@ public enum PagingDirection: Sendable {
 public protocol FetchProtocol: Sendable {
     associatedtype Element where Element: Identifiable & Sendable, Element.ID: Comparable & Sendable
 
-    func callAsFunction() async throws -> Page <Self>
+    func callAsFunction() async throws -> Page<Self>
 }
 
 // MARK: -
@@ -74,7 +74,7 @@ public struct PagedContent<Fetch>: Identifiable, Sendable where Fetch: FetchProt
 extension Page<Service.Fetch>.ID: CustomDebugStringConvertible {
     public var debugDescription: String {
         // TODO: Expand this.
-        return FunHash(self).rawValue
+        FunHash(self).rawValue
     }
 }
 

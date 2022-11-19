@@ -90,7 +90,7 @@ extension Form: Request {
                 .addingPercentEncoding(withAllowedCharacters: .alphanumerics + .punctuationCharacters + "+")!
             return "\(key)=\(value)"
         }
-            .joined(separator: "&")
+        .joined(separator: "&")
         request.headers.append(.init(name: "Content-Type", value: "application/x-www-form-urlencoded; charset=utf-8"))
         request.body = bodyString.data(using: .utf8)!
     }

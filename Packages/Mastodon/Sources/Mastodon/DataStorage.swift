@@ -23,13 +23,15 @@ public class DataStorage {
             if newValue == nil {
                 items[key] = nil
                 logger?.debug("Setting data for key: \(key)")
-            } else {
+            }
+            else {
                 items[key] = newValue
                 logger?.debug("Erasing data for key: \(key)")
             }
             do {
                 try save()
-            } catch {
+            }
+            catch {
                 fatal(error: error)
             }
         }
@@ -49,7 +51,8 @@ public class DataStorage {
         do {
             let data = try PropertyListEncoder().encode(items)
             try data.write(to: path.url)
-        } catch {
+        }
+        catch {
             fatal(error: error)
         }
     }
@@ -64,7 +67,8 @@ public extension DataStorage {
                 }
                 let value = try JSONDecoder().decode(T.self, from: data)
                 return value
-            } catch {
+            }
+            catch {
                 fatal(error: error)
             }
         }
@@ -73,10 +77,12 @@ public extension DataStorage {
                 if let newValue {
                     let data = try JSONEncoder().encode(newValue)
                     self[key] = data
-                } else {
+                }
+                else {
                     self[key] = nil
                 }
-            } catch {
+            }
+            catch {
                 fatal(error: error)
             }
         }

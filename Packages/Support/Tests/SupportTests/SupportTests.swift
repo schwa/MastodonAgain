@@ -1,5 +1,5 @@
-import XCTest
 @testable import Support
+import XCTest
 
 final class CompositeHashTests: XCTestCase {
     func testIdentical() throws {

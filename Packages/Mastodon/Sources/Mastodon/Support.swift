@@ -123,7 +123,8 @@ public enum Uncertain<Known, Unknown> where Known: RawRepresentable, Unknown == 
     public init(_ value: Known.RawValue) {
         if let value = Known(rawValue: value) {
             self = .known(value)
-        } else {
+        }
+        else {
             self = .unknown(value)
         }
     }
@@ -203,27 +204,27 @@ public extension StatusProtocol {
 
     var attributedContent: AttributedString {
         get throws {
-#if os(macOS)
-            let header = #"<meta charset="UTF-8">"#
-            let html = header + content
-            guard let htmlData = html.data(using: .utf8) else {
-                throw MastodonError.generic("Could not decode UTF-8 encoded data.")
-            }
-            guard let nsAttributedContent = NSAttributedString(html: htmlData, documentAttributes: nil) else {
-                throw MastodonError.generic("Could create HTML from data.")
-            }
-            var attributedContent = AttributedString(nsAttributedContent)
-            var container = AttributeContainer()
-            container[AttributeScopes.SwiftUIAttributes.FontAttribute.self] = .body
-            attributedContent.mergeAttributes(container, mergePolicy: .keepNew)
-            // Remove trailing newline caused by <p>…</p>
-            if !attributedContent.characters.isEmpty {
-                attributedContent.characters.removeLast()
-            }
-            return attributedContent
-#elseif os(iOS)
-            return AttributedString() // TODO: Placeholder
-#endif
+            #if os(macOS)
+                let header = #"<meta charset="UTF-8">"#
+                let html = header + content
+                guard let htmlData = html.data(using: .utf8) else {
+                    throw MastodonError.generic("Could not decode UTF-8 encoded data.")
+                }
+                guard let nsAttributedContent = NSAttributedString(html: htmlData, documentAttributes: nil) else {
+                    throw MastodonError.generic("Could create HTML from data.")
+                }
+                var attributedContent = AttributedString(nsAttributedContent)
+                var container = AttributeContainer()
+                container[AttributeScopes.SwiftUIAttributes.FontAttribute.self] = .body
+                attributedContent.mergeAttributes(container, mergePolicy: .keepNew)
+                // Remove trailing newline caused by <p>…</p>
+                if !attributedContent.characters.isEmpty {
+                    attributedContent.characters.removeLast()
+                }
+                return attributedContent
+            #elseif os(iOS)
+                return AttributedString() // TODO: Placeholder
+            #endif
         }
     }
 }
@@ -232,11 +233,14 @@ public extension MediaAttachment.Meta.Size {
     var cgSize: CGSize? {
         if let width, let height {
             return CGSize(width: width, height: height)
-        } else if let width, let aspect, aspect > 0 {
+        }
+        else if let width, let aspect, aspect > 0 {
             return CGSize(width: width, height: width * aspect)
-        } else if let height, let aspect, aspect > 0 {
+        }
+        else if let height, let aspect, aspect > 0 {
             return CGSize(width: height / aspect, height: height)
-        } else if let size {
+        }
+        else if let size {
             let regex = Regex {
                 Capture {
                     OneOrMore(.digit)
@@ -254,7 +258,8 @@ public extension MediaAttachment.Meta.Size {
                 return nil
             }
             return CGSize(width: width, height: height)
-        } else {
+        }
+        else {
             return nil
         }
     }
@@ -302,7 +307,7 @@ public extension Sequence<FormValue> {
                     "Content-Disposition: form-data; name=\"\(name)\"",
                     "",
                     value,
-                    ""
+                    "",
                 ]
                 return Data(lines.joined(separator: "\r\n").utf8)
             case .file(let name, let filename, let mimetype, let data):
@@ -310,7 +315,7 @@ public extension Sequence<FormValue> {
                     "Content-Disposition: form-data; name=\"\(name)\"; filename=\"\(filename)\"",
                     "Content-Type: \(mimetype)",
                     "",
-                    ""
+                    "",
                 ]
                 let header = Data(lines.joined(separator: "\r\n").utf8)
                 return header + data + Data("\r\n".utf8)
@@ -319,7 +324,7 @@ public extension Sequence<FormValue> {
         return Data([
             Data("--\(boundary)\r\n".utf8),
             Data(chunks.joined(separator: Data("--\(boundary)\r\n".utf8))),
-            Data("--\(boundary)--\r\n".utf8)
+            Data("--\(boundary)--\r\n".utf8),
         ].joined())
     }
 }
@@ -358,7 +363,8 @@ public extension Optional where Wrapped: Collection {
         case .some(let value):
             if value.isEmpty {
                 return nil
-            } else {
+            }
+            else {
                 return value
             }
         case .none:
@@ -370,7 +376,7 @@ public extension Optional where Wrapped: Collection {
 public struct PlaceholderCodable: Codable, Sendable {
 }
 
-public struct FunHash <Content>: Hashable where Content: Hashable {
+public struct FunHash<Content>: Hashable where Content: Hashable {
     let rawValue: String
 
     public init(_ content: Content) {
@@ -379,7 +385,7 @@ public struct FunHash <Content>: Hashable where Content: Hashable {
         let cities = ["Paris", "London", "Bangkok", "Singapore", "New York", "Kuala Lumpur", "Hong Kong", "Dubai", "Istanbul", "Rome", "Shanghai", "Los Angeles", "Las Vegas", "Miami", "Toronto", "Barcelona", "Dublin", "Amsterdam", "Moscow", "Cairo", "Prague", "Vienna", "Madrid", "San Francisco", "Vancouver", "Budapest", "Rio de Janeiro", "Berlin", "Tokyo", "Mexico City", "Buenos Aires", "St. Petersburg", "Seoul", "Athens", "Jerusalem", "Seattle", "Delhi", "Sydney", "Mumbai", "Munich", "Venice", "Florence", "Beijing", "Cape Town", "Washington D.C.", "Montreal", "Atlanta", "Boston", "Philadelphia", "Chicago", "San Diego", "Stockholm", "Cancún", "Warsaw", "Sharm el-Sheikh", "Dallas", "Hồ Chí Minh", "Milan", "Oslo", "Libson", "Punta Cana", "Johannesburg", "Antalya", "Mecca", "Macau", "Pattaya", "Guangzhou", "Kiev", "Shenzhen", "Bucharest", "Taipei", "Orlando", "Brussels", "Chennai", "Marrakesh", "Phuket", "Edirne", "Bali", "Copenhagen", "São Paulo", "Agra", "Varna", "Riyadh", "Jakarta", "Auckland", "Honolulu", "Edinburgh", "Wellington", "New Orleans", "Petra", "Melbourne", "Luxor", "Hà Nội", "Manila", "Houston", "Phnom Penh", "Zürich", "Lima", "Santiago", "Bogotá"]
 
         var rng = SplitMix64(s: UInt64(bitPattern: Int64(content.hashValue)))
-        self.rawValue = "\(adjectives.randomElement(using: &rng)!)-\(cities.randomElement(using: &rng)!)-\(Int.random(in: 1 ... 10, using: &rng))"
+        rawValue = "\(adjectives.randomElement(using: &rng)!)-\(cities.randomElement(using: &rng)!)-\(Int.random(in: 1 ... 10, using: &rng))"
     }
 }
 

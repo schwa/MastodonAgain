@@ -1,4 +1,4 @@
-public struct CompositeHash <Element>: Hashable where Element: Hashable {
+public struct CompositeHash<Element>: Hashable where Element: Hashable {
     let elements: [Element]
 
     public init(_ elements: [Element]) {
@@ -28,9 +28,11 @@ extension CompositeHash: Comparable where Element: Comparable {
             case (.some(let lhs), .some(let rhs)):
                 if lhs < rhs {
                     return true
-                } else if lhs > rhs {
+                }
+                else if lhs > rhs {
                     return false
-                } else if rhs == rhs {
+                }
+                else if rhs == rhs {
                     continue
                 }
             }
@@ -40,7 +42,7 @@ extension CompositeHash: Comparable where Element: Comparable {
 }
 
 internal extension Collection {
-    func extended(count: Int) -> [Optional<Element>] {
+    func extended(count: Int) -> [Element?] {
         let extra = count - self.count
         return map { Optional($0) } + repeatElement(nil, count: extra)
     }

@@ -27,8 +27,9 @@ public actor Service {
 
         do {
             let path = (try FSPath.specialDirectory(.cachesDirectory) / host.replacing(".", with: "-")).withPathExtension(".storage.data")
-            self.storage = try Storage(path: path.path)
-        } catch {
+            storage = try Storage(path: path.path)
+        }
+        catch {
             fatal(error: error)
         }
     }

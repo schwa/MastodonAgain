@@ -14,6 +14,7 @@ public class Storage {
             case encoded(Data)
             case raw(Any)
         }
+
         let value: Value
     }
 
@@ -41,10 +42,9 @@ public class Storage {
 //                fatalError()
 //            }
 //        }
-
     }
 
-    public subscript <T>(key: String, type: T.Type) -> T? where T: Codable {
+    public subscript<T>(key: String, type: T.Type) -> T? where T: Codable {
         get {
             do {
                 guard let record = cache[key] else {
@@ -58,7 +58,8 @@ public class Storage {
                     self[key, type] = value
                     return value
                 }
-            } catch {
+            }
+            catch {
                 fatal(error: error)
             }
         }
@@ -68,11 +69,13 @@ public class Storage {
                     cache[key] = Record(value: .raw(newValue))
                     let data = try encoder.encode(newValue)
                     log.post(event: { .set(key, data) })
-                } else {
+                }
+                else {
                     cache[key] = nil
                     log.post(event: { .delete(key) })
                 }
-            } catch {
+            }
+            catch {
                 fatal(error: error)
             }
         }
@@ -155,7 +158,7 @@ internal class StorageLog {
                         let result = data.withUnsafeBytes { data in
                             let vector = [
                                 iovec(iov_base: count.baseAddress, iov_len: count.count),
-                                iovec(iov_base: data.baseAddress, iov_len: data.count)
+                                iovec(iov_base: data.baseAddress, iov_len: data.count),
                             ]
                             return vector.withUnsafeBufferPointer { vectorPointer in
                                 writev(fd, vectorPointer.baseAddress, Int32(vector.count))
@@ -165,7 +168,8 @@ internal class StorageLog {
                             throw StorageError.unknown
                         }
                     }
-                } catch {
+                }
+                catch {
                     fatal(error: error)
                 }
             }
@@ -178,6 +182,7 @@ extension iovec {
         self = iovec(iov_base: UnsafeMutableRawPointer(mutating: iov_base), iov_len: iov_len)
     }
 }
+
 //
 // print(ProcessInfo.processInfo.environment["PWD"])
 //
