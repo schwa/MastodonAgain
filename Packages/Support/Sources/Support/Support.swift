@@ -28,11 +28,9 @@ extension CompositeHash: Comparable where Element: Comparable {
             case (.some(let lhs), .some(let rhs)):
                 if lhs < rhs {
                     return true
-                }
-                else if lhs > rhs {
+                } else if lhs > rhs {
                     return false
-                }
-                else if rhs == rhs {
+                } else if rhs == rhs {
                     continue
                 }
             }

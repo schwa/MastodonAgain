@@ -35,8 +35,7 @@ public extension Service {
         if set {
             // swiftlint:disable:next force_cast
             status = try await session.perform(MastodonAPI.Statuses.Favourite(baseURL: baseURL, token: token, id: id)) as! Status
-        }
-        else {
+        } else {
             // swiftlint:disable:next force_cast
             status = try await session.perform(MastodonAPI.Statuses.Unfavourite(baseURL: baseURL, token: token, id: id)) as! Status
         }
@@ -53,8 +52,7 @@ public extension Service {
         if set {
             // swiftlint:disable:next force_cast
             status = try await session.perform(MastodonAPI.Statuses.Reblog(baseURL: baseURL, token: token, id: id)) as! Status
-        }
-        else {
+        } else {
             // swiftlint:disable:next force_cast
             status = try await session.perform(MastodonAPI.Statuses.Unreblog(baseURL: baseURL, token: token, id: id)) as! Status
         }
@@ -71,8 +69,7 @@ public extension Service {
         if set {
             // swiftlint:disable:next force_cast
             status = try await session.perform(MastodonAPI.Statuses.Bookmark(baseURL: baseURL, token: token, id: id)) as! Status
-        }
-        else {
+        } else {
             // swiftlint:disable:next force_cast
             status = try await session.perform(MastodonAPI.Statuses.Unbookmark(baseURL: baseURL, token: token, id: id)) as! Status
         }
@@ -112,7 +109,7 @@ public extension Service {
 
         let formValues: [FormValue] = [
             .value("description", description),
-            .file("file", file.lastPathComponent, "image/png", fileData), // TODO:
+            .file("file", file.lastPathComponent, "image/png", fileData) // TODO:
         ]
 
         let url = URL(string: "https://\(host)/api/v1/media")!

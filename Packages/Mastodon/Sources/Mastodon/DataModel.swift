@@ -463,7 +463,6 @@ struct Instance: Codable {
     var email, admin: String
 }
 
-
 public struct List: Codable {
     public typealias ID = Tagged<List, String>
     public var id: ID

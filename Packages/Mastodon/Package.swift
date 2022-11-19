@@ -7,16 +7,16 @@ let package = Package(
     name: "Mastodon",
     platforms: [
         .macOS(.v13),
-        .iOS(.v16),
+        .iOS(.v16)
     ],
     products: [
-        .library(name: "Mastodon", targets: ["Mastodon"]),
+        .library(name: "Mastodon", targets: ["Mastodon"])
     ],
     dependencies: [
         .package(url: "https://github.com/schwa/Everything.git", branch: "main"),
         .package(url: "https://github.com/apple/swift-async-algorithms", from: "0.0.3"),
         .package(path: "../Blueprint"),
-        .package(path: "../Support"),
+        .package(path: "../Support")
     ],
     targets: [
         .target(
@@ -32,6 +32,6 @@ let package = Package(
             name: "MastodonTests",
             dependencies: ["Mastodon"],
             resources: [.copy("page.json")]
-        ),
+        )
     ]
 )

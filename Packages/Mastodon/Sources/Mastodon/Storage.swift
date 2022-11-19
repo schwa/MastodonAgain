@@ -58,8 +58,7 @@ public class Storage {
                     self[key, type] = value
                     return value
                 }
-            }
-            catch {
+            } catch {
                 fatal(error: error)
             }
         }
@@ -69,13 +68,11 @@ public class Storage {
                     cache[key] = Record(value: .raw(newValue))
                     let data = try encoder.encode(newValue)
                     log.post(event: { .set(key, data) })
-                }
-                else {
+                } else {
                     cache[key] = nil
                     log.post(event: { .delete(key) })
                 }
-            }
-            catch {
+            } catch {
                 fatal(error: error)
             }
         }
@@ -168,8 +165,7 @@ internal class StorageLog {
                             throw StorageError.unknown
                         }
                     }
-                }
-                catch {
+                } catch {
                     fatal(error: error)
                 }
             }
@@ -183,9 +179,9 @@ extension iovec {
     }
 }
 //
-//print(ProcessInfo.processInfo.environment["PWD"])
+// print(ProcessInfo.processInfo.environment["PWD"])
 //
-//do {
+// do {
 //    print("Loading")
 //    let storage = try Storage(path: "test.dat")
 //    print(storage["hello", String.self])
@@ -194,4 +190,4 @@ extension iovec {
 //        storage["hello \(x)", String.self] = "world \(x)"
 //    }
 //    print("Waiting")
-//}
+// }

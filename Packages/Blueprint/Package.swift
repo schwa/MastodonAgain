@@ -7,19 +7,19 @@ let package = Package(
     name: "Blueprint",
     platforms: [
         .macOS(.v13),
-        .iOS(.v16),
+        .iOS(.v16)
     ],
     products: [
-        .library(name: "Blueprint", targets: ["Blueprint"]),
+        .library(name: "Blueprint", targets: ["Blueprint"])
     ],
     dependencies: [
-        .package(url: "https://github.com/schwa/Everything.git", branch: "main"),
+        .package(url: "https://github.com/schwa/Everything.git", branch: "main")
     ],
     targets: [
         .target(name: "Blueprint", dependencies: ["Everything"]),
         .testTarget(
             name: "BlueprintTests",
             dependencies: ["Blueprint"]
-        ),
+        )
     ]
 )

@@ -24,7 +24,7 @@ final class MastodonTests: XCTestCase {
         let values: [FormValue] = [
             .value("myTextField", "Test"),
             .value("myCheckBox", "on"),
-            .file("myFile", "test.txt", "text/plain", Data("Simple file.".utf8)),
+            .file("myFile", "test.txt", "text/plain", Data("Simple file.".utf8))
         ]
         let data = values.data(boundary: "---------------------------8721656041911415653955004498")
         try Data(expected.utf8).write(to: URL(filePath: "/tmp/expected.txt"))

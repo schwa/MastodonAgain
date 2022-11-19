@@ -123,8 +123,7 @@ public enum Uncertain<Known, Unknown> where Known: RawRepresentable, Unknown == 
     public init(_ value: Known.RawValue) {
         if let value = Known(rawValue: value) {
             self = .known(value)
-        }
-        else {
+        } else {
             self = .unknown(value)
         }
     }
@@ -233,14 +232,11 @@ public extension MediaAttachment.Meta.Size {
     var cgSize: CGSize? {
         if let width, let height {
             return CGSize(width: width, height: height)
-        }
-        else if let width, let aspect, aspect > 0 {
+        } else if let width, let aspect, aspect > 0 {
             return CGSize(width: width, height: width * aspect)
-        }
-        else if let height, let aspect, aspect > 0 {
+        } else if let height, let aspect, aspect > 0 {
             return CGSize(width: height / aspect, height: height)
-        }
-        else if let size {
+        } else if let size {
             let regex = Regex {
                 Capture {
                     OneOrMore(.digit)
@@ -258,8 +254,7 @@ public extension MediaAttachment.Meta.Size {
                 return nil
             }
             return CGSize(width: width, height: height)
-        }
-        else {
+        } else {
             return nil
         }
     }
@@ -307,7 +302,7 @@ public extension Sequence<FormValue> {
                     "Content-Disposition: form-data; name=\"\(name)\"",
                     "",
                     value,
-                    "",
+                    ""
                 ]
                 return Data(lines.joined(separator: "\r\n").utf8)
             case .file(let name, let filename, let mimetype, let data):
@@ -315,7 +310,7 @@ public extension Sequence<FormValue> {
                     "Content-Disposition: form-data; name=\"\(name)\"; filename=\"\(filename)\"",
                     "Content-Type: \(mimetype)",
                     "",
-                    "",
+                    ""
                 ]
                 let header = Data(lines.joined(separator: "\r\n").utf8)
                 return header + data + Data("\r\n".utf8)
@@ -324,7 +319,7 @@ public extension Sequence<FormValue> {
         return Data([
             Data("--\(boundary)\r\n".utf8),
             Data(chunks.joined(separator: Data("--\(boundary)\r\n".utf8))),
-            Data("--\(boundary)--\r\n".utf8),
+            Data("--\(boundary)--\r\n".utf8)
         ].joined())
     }
 }
@@ -363,8 +358,7 @@ public extension Optional where Wrapped: Collection {
         case .some(let value):
             if value.isEmpty {
                 return nil
-            }
-            else {
+            } else {
                 return value
             }
         case .none:
@@ -391,7 +385,6 @@ public struct FunHash <Content>: Hashable where Content: Hashable {
 
 extension FunHash: CustomStringConvertible {
     public var description: String {
-        return rawValue
+        rawValue
     }
-
 }

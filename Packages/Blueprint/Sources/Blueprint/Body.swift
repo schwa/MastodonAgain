@@ -54,7 +54,7 @@ public struct MultipartForm {
                     "Content-Disposition: form-data; name=\"\(name)\"",
                     "",
                     value,
-                    "",
+                    ""
                 ]
                 return Data(lines.joined(separator: "\r\n").utf8)
             }
@@ -65,7 +65,7 @@ public struct MultipartForm {
                 let lines = [
                     "Content-Disposition: form-data; name=\"\(name)\"; filename=\"\(filename)\"",
                     "Content-Type: \(mimetype)",
-                    "",
+                    ""
                 ]
                 let header = Data(lines.joined(separator: "\r\n").utf8)
                 return header + content + Data("\r\n".utf8)
@@ -117,7 +117,7 @@ public struct MultipartForm {
         return Data([
             Data("--\(boundary)\r\n".utf8),
             Data(chunks.joined(separator: Data("--\(boundary)\r\n".utf8))),
-            Data("--\(boundary)--\r\n".utf8),
+            Data("--\(boundary)--\r\n".utf8)
         ].joined())
     }
 }
