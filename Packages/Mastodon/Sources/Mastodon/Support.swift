@@ -14,12 +14,14 @@ public extension Token {
 }
 
 public extension URLRequest {
+    @available(*, deprecated, message: "Use Blueprints")
     static func post(_ url: URL) -> URLRequest {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         return request
     }
 
+    @available(*, deprecated, message: "Use Blueprints")
     func headers(_ headers: [String: String]) -> URLRequest {
         var copy = self
         var original = copy.allHTTPHeaderFields ?? [:]
@@ -53,6 +55,7 @@ extension Dated: Encodable where Content: Encodable {
 extension Dated: Decodable where Content: Decodable {
 }
 
+@available(*, deprecated, message: "Use Blueprints")
 public func validate<T>(_ item: (T, URLResponse)) throws -> (T, URLResponse) {
     guard let (result, response) = item as? (T, HTTPURLResponse) else {
         fatalError("Response is not a HTTPURLResponse")
@@ -103,6 +106,7 @@ public extension CharacterSet {
 }
 
 public extension URLRequest {
+    @available(*, deprecated, message: "Use Blueprints")
     init(url: URL, formParameters form: [String: String]) {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -161,12 +165,14 @@ extension HTTPError: CustomStringConvertible {
 }
 
 public extension URLSession {
+    @available(*, deprecated, message: "Use Blueprints")
     func string(for request: URLRequest) async throws -> (String, URLResponse) {
         let (data, response) = try await data(for: request)
         let string = String(data: data, encoding: .utf8)!
         return (string, response)
     }
 
+    @available(*, deprecated, message: "Use Blueprints")
     func json<T>(_ type: T.Type, decoder: JSONDecoder = JSONDecoder(), for request: URLRequest) async throws -> (T, URLResponse) where T: Decodable {
         let (data, response) = try await data(for: request)
         let json = try decoder.decode(type, from: data)
@@ -260,6 +266,7 @@ public extension MediaAttachment.Meta.Size {
 }
 
 extension URLSession {
+    @available(*, deprecated, message: "Use Blueprints")
     func validatedData(for request: URLRequest) async throws -> (Data, HTTPURLResponse) {
         let (data, response) = try await data(for: request)
         guard let httpResponse = response as? HTTPURLResponse else {
@@ -369,11 +376,22 @@ public extension Optional where Wrapped: Collection {
 public struct PlaceholderCodable: Codable, Sendable {
 }
 
-public func funHash(_ value: Int) -> String {
-    let adjectives = ["abrupt", "acidic", "adorable", "adventurous", "aggressive", "agitated", "alert", "aloof", "bored", "brave", "bright", "colossal", "condescending", "confused", "cooperative", "corny", "costly", "courageous", "cruel", "despicable", "determined", "dilapidated", "diminutive", "distressed", "disturbed", "dizzy", "exasperated", "excited", "exhilarated", "extensive", "exuberant", "frothy", "frustrating", "funny", "fuzzy", "gaudy", "graceful", "greasy", "grieving", "gritty", "grotesque", "grubby", "grumpy", "handsome", "happy", "hollow", "hungry", "hurt", "icy", "ideal", "immense", "impressionable", "intrigued", "irate", "foolish", "frantic", "fresh", "friendly", "frightened", "frothy", "frustrating", "glorious", "gorgeous", "grubby", "happy", "harebrained", "healthy", "helpful", "helpless", "high", "hollow", "homely", "large", "lazy", "livid", "lonely", "loose", "lovely", "lucky", "mysterious", "narrow", "nasty", "outrageous", "panicky", "perfect", "perplexed", "quizzical", "teeny", "tender", "tense", "terrible", "tricky", "troubled", "unsightly", "upset", "wicked", "yummy", "zany", "zealous", "zippy"]
+public struct FunHash <Content>: Hashable where Content: Hashable {
+    let rawValue: String
 
-    let cities = ["Paris", "London", "Bangkok", "Singapore", "New York", "Kuala Lumpur", "Hong Kong", "Dubai", "Istanbul", "Rome", "Shanghai", "Los Angeles", "Las Vegas", "Miami", "Toronto", "Barcelona", "Dublin", "Amsterdam", "Moscow", "Cairo", "Prague", "Vienna", "Madrid", "San Francisco", "Vancouver", "Budapest", "Rio de Janeiro", "Berlin", "Tokyo", "Mexico City", "Buenos Aires", "St. Petersburg", "Seoul", "Athens", "Jerusalem", "Seattle", "Delhi", "Sydney", "Mumbai", "Munich", "Venice", "Florence", "Beijing", "Cape Town", "Washington D.C.", "Montreal", "Atlanta", "Boston", "Philadelphia", "Chicago", "San Diego", "Stockholm", "Cancún", "Warsaw", "Sharm el-Sheikh", "Dallas", "Hồ Chí Minh", "Milan", "Oslo", "Libson", "Punta Cana", "Johannesburg", "Antalya", "Mecca", "Macau", "Pattaya", "Guangzhou", "Kiev", "Shenzhen", "Bucharest", "Taipei", "Orlando", "Brussels", "Chennai", "Marrakesh", "Phuket", "Edirne", "Bali", "Copenhagen", "São Paulo", "Agra", "Varna", "Riyadh", "Jakarta", "Auckland", "Honolulu", "Edinburgh", "Wellington", "New Orleans", "Petra", "Melbourne", "Luxor", "Hà Nội", "Manila", "Houston", "Phnom Penh", "Zürich", "Lima", "Santiago", "Bogotá"]
+    public init(_ content: Content) {
+        let adjectives = ["abrupt", "acidic", "adorable", "adventurous", "aggressive", "agitated", "alert", "aloof", "bored", "brave", "bright", "colossal", "condescending", "confused", "cooperative", "corny", "costly", "courageous", "cruel", "despicable", "determined", "dilapidated", "diminutive", "distressed", "disturbed", "dizzy", "exasperated", "excited", "exhilarated", "extensive", "exuberant", "frothy", "frustrating", "funny", "fuzzy", "gaudy", "graceful", "greasy", "grieving", "gritty", "grotesque", "grubby", "grumpy", "handsome", "happy", "hollow", "hungry", "hurt", "icy", "ideal", "immense", "impressionable", "intrigued", "irate", "foolish", "frantic", "fresh", "friendly", "frightened", "frothy", "frustrating", "glorious", "gorgeous", "grubby", "happy", "harebrained", "healthy", "helpful", "helpless", "high", "hollow", "homely", "large", "lazy", "livid", "lonely", "loose", "lovely", "lucky", "mysterious", "narrow", "nasty", "outrageous", "panicky", "perfect", "perplexed", "quizzical", "teeny", "tender", "tense", "terrible", "tricky", "troubled", "unsightly", "upset", "wicked", "yummy", "zany", "zealous", "zippy"]
 
-    var rng = SplitMix64(s: UInt64(bitPattern: Int64(value)))
-    return "\(adjectives.randomElement(using: &rng)!)-\(cities.randomElement(using: &rng)!)-\(Int.random(in: 1 ... 10, using: &rng)))"
+        let cities = ["Paris", "London", "Bangkok", "Singapore", "New York", "Kuala Lumpur", "Hong Kong", "Dubai", "Istanbul", "Rome", "Shanghai", "Los Angeles", "Las Vegas", "Miami", "Toronto", "Barcelona", "Dublin", "Amsterdam", "Moscow", "Cairo", "Prague", "Vienna", "Madrid", "San Francisco", "Vancouver", "Budapest", "Rio de Janeiro", "Berlin", "Tokyo", "Mexico City", "Buenos Aires", "St. Petersburg", "Seoul", "Athens", "Jerusalem", "Seattle", "Delhi", "Sydney", "Mumbai", "Munich", "Venice", "Florence", "Beijing", "Cape Town", "Washington D.C.", "Montreal", "Atlanta", "Boston", "Philadelphia", "Chicago", "San Diego", "Stockholm", "Cancún", "Warsaw", "Sharm el-Sheikh", "Dallas", "Hồ Chí Minh", "Milan", "Oslo", "Libson", "Punta Cana", "Johannesburg", "Antalya", "Mecca", "Macau", "Pattaya", "Guangzhou", "Kiev", "Shenzhen", "Bucharest", "Taipei", "Orlando", "Brussels", "Chennai", "Marrakesh", "Phuket", "Edirne", "Bali", "Copenhagen", "São Paulo", "Agra", "Varna", "Riyadh", "Jakarta", "Auckland", "Honolulu", "Edinburgh", "Wellington", "New Orleans", "Petra", "Melbourne", "Luxor", "Hà Nội", "Manila", "Houston", "Phnom Penh", "Zürich", "Lima", "Santiago", "Bogotá"]
+
+        var rng = SplitMix64(s: UInt64(bitPattern: Int64(content.hashValue)))
+        self.rawValue = "\(adjectives.randomElement(using: &rng)!)-\(cities.randomElement(using: &rng)!)-\(Int.random(in: 1 ... 10, using: &rng))"
+    }
+}
+
+extension FunHash: CustomStringConvertible {
+    public var description: String {
+        return rawValue
+    }
+
 }

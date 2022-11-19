@@ -1,7 +1,26 @@
+import Everything
 import Foundation
 
 public extension Service {
-    private func fetchStatusesPage(url: URL) async throws -> PagedContent<Status>.Page {
+    // TODO: This will have to become generic for generic pagedcontentviews
+    struct Fetch: FetchProtocol {
+        public typealias Element = Status
+
+        let service: Service
+        let url: URL
+
+        init(service: Service, url: URL) {
+            self.service = service
+            self.url = url
+        }
+
+        public func callAsFunction() async throws -> Page<Self> {
+            try await service.fetchStatusesPage(url: url)
+        }
+    }
+
+    // TODO: this seems totally generic.
+    private func fetchStatusesPage(url: URL) async throws -> PagedContent<Fetch>.Page {
         guard let token = authorization.token else {
             fatalError("No host or token.")
         }
@@ -12,29 +31,26 @@ public extension Service {
         let statuses = try decoder.decode([Status].self, from: data)
 
         // TODO: Are all empty statuses the same even if they have different Cursors?
-        var cursor = PagedContent<Status>.Page.Cursor()
+
+        var previous: Fetch?
+        var next: Fetch?
+
         if let link = response.allHeaderFields["Link"] {
             // swiftlint:disable:next force_cast
             let link = link as! String
             let links = try processLinks(string: link)
-            if let previous = links["prev"] {
-                cursor.previousURL = previous
-                cursor.previous = {
-                    try await self.fetchStatusesPage(url: previous)
-                }
+            if let url = links["prev"] {
+                previous = Fetch(service: self, url: url)
             }
-            if let next = links["next"] {
-                cursor.nextURL = next
-                cursor.next = {
-                    try await self.fetchStatusesPage(url: next)
-                }
+            if let url = links["next"] {
+                next = Fetch(service: self, url: url)
             }
         }
         update(statuses)
-        return .init(cursor: cursor, elements: statuses)
+        return .init(previous: previous, next: next, elements: statuses)
     }
 
-    func timelime(_ timeline: Timeline) async throws -> PagedContent<Status>.Page {
+    func timelime(_ timeline: Timeline) async throws -> PagedContent<Fetch>.Page {
         guard let url = timeline.url else {
             fatalError("No url")
         }

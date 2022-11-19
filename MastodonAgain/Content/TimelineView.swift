@@ -16,7 +16,7 @@ struct TimelineView: View, Sendable {
     let timeline: Timeline
 
     @State
-    var content = PagedContent<Status>()
+    var content = PagedContent<Service.Fetch>()
 
     enum Mode: String, RawRepresentable, CaseIterable, Sendable {
         case small

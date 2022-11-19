@@ -2,8 +2,8 @@ import Mastodon
 import SwiftUI
 
 // TODO: Sendable view?
-struct PagedContentView<Row, Element>: View where Row: View, Element: Identifiable & Sendable, Element.ID: Comparable & Sendable {
-    typealias Content = PagedContent<Element>
+struct PagedContentView<Row, Fetch>: View where Row: View, Fetch: FetchProtocol {
+    typealias Content = PagedContent<Fetch>
 
     @Binding
     var content: Content
@@ -21,7 +21,7 @@ struct PagedContentView<Row, Element>: View where Row: View, Element: Identifiab
         Refresh("Newer") {
             fetchPrevious()
         }
-        .disabled(content.pages.first?.cursor.previous == nil)
+        .disabled(content.pages.first?.previous == nil)
         ForEach(content.pages) { page in
             let id = page.id
             let pageBinding = Binding {
@@ -37,13 +37,13 @@ struct PagedContentView<Row, Element>: View where Row: View, Element: Identifiab
         Refresh("Older") {
             fetchNext()
         }
-        .disabled(content.pages.last?.cursor.next == nil)
+        .disabled(content.pages.last?.next == nil)
     }
 
     func fetchPrevious() {
         assert(isFetching == false)
         isFetching = true
-        guard let fetch = content.pages.first?.cursor.previous else {
+        guard let fetch = content.pages.first?.previous else {
             fatalError("No page or not cursor")
         }
         Task {
@@ -63,7 +63,7 @@ struct PagedContentView<Row, Element>: View where Row: View, Element: Identifiab
             return
         }
         isFetching = true
-        guard let fetch = content.pages.last?.cursor.next else {
+        guard let fetch = content.pages.last?.next else {
             return
         }
         Task {
