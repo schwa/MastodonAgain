@@ -10,6 +10,15 @@ extension CompositeHash: Sendable where Element: Sendable {
 }
 
 extension CompositeHash: Codable where Element: Codable {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        elements = try container.decode([Element].self)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(elements)
+    }
 }
 
 extension CompositeHash: Comparable where Element: Comparable {

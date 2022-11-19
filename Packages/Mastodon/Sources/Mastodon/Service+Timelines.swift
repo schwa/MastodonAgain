@@ -3,7 +3,7 @@ import Foundation
 
 public extension Service {
     // TODO: This will have to become generic for generic pagedcontentviews
-    struct Fetch: FetchProtocol {
+    struct Fetch: FetchProtocol, Codable {
         public typealias Element = Status
 
         let service: Service
@@ -16,6 +16,20 @@ public extension Service {
 
         public func callAsFunction() async throws -> Page<Self> {
             try await service.fetchStatusesPage(url: url)
+        }
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            guard let service = decoder.userInfo[CodingUserInfoKey(rawValue: "service")!] as? Service else {
+                fatalError("No service set on decoder userinfo.")
+            }
+            self.service = service
+            url = try container.decode(URL.self)
+        }
+
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.singleValueContainer()
+            try container.encode(url)
         }
     }
 
@@ -47,7 +61,10 @@ public extension Service {
             }
         }
         update(statuses)
-        return .init(previous: previous, next: next, elements: statuses)
+
+        let page = PagedContent<Fetch>.Page(previous: previous, next: next, elements: statuses)
+        //storage[PagedContent<Fetch>.Page.self, page.id] = page
+        return page
     }
 
     func timelime(_ timeline: Timeline) async throws -> PagedContent<Fetch>.Page {
