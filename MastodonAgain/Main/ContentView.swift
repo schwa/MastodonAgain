@@ -17,8 +17,12 @@ struct ContentView: View {
                     guard let signin else {
                         return
                     }
-                    appModel.signins.append(signin)
-                    appModel.currentSignin = signin
+                    Task {
+                        await MainActor.run {
+                            appModel.signins.append(signin)
+                            appModel.currentSignin = signin
+                        }
+                    }
                 }
             }
         }
