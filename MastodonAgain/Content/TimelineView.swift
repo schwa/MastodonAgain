@@ -1,6 +1,7 @@
 import Everything
 import Mastodon
 import SwiftUI
+import UniformTypeIdentifiers
 
 // TODO: Sendable view?
 struct TimelineView: View, Sendable {
@@ -22,6 +23,7 @@ struct TimelineView: View, Sendable {
     var refreshing = false
 
     init(timeline: Timeline) {
+        appLogger?.log("INIT (once per timelime)")
         self.timeline = timeline
     }
 
@@ -50,21 +52,18 @@ struct TimelineView: View, Sendable {
             }
             .pickerStyle(.inline)
 
-            Button("Save") {
-                do {
-                    let data = try JSONEncoder().encode(timeline)
-                    let path = FSPath.temporaryDirectory / "timeline.json"
-                    try data.write(to: path.url)
-                    #if os(macOS)
-                        path.reveal()
-                    #endif
+            ValueView(value: false) { value in
+                Button("Save") {
+                    value.wrappedValue = true
                 }
-                catch {
-                    fatal(error: error)
+                // swiftlint:disable:next force_try
+                .fileExporter(isPresented: value, document: try! JSONDocument(content), contentType: .json) { result in
+
                 }
             }
         }
         .task {
+            appLogger?.log("TASK (once per timelime)")
             refreshTask()
         }
         .onChange(of: content) { newValue in
@@ -91,5 +90,26 @@ struct TimelineView: View, Sendable {
             }
             refreshing = false
         }
+    }
+}
+
+struct JSONDocument: FileDocument {
+    static let readableContentTypes: [UTType] = [.json]
+
+    let data: Data
+
+    init <T>(_ value: T, encoder: JSONEncoder = JSONEncoder()) throws where T: Codable {
+        data = try encoder.encode(value)
+    }
+
+    init(configuration: ReadConfiguration) throws {
+        guard let data = configuration.file.regularFileContents else {
+            throw MastodonError.generic("Could not read file")
+        }
+        self.data = data
+    }
+
+    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
+        FileWrapper(regularFileWithContents: data)
     }
 }
