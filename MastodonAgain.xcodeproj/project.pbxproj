@@ -393,13 +393,11 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 45202002290F164800469569 /* MastodonAgain-Debug.xcconfig */;
 			buildSettings = {
-				DEVELOPMENT_TEAM = A4ZM73UFF5;
 				INFOPLIST_FILE = MastodonAgain/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = TODO;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				PRODUCT_BUNDLE_IDENTIFIER = com.andyqua.MastodonAgain;
 			};
 			name = Debug;
 		};
@@ -407,13 +405,11 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 45202000290F164800469569 /* MastodonAgain-Release.xcconfig */;
 			buildSettings = {
-				DEVELOPMENT_TEAM = A4ZM73UFF5;
 				INFOPLIST_FILE = MastodonAgain/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = TODO;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				PRODUCT_BUNDLE_IDENTIFIER = com.andyqua.MastodonAgain;
 			};
 			name = Release;
 		};
