@@ -708,3 +708,15 @@ struct JSONDocument: FileDocument {
         FileWrapper(regularFileWithContents: data)
     }
 }
+
+extension View {
+    @ViewBuilder
+    func hidden(_ hide: Bool) -> some View {
+        if hide {
+            hidden()
+        }
+        else {
+            self
+        }
+    }
+}

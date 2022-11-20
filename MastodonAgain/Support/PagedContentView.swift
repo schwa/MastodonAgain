@@ -1,3 +1,4 @@
+import Everything
 import Mastodon
 import SwiftUI
 
@@ -35,7 +36,7 @@ struct PagedContentView<Row, Fetch>: View where Row: View, Fetch: FetchProtocol 
                 }
                 Spacer()
             }
-            .disabled(content.pages.first?.previous == nil)
+            .hidden(content.pages.first?.previous == nil)
             ForEach(content.pages) { page in
                 let id = page.id
                 let pageBinding = Binding {
@@ -53,9 +54,9 @@ struct PagedContentView<Row, Fetch>: View where Row: View, Fetch: FetchProtocol 
                 Refresh("Older", refreshing: $isFetching) {
                     fetchNext()
                 }
-                .disabled(content.pages.last?.next == nil)
                 Spacer()
             }
+            .hidden(content.pages.last?.next == nil)
         }
     }
 
