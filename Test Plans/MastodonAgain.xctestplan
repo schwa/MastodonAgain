@@ -1,6 +1,12 @@
 {
   "configurations" : [
+    {
+      "id" : "704FB539-FB5C-4AF0-BC9F-2C3C64D8F3CB",
+      "name" : "Configuration 1",
+      "options" : {
 
+      }
+    }
   ],
   "defaultOptions" : {
     "targetForVariableExpansion" : {
