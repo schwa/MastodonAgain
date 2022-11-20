@@ -27,16 +27,9 @@ public actor Service {
         self.authorization = authorization
 
         do {
-            let path = (try FSPath.specialDirectory(.cachesDirectory) / host.replacing(".", with: "-")).withPathExtension(".storage.data")
+            let path = (try FSPath.specialDirectory(.cachesDirectory) / host.replacing(".", with: "-")).withPathExtension("v1-storage.data")
             storage = Storage()
-            storage.register(type: Dated<Status>.self) {
-                try JSONEncoder().encode($0)
-            } decoder: {
-                try JSONDecoder().decode(Dated<Status>.self, from: $0)
-            }
-
-
-
+            storage.registerJSON(type: Dated<Status>.self)
             try storage.open(path: path.path)
         }
         catch {
@@ -46,13 +39,13 @@ public actor Service {
 
     public func update(_ value: Status) {
         // TODO: Insert by date
-        storage[value.id.rawValue, Dated<Status>.self] = .init(value)
+        storage[value.id.rawValue] = Dated<Status>(value)
     }
 
     public func update(_ other: some Collection<Status>) {
         let now = Date.now
         for value in other {
-            storage[value.id.rawValue, Dated<Status>.self] = Dated(value, date: now)
+            storage[value.id.rawValue] = Dated(value, date: now)
         }
     }
 }

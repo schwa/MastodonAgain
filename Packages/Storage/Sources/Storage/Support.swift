@@ -20,10 +20,20 @@ internal extension iovec {
     }
 }
 
-struct WeakBox <Content> where Content: AnyObject {
-    weak var content: Content?
+public struct WeakBox <Content> where Content: AnyObject {
+    public weak var content: Content?
 
-    init(_ content: Content) {
+    public init(_ content: Content) {
         self.content = content
+    }
+}
+
+public extension Storage {
+    func registerJSON <T>(type: T.Type, encoder: JSONEncoder = JSONEncoder(), decoder: JSONDecoder = JSONDecoder()) where T: Codable {
+        register(type: type) {
+            try encoder.encode($0)
+        } decoder: {
+            try decoder.decode(type, from: $0)
+        }
     }
 }
