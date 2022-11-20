@@ -85,10 +85,12 @@ public class Storage {
             fatalError()
         }
 
+        let tempPath = try FSPath.makeTemporaryDirectory() / "compacted.data"
+
+
         // TODO: This is all rather ugly and likely error prone.
-        let tempPath = "/tmp/newlog.data" // TODO: get a real temp file.
         do {
-            let newLog = try StorageLog(path: tempPath)
+            let newLog = try StorageLog(path: tempPath.path)
             for (key, record) in cache {
                 let encoder = try self.encoders[record.type].safelyUnwrap(StorageError.noEncoderFound(record.type))
                 newLog.post {
@@ -104,7 +106,7 @@ public class Storage {
         }
 
         let oldPath = log.path
-        let newUrl = try FileManager().replaceItemAt(URL(filePath: oldPath), withItemAt: URL(filePath: tempPath), options: [.withoutDeletingBackupItem, .usingNewMetadataOnly])
+        let newUrl = try FileManager().replaceItemAt(URL(filePath: oldPath), withItemAt: tempPath.url, options: [.withoutDeletingBackupItem, .usingNewMetadataOnly])
         guard let newPath = newUrl?.path else {
             fatalError()
         }

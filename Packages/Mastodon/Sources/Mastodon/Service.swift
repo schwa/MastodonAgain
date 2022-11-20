@@ -31,6 +31,7 @@ public actor Service {
             storage = Storage()
             storage.registerJSON(type: Dated<Status>.self)
             try storage.open(path: path.path)
+            try storage.compact()
         }
         catch {
             fatal(error: error)
