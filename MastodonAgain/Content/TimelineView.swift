@@ -18,11 +18,6 @@ struct TimelineView: View, Sendable {
     @State
     var content = PagedContent<Service.Fetch>()
 
-    enum Mode: String, RawRepresentable, CaseIterable, Sendable {
-        case small
-        case large
-    }
-
     @State
     var refreshing = false
 
@@ -45,19 +40,13 @@ struct TimelineView: View, Sendable {
             }
 
             PagedContentView(content: $content, isFetching: $refreshing) { status in
-                if appModel.statusRowMode == .large {
-                    StatusRow(status: status)
-                    Divider()
-                }
-                else {
-                    MiniStatusRow(status: status)
-                }
+                StatusRow(status: status, mode: appModel.statusRowMode)
             }
         }
         .toolbar {
             Picker("Mode", selection: $appModel.statusRowMode) {
-                Image(systemName: "tablecells").tag(Mode.large)
-                Image(systemName: "list.dash").tag(Mode.small)
+                Image(systemName: "tablecells").tag(StatusRow.Mode.large)
+                Image(systemName: "list.dash").tag(StatusRow.Mode.small)
             }
             .pickerStyle(.inline)
 

@@ -19,7 +19,7 @@ class AppModel: ObservableObject {
     var useMarkdownContent = false
 
     @AppStorage("statusRowMode")
-    var statusRowMode = TimelineView.Mode.large
+    var statusRowMode = StatusRow.Mode.large
 
     @Stored("Signins")
     var signins: [SignIn] = []
