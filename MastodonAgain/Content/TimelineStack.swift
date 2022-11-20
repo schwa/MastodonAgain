@@ -33,12 +33,16 @@ struct TimelineStack: View {
     var body: some View {
         NavigationStack(path: $stackModel.path) {
             view(for: root)
-                .navigationDestination(for: NavigationPage.self) { page in
-                    view(for: page)
-                }
+            .navigationDestination(for: NavigationPage.self) { page in
+                view(for: page)
+            }
+            .logging("VIEW FOR PAGE")
         }
         .environmentObject(appModel)
         .environmentObject(stackModel)
+        .onChange(of: stackModel.path) { newValue in
+            appLogger?.log("Path did change: \(newValue))")
+        }
     }
 
     @ViewBuilder

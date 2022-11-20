@@ -4,6 +4,7 @@ import Foundation
 import Mastodon
 import RegexBuilder
 import SwiftUI
+import UniformTypeIdentifiers
 import WebKit
 
 // swiftlint:disable file_length
@@ -676,5 +677,34 @@ extension Locale {
 
     static var availableTopLevelIdentifiers: [String] {
         Locale.availableIdentifiers.filter({ !$0.contains("_") })
+    }
+}
+
+
+extension View {
+    func logging(_ s: String) -> Self {
+        appLogger?.log("\(s)")
+        return self
+    }
+}
+
+struct JSONDocument: FileDocument {
+    static let readableContentTypes: [UTType] = [.json]
+
+    let data: Data
+
+    init <T>(_ value: T, encoder: JSONEncoder = JSONEncoder()) throws where T: Codable {
+        data = try encoder.encode(value)
+    }
+
+    init(configuration: ReadConfiguration) throws {
+        guard let data = configuration.file.regularFileContents else {
+            throw MastodonError.generic("Could not read file")
+        }
+        self.data = data
+    }
+
+    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
+        FileWrapper(regularFileWithContents: data)
     }
 }

@@ -1,7 +1,6 @@
 import Everything
 import Mastodon
 import SwiftUI
-import UniformTypeIdentifiers
 
 // TODO: Sendable view?
 struct TimelineView: View, Sendable {
@@ -57,9 +56,7 @@ struct TimelineView: View, Sendable {
                     value.wrappedValue = true
                 }
                 // swiftlint:disable:next force_try
-                .fileExporter(isPresented: value, document: try! JSONDocument(content), contentType: .json) { result in
-
-                }
+                .fileExporter(isPresented: value, document: try! JSONDocument(content), contentType: .json) { _ in }
             }
         }
         .task {
@@ -93,23 +90,3 @@ struct TimelineView: View, Sendable {
     }
 }
 
-struct JSONDocument: FileDocument {
-    static let readableContentTypes: [UTType] = [.json]
-
-    let data: Data
-
-    init <T>(_ value: T, encoder: JSONEncoder = JSONEncoder()) throws where T: Codable {
-        data = try encoder.encode(value)
-    }
-
-    init(configuration: ReadConfiguration) throws {
-        guard let data = configuration.file.regularFileContents else {
-            throw MastodonError.generic("Could not read file")
-        }
-        self.data = data
-    }
-
-    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
-        FileWrapper(regularFileWithContents: data)
-    }
-}
