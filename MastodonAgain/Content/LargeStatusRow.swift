@@ -18,16 +18,13 @@ struct LargeStatusRow: View, Sendable {
     var instanceModel: InstanceModel
 
     var body: some View {
-        VStack {
-            HStack(alignment: .top) {
-                avatar
-                VStack(alignment: .leading) {
-                    header
-                    content
-                    footer
-                }
+        HStack(alignment: .top) {
+            avatar
+            VStack(alignment: .leading) {
+                header
+                content
+                footer
             }
-            Divider()
         }
     }
 

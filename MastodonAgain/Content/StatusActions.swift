@@ -140,6 +140,8 @@ struct StatusActions: View {
     }
 }
 
+// MARK: -
+
 struct StatusActionButton: View {
     let count: Int?
     let label: String
@@ -149,6 +151,9 @@ struct StatusActionButton: View {
 
     @Environment(\.errorHandler)
     var errorHandler
+
+    @Environment(\.isSelected)
+    var isSelected
 
     @State
     var inFlight = false
@@ -162,7 +167,7 @@ struct StatusActionButton: View {
     }
 
     var body: some View {
-        Button {
+        Button(title: label, systemImage: systemName) {
             guard inFlight == false else {
                 appLogger?.debug("Task for \(label) is already in flight, dropping.")
                 return
@@ -174,28 +179,62 @@ struct StatusActionButton: View {
                 }
                 inFlight = false
             }
-        } label: {
-            let image = Image(systemName: systemName)
-                .symbolVariant(isOn ? .fill : .none)
-                .foregroundColor(isOn ? .accentColor : nil)
-            // swiftlint:disable:next empty_count
-            if let count, count > 0 {
-                Label {
-                    Text("\(count, format: .number)")
-                } icon: {
-                    image
-                }
-            }
-            else {
-                if inFlight {
-                    ProgressView().controlSize(.small)
-                }
-                else {
-                    image
-                }
+        }
+        .buttonStyle(TODOButtonStyle(isSelected: isSelected, isHighlighted: isOn, count: count, isInProgress: inFlight))
+    }
+}
+
+// MARK: -
+
+struct TODOButtonStyle: ButtonStyle {
+    let isSelected: Bool
+    let isHighlighted: Bool
+    let count: Int?
+    let isInProgress: Bool
+
+    init(isSelected: Bool, isHighlighted: Bool, count: Int?, isInProgress: Bool) {
+        self.isSelected = isSelected
+        self.isHighlighted = isHighlighted
+        self.count = count
+        self.isInProgress = isInProgress
+    }
+
+    func makeBody(configuration: Configuration) -> some View {
+        // TODO: Make leading?
+        ZStack {
+            ProgressView().controlSize(.small)
+                .hidden(!isInProgress)
+            configuration.label
+                .labelStyle(_LabelStyle(isSelected: isSelected, isHighlighted: isHighlighted, count: count))
+                .hidden(isInProgress)
+        }
+    }
+
+    struct _LabelStyle: LabelStyle {
+        let isSelected: Bool
+        let isHighlighted: Bool
+        let count: Int?
+
+        func makeBody(configuration: Configuration) -> some View {
+            HStack(spacing: 1) {
+                configuration.icon
+                .foregroundColor(isHighlighted ? .accentColor : nil)
+                Text(count ?? 0, format: .number)
+                .font(.caption)
+                .monospacedDigit()
             }
         }
     }
 }
+struct TODOButtonPreview: PreviewProvider {
+    static var previews: some View {
+        VStack {
+            Button(title: "Gear", systemImage: "gear", action: {})
+                .buttonStyle(TODOButtonStyle(isSelected: false, isHighlighted: true, count: 5, isInProgress: true))
 
-// MARK:
+            Button(title: "Gear", systemImage: "gear", action: {})
+                .buttonStyle(TODOButtonStyle(isSelected: false, isHighlighted: true, count: 5, isInProgress: false))
+        }
+    }
+}
+

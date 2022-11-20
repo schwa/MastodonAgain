@@ -37,7 +37,10 @@ struct TimelineView: View, Sendable {
             DebugDescriptionView(timeline.url).debuggingInfo()
             PagedContentView(content: $content, isFetching: $refreshing) { status in
                 StatusRow(status: status, mode: appModel.statusRowMode)
+                .isSelected(selection.contains(status.id))
+                .listRowSeparator(.visible, edges: .bottom)
             }
+            .listSectionSeparator(.visible, edges: .bottom)
         }
         .toolbar {
             Picker("Mode", selection: $appModel.statusRowMode) {
@@ -86,6 +89,34 @@ struct TimelineView: View, Sendable {
             }
             refreshing = false
         }
+    }
+}
+
+struct SelectedKey: EnvironmentKey {
+    static var defaultValue = false
+}
+
+extension EnvironmentValues {
+    var isSelected: Bool {
+        get {
+            self[SelectedKey.self]
+        }
+        set {
+            self[SelectedKey.self] = newValue
+        }
+    }
+}
+
+struct SelectedModifier: ViewModifier {
+    let value: Bool
+    func body(content: Content) -> some View {
+        content.environment(\.isSelected, value)
+    }
+}
+
+extension View {
+    func isSelected(_ value: Bool) -> some View {
+        self.modifier(SelectedModifier(value: value))
     }
 }
 
