@@ -18,6 +18,7 @@
   },
   "testTargets" : [
     {
+      "parallelizable" : true,
       "target" : {
         "containerPath" : "container:Packages\/Mastodon",
         "identifier" : "MastodonTests",
@@ -25,6 +26,7 @@
       }
     },
     {
+      "parallelizable" : true,
       "target" : {
         "containerPath" : "container:Packages\/Blueprint",
         "identifier" : "BlueprintTests",
@@ -32,6 +34,7 @@
       }
     },
     {
+      "parallelizable" : true,
       "target" : {
         "containerPath" : "container:Packages\/Support",
         "identifier" : "SupportTests",
