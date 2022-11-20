@@ -78,6 +78,13 @@ extension Page: Codable where Fetch: Codable, Element.ID: Codable, Element: Coda
 extension PagedContent: Codable where Page: Codable {
 }
 
+extension Page: Equatable where Fetch: Equatable, Element.ID: Equatable, Element: Equatable {
+}
+
+extension PagedContent: Equatable where Page: Equatable {
+}
+
+
 // MARK: -
 
 extension Page: CustomDebugStringConvertible {

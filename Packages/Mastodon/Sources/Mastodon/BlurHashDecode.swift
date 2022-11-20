@@ -1,7 +1,7 @@
 import CoreGraphics
 import SwiftUI
 
-public struct Blurhash: Codable, Sendable {
+public struct Blurhash: Codable, Sendable, Equatable {
     let string: String
 
     public init(from decoder: Decoder) throws {

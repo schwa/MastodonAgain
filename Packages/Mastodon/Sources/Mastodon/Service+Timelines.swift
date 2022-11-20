@@ -3,7 +3,8 @@ import Foundation
 
 public extension Service {
     // TODO: This will have to become generic for generic pagedcontentviews
-    struct Fetch: FetchProtocol, Codable {
+    struct Fetch: FetchProtocol, Codable, Hashable {
+
         public typealias Element = Status
 
         let service: Service
@@ -30,6 +31,14 @@ public extension Service {
         public func encode(to encoder: Encoder) throws {
             var container = encoder.singleValueContainer()
             try container.encode(url)
+        }
+
+        public static func == (lhs: Service.Fetch, rhs: Service.Fetch) -> Bool {
+            return lhs.url == rhs.url
+        }
+
+        public func hash(into hasher: inout Hasher) {
+            url.hash(into: &hasher)
         }
     }
 

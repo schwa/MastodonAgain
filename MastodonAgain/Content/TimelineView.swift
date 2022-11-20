@@ -67,9 +67,13 @@ struct TimelineView: View, Sendable {
         .task {
             refreshTask()
         }
+        .onChange(of: content) { newValue in
+            appLogger?.log("Content did change")
+        }
     }
 
     func refreshTask(direction: PagingDirection? = nil) {
+        appLogger?.log("FETCHING PAGE (once per timelime)")
         guard refreshing == false else {
             return
         }
