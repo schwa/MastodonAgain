@@ -1,0 +1,32 @@
+{
+  "pins" : [
+    {
+      "identity" : "coregraphicsgeometrysupport",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/schwa/CoreGraphicsGeometrySupport",
+      "state" : {
+        "branch" : "main",
+        "revision" : "63347db575440bb24130ee7724409f753972318f"
+      }
+    },
+    {
+      "identity" : "everything",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/schwa/Everything",
+      "state" : {
+        "branch" : "main",
+        "revision" : "590cf0be4eb1d51d05ab820ae9e31bc0eaff45d5"
+      }
+    },
+    {
+      "identity" : "swift-async-algorithms",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-async-algorithms",
+      "state" : {
+        "revision" : "cca423ff03ab657062f3781847e65a867b51bb01",
+        "version" : "0.0.3"
+      }
+    }
+  ],
+  "version" : 2
+}
