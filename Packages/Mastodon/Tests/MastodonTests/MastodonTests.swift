@@ -18,6 +18,7 @@ final class MastodonTests: XCTestCase {
 
         Simple file.
         -----------------------------8721656041911415653955004498--
+
         """
         .components(separatedBy: .newlines).joined(separator: "\r\n")
 
