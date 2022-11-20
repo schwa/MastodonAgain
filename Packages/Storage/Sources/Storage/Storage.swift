@@ -86,7 +86,7 @@ public class Storage {
         }
 
         // TODO: This is all rather ugly and likely error prone.
-        let tempPath = "/tmp/newlog.data"
+        let tempPath = "/tmp/newlog.data" // TODO: get a real temp file.
         do {
             let newLog = try StorageLog(path: tempPath)
             for (key, record) in cache {
