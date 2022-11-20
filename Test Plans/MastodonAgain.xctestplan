@@ -1,0 +1,43 @@
+{
+  "configurations" : [
+    {
+      "id" : "12F76AA8-D359-41B5-A00F-CA7E46323D43",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:MastodonAgain.xcodeproj",
+      "identifier" : "455AC87D290D96F600137415",
+      "name" : "MastodonAgain"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Packages\/Mastodon",
+        "identifier" : "MastodonTests",
+        "name" : "MastodonTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Packages\/Blueprint",
+        "identifier" : "BlueprintTests",
+        "name" : "BlueprintTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Packages\/Support",
+        "identifier" : "SupportTests",
+        "name" : "SupportTests"
+      }
+    }
+  ],
+  "version" : 1
+}

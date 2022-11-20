@@ -37,6 +37,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4511AFBC2929D07E008A1858 /* MastodonAgain.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = MastodonAgain.xctestplan; sourceTree = "<group>"; };
 		451434972918386E004A9208 /* InstanceModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceModel.swift; sourceTree = "<group>"; };
 		4514349C29184E05004A9208 /* SigninsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigninsView.swift; sourceTree = "<group>"; };
 		45201FF9290F150100469569 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
@@ -95,6 +96,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4511AFBB2929D07E008A1858 /* Test Plans */ = {
+			isa = PBXGroup;
+			children = (
+				4511AFBC2929D07E008A1858 /* MastodonAgain.xctestplan */,
+			);
+			path = "Test Plans";
+			sourceTree = "<group>";
+		};
 		4514349929183DD6004A9208 /* Main */ = {
 			isa = PBXGroup;
 			children = (
@@ -178,6 +187,7 @@
 				45201FFF290F164800469569 /* xcconfig */,
 				455AC891290D981A00137415 /* Packages */,
 				455AC880290D96F600137415 /* MastodonAgain */,
+				4511AFBB2929D07E008A1858 /* Test Plans */,
 				455AC87F290D96F600137415 /* Products */,
 				45F1A2AD290DBB990093A8AC /* Frameworks */,
 			);
