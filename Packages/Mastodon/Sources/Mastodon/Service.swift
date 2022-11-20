@@ -4,6 +4,7 @@ import Everything
 import Foundation
 import os
 import RegexBuilder
+import Storage
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -27,7 +28,16 @@ public actor Service {
 
         do {
             let path = (try FSPath.specialDirectory(.cachesDirectory) / host.replacing(".", with: "-")).withPathExtension(".storage.data")
-            storage = try Storage(path: path.path)
+            storage = Storage()
+            storage.register(type: Dated<Status>.self) {
+                try JSONEncoder().encode($0)
+            } decoder: {
+                try JSONDecoder().decode(Dated<Status>.self, from: $0)
+            }
+
+
+
+            try storage.open(path: path.path)
         }
         catch {
             fatal(error: error)

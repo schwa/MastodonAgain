@@ -16,6 +16,7 @@ let package = Package(
         .package(url: "https://github.com/schwa/Everything.git", branch: "main"),
         .package(url: "https://github.com/apple/swift-async-algorithms", from: "0.0.3"),
         .package(path: "../Blueprint"),
+        .package(path: "../Storage"),
         .package(path: "../Support"),
     ],
     targets: [
@@ -25,6 +26,7 @@ let package = Package(
                 "Blueprint",
                 "Everything",
                 .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"),
+                "Storage",
                 "Support",
             ]
         ),

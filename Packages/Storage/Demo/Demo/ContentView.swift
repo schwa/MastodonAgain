@@ -1,12 +1,7 @@
-//
-//  ContentView.swift
-//  Demo
-//
-//  Created by Jonathan Wight on 11/19/22.
-//
-
-import SwiftUI
 import Storage
+import SwiftUI
+
+// swiftlint:disable force_try
 
 let sharedStorage = {
     print(#function)
@@ -22,7 +17,6 @@ let sharedStorage = {
 }()
 
 struct ContentView: View {
-
     @State
     var key: String = "MY_KEY"
 

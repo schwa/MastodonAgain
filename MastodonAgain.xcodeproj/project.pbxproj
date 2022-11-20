@@ -15,6 +15,10 @@
 		4520201529104D7D00469569 /* canned_timeline.json in Resources */ = {isa = PBXBuildFile; fileRef = 4520201429104D7D00469569 /* canned_timeline.json */; };
 		4529E98229286D0300ABFA42 /* NotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4529E98129286D0300ABFA42 /* NotificationsView.swift */; };
 		453BB94A292720A800FAA259 /* SigninPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 453BB949292720A800FAA259 /* SigninPicker.swift */; };
+		454ED2FE2929D9CA0067B070 /* Blueprint in Frameworks */ = {isa = PBXBuildFile; productRef = 454ED2FD2929D9CA0067B070 /* Blueprint */; };
+		454ED3002929D9CA0067B070 /* Mastodon in Frameworks */ = {isa = PBXBuildFile; productRef = 454ED2FF2929D9CA0067B070 /* Mastodon */; };
+		454ED3022929D9CA0067B070 /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = 454ED3012929D9CA0067B070 /* Storage */; };
+		454ED3042929D9CA0067B070 /* Support in Frameworks */ = {isa = PBXBuildFile; productRef = 454ED3032929D9CA0067B070 /* Support */; };
 		455AC882290D96F600137415 /* MastodonAgainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455AC881290D96F600137415 /* MastodonAgainApp.swift */; };
 		455AC884290D96F600137415 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455AC883290D96F600137415 /* ContentView.swift */; };
 		455AC886290D96F700137415 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 455AC885290D96F700137415 /* Assets.xcassets */; };
@@ -22,7 +26,6 @@
 		45A27F49291053FB00662B71 /* TimelineStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A27F48291053FB00662B71 /* TimelineStack.swift */; };
 		45B45CC2291065870070F1C5 /* PagedContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B45CC1291065870070F1C5 /* PagedContentView.swift */; };
 		45B45CC4291086660070F1C5 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B45CC3291086660070F1C5 /* CardView.swift */; };
-		45F1A2AF290DBB990093A8AC /* Mastodon in Frameworks */ = {isa = PBXBuildFile; productRef = 45F1A2AE290DBB990093A8AC /* Mastodon */; };
 		45F1A2B2290DD6AB0093A8AC /* CachedAsyncImage in Frameworks */ = {isa = PBXBuildFile; productRef = 45F1A2B1290DD6AB0093A8AC /* CachedAsyncImage */; };
 		45F1A2B6290E0F4B0093A8AC /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F1A2B5290E0F4B0093A8AC /* Support.swift */; };
 		45F1A2B9290E1FB60093A8AC /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F1A2B8290E1FB60093A8AC /* TimelineView.swift */; };
@@ -59,19 +62,20 @@
 		4520201429104D7D00469569 /* canned_timeline.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = canned_timeline.json; sourceTree = "<group>"; };
 		4529E98129286D0300ABFA42 /* NotificationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsView.swift; sourceTree = "<group>"; };
 		453BB949292720A800FAA259 /* SigninPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigninPicker.swift; sourceTree = "<group>"; };
+		454ED2F92929D9A30067B070 /* Blueprint */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Blueprint; sourceTree = "<group>"; };
+		454ED2FA2929D9B70067B070 /* Mastodon */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Mastodon; sourceTree = "<group>"; };
+		454ED2FB2929D9B70067B070 /* Storage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Storage; sourceTree = "<group>"; };
+		454ED2FC2929D9B70067B070 /* Support */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Support; sourceTree = "<group>"; };
 		455AC87E290D96F600137415 /* MastodonAgain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MastodonAgain.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		455AC881290D96F600137415 /* MastodonAgainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonAgainApp.swift; sourceTree = "<group>"; };
 		455AC883290D96F600137415 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		455AC885290D96F700137415 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		455AC887290D96F700137415 /* MastodonAgain.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MastodonAgain.entitlements; sourceTree = "<group>"; };
 		455AC889290D96F700137415 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		456269CF29295DB50010E145 /* Support */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Support; sourceTree = "<group>"; };
-		457ABA4129216CBE0018A276 /* Blueprint */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Blueprint; sourceTree = "<group>"; };
 		45A27F48291053FB00662B71 /* TimelineStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineStack.swift; sourceTree = "<group>"; };
 		45B45CC1291065870070F1C5 /* PagedContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PagedContentView.swift; sourceTree = "<group>"; };
 		45B45CC3291086660070F1C5 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		45F1A2B5290E0F4B0093A8AC /* Support.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Support.swift; sourceTree = "<group>"; };
-		45F1A2B7290E1B720093A8AC /* Mastodon */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Mastodon; sourceTree = "<group>"; };
 		45F1A2B8290E1FB60093A8AC /* TimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
 		45F1A2BA290E1FE50093A8AC /* StatusRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusRow.swift; sourceTree = "<group>"; };
 		45F1A2BC290E31360093A8AC /* Minikeychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Minikeychain.swift; sourceTree = "<group>"; };
@@ -89,8 +93,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				45F1A2AF290DBB990093A8AC /* Mastodon in Frameworks */,
+				454ED3042929D9CA0067B070 /* Support in Frameworks */,
+				454ED2FE2929D9CA0067B070 /* Blueprint in Frameworks */,
+				454ED3002929D9CA0067B070 /* Mastodon in Frameworks */,
 				45F1A2B2290DD6AB0093A8AC /* CachedAsyncImage in Frameworks */,
+				454ED3022929D9CA0067B070 /* Storage in Frameworks */,
 				45FDAF8929177EF50073E8E0 /* AsyncAlgorithms in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -230,9 +237,10 @@
 		455AC891290D981A00137415 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				457ABA4129216CBE0018A276 /* Blueprint */,
-				45F1A2B7290E1B720093A8AC /* Mastodon */,
-				456269CF29295DB50010E145 /* Support */,
+				454ED2F92929D9A30067B070 /* Blueprint */,
+				454ED2FA2929D9B70067B070 /* Mastodon */,
+				454ED2FB2929D9B70067B070 /* Storage */,
+				454ED2FC2929D9B70067B070 /* Support */,
 			);
 			path = Packages;
 			sourceTree = "<group>";
@@ -262,9 +270,12 @@
 			);
 			name = MastodonAgain;
 			packageProductDependencies = (
-				45F1A2AE290DBB990093A8AC /* Mastodon */,
 				45F1A2B1290DD6AB0093A8AC /* CachedAsyncImage */,
 				45FDAF8829177EF50073E8E0 /* AsyncAlgorithms */,
+				454ED2FD2929D9CA0067B070 /* Blueprint */,
+				454ED2FF2929D9CA0067B070 /* Mastodon */,
+				454ED3012929D9CA0067B070 /* Storage */,
+				454ED3032929D9CA0067B070 /* Support */,
 			);
 			productName = MastodonAgain;
 			productReference = 455AC87E290D96F600137415 /* MastodonAgain.app */;
@@ -456,9 +467,21 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		45F1A2AE290DBB990093A8AC /* Mastodon */ = {
+		454ED2FD2929D9CA0067B070 /* Blueprint */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Blueprint;
+		};
+		454ED2FF2929D9CA0067B070 /* Mastodon */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Mastodon;
+		};
+		454ED3012929D9CA0067B070 /* Storage */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Storage;
+		};
+		454ED3032929D9CA0067B070 /* Support */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Support;
 		};
 		45F1A2B1290DD6AB0093A8AC /* CachedAsyncImage */ = {
 			isa = XCSwiftPackageProductDependency;

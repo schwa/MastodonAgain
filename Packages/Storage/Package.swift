@@ -16,7 +16,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-async-algorithms", from: "0.0.3"),
     ],
     targets: [
-        .target(name: "Storage",dependencies: [
+        .target(name: "Storage", dependencies: [
             .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"),
             "Everything"
         ]),

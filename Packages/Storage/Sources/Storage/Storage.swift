@@ -44,7 +44,9 @@ public class Storage {
     public func register<T>(type: T.Type, encoder: @escaping (T) throws -> Data, decoder: @escaping (Data) throws -> T) {
         let type = TypeID(T.self)
         encoders[type] = {
-            try encoder($0 as! T)
+            // swiftlint:disable:next force_cast
+            try encoder($0 as! T)             // TODO: FIx this
+
         }
         decoders[type] = {
             try decoder($0)
@@ -54,7 +56,7 @@ public class Storage {
     public func open(path: String) throws {
         if FileManager().fileExists(atPath: path) {
             let data = try StorageLog.read(path: path)
-            try data.forEach { (key, value) in
+            try data.forEach { key, value in
                 let (type, data) = value
                 let decoder = try decoders[type].safelyUnwrap(StorageError.noDecoderFound(type))
                 let value = try decoder(data)
@@ -74,6 +76,7 @@ public class Storage {
             fatalError()
         }
         try log.flush()
+        // swiftlint:disable:next force_cast
         return try FileManager().attributesOfItem(atPath: log.path)[.size] as! Int
     }
 
@@ -164,17 +167,16 @@ public class Storage {
 // MARK: -
 
 public extension Storage {
-
-    subscript<K, V>(key: K) -> Optional<V> where K: Codable, V: Codable {
+    subscript<K, V>(key: K) -> V? where K: Codable, V: Codable {
         get {
-            return self[key, V.self]
+            self[key, V.self]
         }
         set {
             self[key, V.self] = newValue
         }
     }
 
-    subscript<K, V>(_ key: K, type: V.Type) -> Optional<V> where K: Codable, V: Codable {
+    subscript<K, V>(_ key: K, type: V.Type) -> V? where K: Codable, V: Codable {
         get {
             do {
                 let key = try Key(key)

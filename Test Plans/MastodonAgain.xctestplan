@@ -40,6 +40,14 @@
         "identifier" : "SupportTests",
         "name" : "SupportTests"
       }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Packages\/Storage",
+        "identifier" : "StorageTests",
+        "name" : "StorageTests"
+      }
     }
   ],
   "version" : 1

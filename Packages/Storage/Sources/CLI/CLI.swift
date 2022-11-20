@@ -7,7 +7,6 @@ public struct CLI {
     public private(set) var text = "Hello, World!"
 
     public static func main() throws {
-
         let storage = Storage()
 
         storage.register(type: String.self) { value in
