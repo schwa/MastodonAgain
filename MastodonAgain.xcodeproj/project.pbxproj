@@ -34,6 +34,7 @@
 		45FDAF84291714F40073E8E0 /* StatusInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FDAF83291714F40073E8E0 /* StatusInfoView.swift */; };
 		45FDAF86291715130073E8E0 /* AccountInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FDAF85291715130073E8E0 /* AccountInfoView.swift */; };
 		45FDAF8929177EF50073E8E0 /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 45FDAF8829177EF50073E8E0 /* AsyncAlgorithms */; };
+		A19FD1FB29295CAF00F6BE86 /* SignInViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19FD1FA29295CAF00F6BE86 /* SignInViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -80,6 +81,7 @@
 		45FDAF83291714F40073E8E0 /* StatusInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusInfoView.swift; sourceTree = "<group>"; };
 		45FDAF85291715130073E8E0 /* AccountInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoView.swift; sourceTree = "<group>"; };
 		45FDAF8A29178A970073E8E0 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		A19FD1FA29295CAF00F6BE86 /* SignInViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +116,7 @@
 				455AC883290D96F600137415 /* ContentView.swift */,
 				452020122910281300469569 /* MainView.swift */,
 				453BB949292720A800FAA259 /* SigninPicker.swift */,
+				A19FD1FA29295CAF00F6BE86 /* SignInViewModel.swift */,
 				4514349C29184E05004A9208 /* SigninsView.swift */,
 			);
 			path = Main;
@@ -352,6 +355,7 @@
 				45FDAF84291714F40073E8E0 /* StatusInfoView.swift in Sources */,
 				45A27F49291053FB00662B71 /* TimelineStack.swift in Sources */,
 				45F1A2BB290E1FE50093A8AC /* StatusRow.swift in Sources */,
+				A19FD1FB29295CAF00F6BE86 /* SignInViewModel.swift in Sources */,
 				45FDAF822916EE5A0073E8E0 /* MiniStatusRow.swift in Sources */,
 				45202011290F8DC600469569 /* NewPostWindow.swift in Sources */,
 				451434982918386E004A9208 /* InstanceModel.swift in Sources */,
@@ -389,11 +393,13 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 45202002290F164800469569 /* MastodonAgain-Debug.xcconfig */;
 			buildSettings = {
+				DEVELOPMENT_TEAM = A4ZM73UFF5;
 				INFOPLIST_FILE = MastodonAgain/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = TODO;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				PRODUCT_BUNDLE_IDENTIFIER = com.andyqua.MastodonAgain;
 			};
 			name = Debug;
 		};
@@ -401,11 +407,13 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 45202000290F164800469569 /* MastodonAgain-Release.xcconfig */;
 			buildSettings = {
+				DEVELOPMENT_TEAM = A4ZM73UFF5;
 				INFOPLIST_FILE = MastodonAgain/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = TODO;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				PRODUCT_BUNDLE_IDENTIFIER = com.andyqua.MastodonAgain;
 			};
 			name = Release;
 		};

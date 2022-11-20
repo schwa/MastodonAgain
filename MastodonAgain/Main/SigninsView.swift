@@ -63,13 +63,16 @@ struct SigninsView: View {
 // MARK: -
 
 struct SignInView: View {
+    @EnvironmentObject
+    var appModel: AppModel
+    
+    @Environment(\.errorHandler)
+    var errorHandler
+
+    @StateObject
+    var signInModel = SignInViewModel()
+        
     let result: (SignIn?) -> Void
-
-    @State
-    var host: String?
-
-    @State
-    var authorization: Authorization = .unauthorized
 
     var body: some View {
         VStack {
@@ -77,35 +80,66 @@ struct SignInView: View {
                 .frame(maxWidth: .infinity)
                 .padding()
                 .background(Color.orange)
-
-            if let host {
-                NewAuthorizationFlow(host: host, authorization: $authorization)
+            
+            if let _ = signInModel.host {
+                Text( "Registering app....." )
             }
             else {
-                HostPicker(host: $host)
+                HostPicker(host: $signInModel.host)
             }
         }
         .frame(maxHeight: .infinity)
-        .onChange(of: host) { _ in
-            update()
-        }
-        .onChange(of: authorization) { _ in
-            update()
-        }
-    }
-
-    func update() {
-        if let host, case .authorized = authorization {
+        .onChange(of: signInModel.host) { _ in
             Task {
-                let service = Service(host: host, authorization: authorization)
-                let account = try await service.perform(type: Account.self) { baseURL, token in
-                    MastodonAPI.Accounts.Verify(baseURL: baseURL, token: token)
+                await errorHandler {
+                    switch await signInModel.authorization {
+                        case .unauthorized:
+                            // Register application
+                            try await signInModel.register(applicationName: appModel.applicationName, applicationWebsite: appModel.applicationWebsite)
+
+                        default:
+                            // handled below
+                            break
+                    }
+                    
                 }
-                let (data, _) = try await URLSession.shared.data(for: URLRequest(url: account.avatar))
-                let signin = SignIn(host: host, authorization: authorization, account: account, avatar: try .init(source: .data(data)))
-                result(signin)
             }
         }
+        .onChange(of: signInModel.authorization) { _ in
+            Task {
+                await errorHandler {
+                    switch await signInModel.authorization {
+                        case .registered(let application):
+                            let authCode = try await signInModel.signIn(clientID: application.clientID)
+                            
+                            try await signInModel.exchangeCodeForToken(application: application, authorisationCode: authCode)
+
+                        case .authorized:
+                            let signin = try await signInModel.getAccountDetails()
+                            result(signin)
+
+                        default:
+                            // Do nothing - handled above
+                            break
+                    }
+                }
+            }
+        }
+    }
+    
+    func registerApplication() async throws {
+        try await signInModel.register(applicationName: appModel.applicationName, applicationWebsite: appModel.applicationWebsite)
+    }
+    
+    func authoriseApp( application : RegisteredApplication ) async throws {
+        let authCode = try await signInModel.signIn(clientID: application.clientID)
+        
+        try await signInModel.exchangeCodeForToken(application: application, authorisationCode: authCode)
+    }
+    
+    func getAccountDetails() async throws {
+        let signin = try await signInModel.getAccountDetails()
+        result(signin)
     }
 }
 
@@ -149,124 +183,5 @@ struct HostPicker: View {
         .onSubmit {
             host = userHost
         }
-    }
-}
-
-struct NewAuthorizationFlow: View {
-    @EnvironmentObject
-    var appModel: AppModel
-
-    let host: String
-
-    @Binding
-    var authorization: Authorization
-
-    @State
-    var authorizationCode: String = ""
-
-    @Environment(\.errorHandler)
-    var errorHandler
-
-    struct Mode: Equatable {
-        let title: String
-        let started = Date()
-    }
-
-    @State
-    var mode: Mode?
-
-    var body: some View {
-        Group {
-            if let mode {
-                ProgressView()
-                if let date = mode.started {
-                    Text("\(mode.title): ") + Text(date, style: .relative).monospacedDigit()
-                }
-            }
-            else {
-                switch authorization {
-                case .unauthorized:
-                    PlaceholderShape().stroke()
-                case .registered(let application):
-                    registeredView(application)
-                default:
-                    Text("Already authorized!")
-                }
-            }
-        }
-        .onAppear {
-            Task {
-                await errorHandler {
-                    try await register()
-                }
-            }
-        }
-        .onChange(of: mode, perform: { mode in
-            appLogger?.log("Mode changed: \(String(describing: mode))")
-        })
-        .onChange(of: authorization) { authorization in
-            appLogger?.log("Authorization changed: \(String(describing: authorization))")
-        }
-    }
-
-    @ViewBuilder
-    func registeredView(_ application: RegisteredApplication) -> some View {
-        VStack {
-            let url = URL(string: "https://\(host)/oauth/authorize?client_id=\(application.clientID)&scope=read+write+follow+push&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code")!
-            let request = URLRequest(url: url)
-            WebView(request: request)
-            Image(systemName: "arrow.down").font(.largeTitle)
-                .foregroundColor(.red)
-                .padding()
-            TextField("Authorisation Code", text: $authorizationCode)
-                .onSubmit {
-                    Task {
-                        try await getToken(with: application)
-                    }
-                }
-                .padding()
-        }
-        .toolbar {
-//            Button("Previous") {
-//                // TODO: We dont really have a good way of getting back.
-//            }
-            Button("Next") {
-                Task {
-                    try await getToken(with: application)
-                }
-            }
-            .disabled(authorizationCode.isEmpty)
-        }
-    }
-
-    func register() async throws {
-        mode = Mode(title: "Registering Application")
-        let url = URL(string: "https://\(host)/api/v1/apps")!
-        let request = URLRequest(url: url, formParameters: [
-            "client_name": appModel.applicationName,
-            "redirect_uris": "urn:ietf:wg:oauth:2.0:oob",
-            "scopes": "read write follow push",
-            "website": appModel.applicationWebsite,
-        ])
-
-        let (application, _) = try await URLSession.shared.json(RegisteredApplication.self, for: request)
-        authorization = .registered(application)
-        mode = nil
-    }
-
-    func getToken(with application: RegisteredApplication) async throws {
-        mode = Mode(title: "Getting Token")
-        let url = URL(string: "https://\(host)/oauth/token")!
-        let request = URLRequest(url: url, formParameters: [
-            "client_id": application.clientID,
-            "client_secret": application.clientSecret,
-            "redirect_uri": "urn:ietf:wg:oauth:2.0:oob",
-            "grant_type": "authorization_code",
-            "code": authorizationCode,
-            "scope": "read write follow push",
-        ])
-        let (token, _) = try await URLSession.shared.json(Token.self, for: request)
-        authorization = .authorized(application, token)
-        mode = nil
     }
 }
