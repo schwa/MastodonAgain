@@ -38,7 +38,6 @@ public class DataStorage {
     }
 
     public func load() throws {
-        logger?.debug("Storage.load")
         guard path.exists else {
             return
         }
@@ -47,7 +46,6 @@ public class DataStorage {
     }
 
     public func save() throws {
-        logger?.debug("Storage.save")
         do {
             let data = try PropertyListEncoder().encode(items)
             try data.write(to: path.url)
