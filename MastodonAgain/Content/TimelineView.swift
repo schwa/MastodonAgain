@@ -22,7 +22,6 @@ struct TimelineView: View, Sendable {
     var refreshing = false
 
     init(timeline: Timeline) {
-        appLogger?.log("INIT (once per timelime)")
         self.timeline = timeline
     }
 
@@ -36,10 +35,6 @@ struct TimelineView: View, Sendable {
     var body: some View {
         List(selection: $selection) {
             DebugDescriptionView(timeline.url).debuggingInfo()
-            if refreshing {
-                ProgressView()
-            }
-
             PagedContentView(content: $content, isFetching: $refreshing) { status in
                 StatusRow(status: status, mode: appModel.statusRowMode)
             }
@@ -60,11 +55,15 @@ struct TimelineView: View, Sendable {
             }
         }
         .task {
-            appLogger?.log("TASK (once per timelime)")
+            /* TODO: Bug this is getting called multiple times (x2). The guard isn't preventing multiple hits. Also seeing
+             Update NavigationAuthority bound path tried to update multiple times per frame.
+             Update NavigationRequestObserver tried to update multiple times per frame.
+             https://developer.apple.com/forums/thread/708592
+             */
+            guard refreshing == false else {
+                return
+            }
             refreshTask()
-        }
-        .onChange(of: content) { newValue in
-            appLogger?.log("Content did change")
         }
     }
 

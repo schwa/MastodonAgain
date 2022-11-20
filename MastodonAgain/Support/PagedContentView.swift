@@ -18,26 +18,49 @@ struct PagedContentView<Row, Fetch>: View where Row: View, Fetch: FetchProtocol 
     let row: (Binding<Content.Element>) -> Row
 
     var body: some View {
-        Refresh("Newer") {
-            fetchPrevious()
-        }
-        .disabled(content.pages.first?.previous == nil)
-        ForEach(content.pages) { page in
-            let id = page.id
-            let pageBinding = Binding {
-                page
-            } set: { newValue in
-                guard let index = content.pages.firstIndex(where: { $0.id == id }) else {
-                    fatalError("Could not find a page in a timeline we were displaying it from...")
+        if content.pages.isEmpty {
+            HStack {
+                Spacer()
+                Refresh("Refresh", refreshing: $isFetching) {
+                    refresh()
                 }
-                content.pages[index] = newValue
+                Spacer()
             }
-            PageView(page: pageBinding, row: row)
         }
-        Refresh("Older") {
-            fetchNext()
+        else {
+            HStack {
+                Spacer()
+                Refresh("Newer", refreshing: $isFetching) {
+                    fetchPrevious()
+                }
+                Spacer()
+            }
+            .disabled(content.pages.first?.previous == nil)
+            ForEach(content.pages) { page in
+                let id = page.id
+                let pageBinding = Binding {
+                    page
+                } set: { newValue in
+                    guard let index = content.pages.firstIndex(where: { $0.id == id }) else {
+                        fatalError("Could not find a page in a timeline we were displaying it from...")
+                    }
+                    content.pages[index] = newValue
+                }
+                PageView(page: pageBinding, row: row)
+            }
+            HStack {
+                Spacer()
+                Refresh("Older", refreshing: $isFetching) {
+                    fetchNext()
+                }
+                .disabled(content.pages.last?.next == nil)
+                Spacer()
+            }
         }
-        .disabled(content.pages.last?.next == nil)
+    }
+
+    func refresh() {
+        // TODO:
     }
 
     func fetchPrevious() {
@@ -49,7 +72,7 @@ struct PagedContentView<Row, Fetch>: View where Row: View, Fetch: FetchProtocol 
         Task {
             await errorHandler {
                 let newPage = try await fetch()
-                appLogger?.log("Fetched: \(newPage.debugDescription)")
+                appLogger?.log("Fetched previous: \(newPage.debugDescription)")
                 await MainActor.run {
                     content.pages.insert(newPage, at: 0)
                     isFetching = false
@@ -69,7 +92,7 @@ struct PagedContentView<Row, Fetch>: View where Row: View, Fetch: FetchProtocol 
         Task {
             await errorHandler {
                 let newPage = try await fetch()
-                appLogger?.log("Fetched: \(newPage.debugDescription)")
+                appLogger?.log("Fetched next: \(newPage.debugDescription)")
                 await MainActor.run {
                     content.pages.append(newPage)
                     isFetching = false
@@ -109,36 +132,25 @@ struct PagedContentView<Row, Fetch>: View where Row: View, Fetch: FetchProtocol 
 
 struct Refresh: View {
     let title: String
-    let action: @Sendable () async throws -> Void
+    let action: () -> Void
 
-    @State
-    var running = false
+    @Binding
+    var refreshing: Bool
 
-    init(_ title: String, action: @escaping @Sendable () async throws -> Void) {
+    init(_ title: String, refreshing: Binding<Bool>, action: @escaping () -> Void) {
         self.title = title
+        self._refreshing = refreshing
         self.action = action
     }
 
     var body: some View {
-        if running {
-            ProgressView()
+        if refreshing {
+            ProgressView().controlSize(.small)
         }
         else {
             Button(title) {
-                run()
+                action()
             }
-            .onAppear() {
-//                run()
-            }
-        }
-    }
-
-    func run() {
-        let action = action
-        running = true
-        Task.detached {
-            try await action()
-            running = false
         }
     }
 }
