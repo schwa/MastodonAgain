@@ -3,7 +3,7 @@ import SwiftUI
 
 struct StatusRow: View {
     enum Mode: String, RawRepresentable, CaseIterable, Sendable {
-        case small
+        case mini
         case large
     }
 
@@ -14,7 +14,7 @@ struct StatusRow: View {
 
     var body: some View {
         switch mode {
-        case .small:
+        case .mini:
             MiniStatusRow(status: _status)
         case .large:
             LargeStatusRow(status: _status)
