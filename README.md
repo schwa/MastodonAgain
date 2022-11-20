@@ -4,7 +4,15 @@ I did a bad thing.
 
 ![](Documentation/Screenshot%202022-10-30%20at%2022.38.35.png)
 
+## Requirements
+
+This project is aimed at macOS 13 Ventura and higher. Back-porting to macOS 12 may be possible but would be a lot of work. Pull requests would be welcome but macOS 12 and older support is not and likely won't be a priority.
+
+While it can compile and run on iOS 16 devices it has not been tested on any iOS devices at all. Focus is getting mac OS support running first - then bringing up iOS (and especially iPad) support.
+
 ## What works?
+
+(There's a good chance this README list is not up to date - be warned).
 
 - [X] Login (using an authentication code)
 - [X] Timeline (to some extent)
