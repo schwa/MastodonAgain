@@ -49,6 +49,7 @@ struct StatusActions: View {
         Button(systemImage: "info", action: {
             stackModel.path.append(.status(status.id))
         })
+        .buttonStyle(TODOButtonStyle())
     }
 
     // TODO: Experiments here to solve Capture of 'self' with non-sendable type 'StatusRow' in a `@Sendable` closure
@@ -112,13 +113,16 @@ struct StatusActions: View {
     @ViewBuilder
     var moreButton: some View {
         Button(systemImage: "ellipsis", action: {})
+            .buttonStyle(TODOButtonStyle())
     }
 
     @ViewBuilder
     var shareButton: some View {
         let status: any StatusProtocol = status.reblog ?? status
         let url = status.url! // TODO:
+        // TODO: We can't make the ShareLink styled
         ShareLink(item: url, label: { Image(systemName: "square.and.arrow.up") })
+//            .buttonStyle(TODOButtonStyle())
     }
 
     @ViewBuilder
@@ -129,7 +133,8 @@ struct StatusActions: View {
         .popover(isPresented: $isDebugPopoverPresented) {
             debugView
         }
-    }
+        .buttonStyle(TODOButtonStyle())
+}
 
     @ViewBuilder
     var debugView: some View {
@@ -180,20 +185,21 @@ struct StatusActionButton: View {
                 inFlight = false
             }
         }
-        .buttonStyle(TODOButtonStyle(isSelected: isSelected, isHighlighted: isOn, count: count, isInProgress: inFlight))
+        .buttonStyle(TODOButtonStyle(isHighlighted: isOn, count: count, isInProgress: inFlight))
     }
 }
 
 // MARK: -
 
 struct TODOButtonStyle: ButtonStyle {
-    let isSelected: Bool
+    @Environment(\.isSelected)
+    var isSelected
+
     let isHighlighted: Bool
     let count: Int?
     let isInProgress: Bool
 
-    init(isSelected: Bool, isHighlighted: Bool, count: Int?, isInProgress: Bool) {
-        self.isSelected = isSelected
+    init(isHighlighted: Bool = false, count: Int? = nil, isInProgress: Bool = false) {
         self.isHighlighted = isHighlighted
         self.count = count
         self.isInProgress = isInProgress
@@ -206,6 +212,12 @@ struct TODOButtonStyle: ButtonStyle {
                 .hidden(!isInProgress)
             configuration.label
                 .labelStyle(_LabelStyle(isSelected: isSelected, isHighlighted: isHighlighted, count: count))
+                .padding(2)
+                .background {
+                    if configuration.isPressed {
+                        Color.gray.opacity(0.5).cornerRadius(2)
+                    }
+                }
                 .hidden(isInProgress)
         }
     }
@@ -230,11 +242,10 @@ struct TODOButtonPreview: PreviewProvider {
     static var previews: some View {
         VStack {
             Button(title: "Gear", systemImage: "gear", action: {})
-                .buttonStyle(TODOButtonStyle(isSelected: false, isHighlighted: true, count: 5, isInProgress: true))
+                .buttonStyle(TODOButtonStyle(isHighlighted: true, count: 5, isInProgress: true))
 
             Button(title: "Gear", systemImage: "gear", action: {})
-                .buttonStyle(TODOButtonStyle(isSelected: false, isHighlighted: true, count: 5, isInProgress: false))
+                .buttonStyle(TODOButtonStyle(isHighlighted: true, count: 5, isInProgress: false))
         }
     }
 }
-
