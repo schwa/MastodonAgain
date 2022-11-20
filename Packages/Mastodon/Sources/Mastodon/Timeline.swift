@@ -9,7 +9,6 @@ public enum TimelineType: Codable, Hashable, Sendable {
     case hashtag(String)
     case home
     case list(String) // List.ID
-    case canned
 
     public var path: URLPath? {
         switch self {
@@ -25,8 +24,6 @@ public enum TimelineType: Codable, Hashable, Sendable {
             return "/api/v1/timelines/home"
         case .list(let list):
             return "/api/v1/timelines/list/\(list)"
-        case .canned:
-            return nil
         }
     }
 
@@ -44,8 +41,6 @@ public enum TimelineType: Codable, Hashable, Sendable {
             return "Home"
         case .list(let listID):
             return "List(\(listID))"
-        case .canned:
-            return "Canned"
         }
     }
 
@@ -64,8 +59,6 @@ public enum TimelineType: Codable, Hashable, Sendable {
             return Image(systemName: "house")
         case .list:
             return Image(systemName: "list.bullet.clipboard")
-        case .canned:
-            return Image(systemName: "opticaldisc")
         }
     }
 }
@@ -80,34 +73,8 @@ public struct Timeline: Codable, Hashable, Sendable {
     public let host: String
     public let timelineType: TimelineType
 
-    public init(host: String, timelineType: TimelineType, canned: Bool = false) {
+    public init(host: String, timelineType: TimelineType) {
         self.host = host
         self.timelineType = timelineType
     }
 }
-
-// public extension Timeline {
-//    var previousURL: URL? {
-//        guard let first = pages.first else {
-//            return nil
-//        }
-//
-//        if let url = first.previous {
-//            return url
-//        }
-//        else {
-//            guard let url = url else {
-//                return nil
-//            }
-//            return url.appending(queryItems: [
-//                .init(name: "since_id", value: first.statuses.first!.id.rawValue)
-//            ])
-//        }
-//    }
-//
-//    var nextURL: URL? {
-//        pages.last?.next
-//    }
-// }
-
-// MARK: -

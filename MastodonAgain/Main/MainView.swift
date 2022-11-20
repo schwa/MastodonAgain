@@ -53,7 +53,6 @@ enum MainTabs: String, CaseIterable {
 //    case directMessages
 //    case search
     case me
-//    case cannedTimeline
     case notifications
 
     var timelineType: TimelineType? {
@@ -66,8 +65,6 @@ enum MainTabs: String, CaseIterable {
             return .federated
         case .local:
             return .local
-//        case .cannedTimeline:
-//            return .canned
         default:
             return nil
         }
@@ -108,5 +105,4 @@ enum MainTabs: String, CaseIterable {
 //        Label("Direct Messages", systemImage: "bubble.left").tag(MainTabs.directMessages)
 //        Label("Search", systemImage: "magnifyingglass").tag(MainTabs.search)
 //        Label("Me", systemImage: "person.text.rectangle").badge(1).tag(MainTabs.me)
-//        Label("Canned Timeline", systemImage: "oilcan").tag(MainTabs.cannedTimeline)
 }

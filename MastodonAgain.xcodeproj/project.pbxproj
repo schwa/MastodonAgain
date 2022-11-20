@@ -12,7 +12,6 @@
 		4520200F290F87A200469569 /* MediaStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4520200E290F87A200469569 /* MediaStack.swift */; };
 		45202011290F8DC600469569 /* NewPostWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45202010290F8DC600469569 /* NewPostWindow.swift */; };
 		452020132910281300469569 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452020122910281300469569 /* MainView.swift */; };
-		4520201529104D7D00469569 /* canned_timeline.json in Resources */ = {isa = PBXBuildFile; fileRef = 4520201429104D7D00469569 /* canned_timeline.json */; };
 		4529E98229286D0300ABFA42 /* NotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4529E98129286D0300ABFA42 /* NotificationsView.swift */; };
 		453BB94A292720A800FAA259 /* SigninPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 453BB949292720A800FAA259 /* SigninPicker.swift */; };
 		454ED2FE2929D9CA0067B070 /* Blueprint in Frameworks */ = {isa = PBXBuildFile; productRef = 454ED2FD2929D9CA0067B070 /* Blueprint */; };
@@ -59,7 +58,6 @@
 		4520200E290F87A200469569 /* MediaStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaStack.swift; sourceTree = "<group>"; };
 		45202010290F8DC600469569 /* NewPostWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostWindow.swift; sourceTree = "<group>"; };
 		452020122910281300469569 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
-		4520201429104D7D00469569 /* canned_timeline.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = canned_timeline.json; sourceTree = "<group>"; };
 		4529E98129286D0300ABFA42 /* NotificationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsView.swift; sourceTree = "<group>"; };
 		453BB949292720A800FAA259 /* SigninPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigninPicker.swift; sourceTree = "<group>"; };
 		454ED2F92929D9A30067B070 /* Blueprint */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Blueprint; sourceTree = "<group>"; };
@@ -218,7 +216,6 @@
 				4514349A29183DF1004A9208 /* Content */,
 				4514349B29183DFA004A9208 /* Support */,
 				4520200D290F273400469569 /* Info.plist */,
-				4520201429104D7D00469569 /* canned_timeline.json */,
 				455AC885290D96F700137415 /* Assets.xcassets */,
 				455AC887290D96F700137415 /* MastodonAgain.entitlements */,
 				455AC888290D96F700137415 /* Preview Content */,
@@ -325,7 +322,6 @@
 			files = (
 				455AC88A290D96F700137415 /* Preview Assets.xcassets in Resources */,
 				455AC886290D96F700137415 /* Assets.xcassets in Resources */,
-				4520201529104D7D00469569 /* canned_timeline.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

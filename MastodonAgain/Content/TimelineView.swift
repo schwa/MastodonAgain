@@ -84,9 +84,6 @@ struct TimelineView: View, Sendable {
         guard refreshing == false else {
             return
         }
-        guard timeline.timelineType != .canned else {
-            return
-        }
         refreshing = true
         Task {
             await errorHandler { [instanceModel, timeline] in
