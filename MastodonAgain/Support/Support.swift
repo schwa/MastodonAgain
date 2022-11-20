@@ -153,10 +153,14 @@ struct Avatar: View {
             }
         }
         catch {
-            appLogger?.error("Error \(error)")
+            if (error as NSError).domain == NSURLErrorDomain && (error as NSError).code == -999 {
+                return
+            }
+            appLogger?.error("Update relationships error \(error)")
         }
     }
 }
+
 
 struct RequestDebugView: View {
     let request: URLRequest
