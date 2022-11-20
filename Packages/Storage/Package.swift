@@ -7,6 +7,7 @@ let package = Package(
     name: "Storage",
     platforms: [
         .macOS("13.0"),
+        .iOS("16.0"),
     ],
     products: [
         .library(name: "Storage", targets: ["Storage"])

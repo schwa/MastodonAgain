@@ -1,7 +1,6 @@
 import Foundation
 
 public struct TypeID: Hashable {
-
     public let rawValue: String
 
     public init<T>(_ type: T.Type) {
