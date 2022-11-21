@@ -26,6 +26,14 @@ public enum RequestBuilder {
     public static func buildBlock(_ components: (any Request)?...) -> CompositeRequest {
         CompositeRequest(children: components.compactMap({ $0 }))
     }
+
+    public static func buildEither(first request: some Request) -> CompositeRequest {
+        CompositeRequest(children: [request])
+    }
+
+    public static func buildEither(second request: some Request) -> CompositeRequest {
+        CompositeRequest(children: [request])
+    }
 }
 
 public struct CompositeRequest: Request {

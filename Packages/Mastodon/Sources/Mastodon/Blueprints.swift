@@ -877,6 +877,18 @@ public extension MastodonAPI {
             let minID: Status.ID?
             let limit: Int?
 
+            public init(baseURL: URL, token: Token, local: Bool? = nil, remote: Bool? = nil, onlyMedia: Bool? = nil, maxID: Status.ID? = nil, sinceID: Status.ID? = nil, minID: Status.ID? = nil, limit: Int? = nil) {
+                self.baseURL = baseURL
+                self.token = token
+                self.local = local
+                self.remote = remote
+                self.onlyMedia = onlyMedia
+                self.maxID = maxID
+                self.sinceID = sinceID
+                self.minID = minID
+                self.limit = limit
+            }
+
             public var request: some Request {
                 Method.get
                 baseURL
@@ -906,6 +918,18 @@ public extension MastodonAPI {
             let sinceID: Status.ID?
             let minID: Status.ID?
             let limit: Int?
+
+            public init(baseURL: URL, token: Token, hashtag: String, local: Bool? = nil, onlyMedia: Bool? = nil, maxID: Status.ID? = nil, sinceID: Status.ID? = nil, minID: Status.ID? = nil, limit: Int? = nil) {
+                self.baseURL = baseURL
+                self.token = token
+                self.hashtag = hashtag
+                self.local = local
+                self.onlyMedia = onlyMedia
+                self.maxID = maxID
+                self.sinceID = sinceID
+                self.minID = minID
+                self.limit = limit
+            }
 
             public var request: some Request {
                 Method.get
@@ -969,6 +993,16 @@ public extension MastodonAPI {
             let sinceID: Status.ID?
             let minID: Status.ID?
             let limit: Int?
+
+            public init(baseURL: URL, token: Token, id: Mastodon.List.ID, maxID: Status.ID? = nil, sinceID: Status.ID? = nil, minID: Status.ID? = nil, limit: Int? = nil) {
+                self.baseURL = baseURL
+                self.token = token
+                self.id = id
+                self.maxID = maxID
+                self.sinceID = sinceID
+                self.minID = minID
+                self.limit = limit
+            }
 
             public var request: some Request {
                 Method.get
