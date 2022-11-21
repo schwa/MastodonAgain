@@ -81,7 +81,7 @@ struct SignInView: View {
                 .padding()
                 .background(Color.orange)
 
-            if let _ = signInModel.host {
+            if signInModel.host != nil {
                 Text("Registering app.....")
             }
             else {

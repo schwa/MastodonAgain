@@ -105,9 +105,9 @@ struct Avatar: View {
                 if relationship.following {
                     Button("Unfollow") {
                         await errorHandler {
-                            _ = try await instanceModel.service.perform(type: Relationship.self, { baseURL, token in
+                            _ = try await instanceModel.service.perform { baseURL, token in
                                 MastodonAPI.Accounts.Unfollow(baseURL: baseURL, token: token, id: account.id)
-                            })
+                            }
                             appLogger?.info("You have unfollowed \(account.acct)")
                             await updateRelationship()
                         }
@@ -115,9 +115,9 @@ struct Avatar: View {
                     if relationship.showingReblogs {
                         Button("Disable Reposts") {
                             await errorHandler {
-                                _ = try await instanceModel.service.perform(type: Relationship.self, { baseURL, token in
+                                _ = try await instanceModel.service.perform { baseURL, token in
                                     MastodonAPI.Accounts.Follow(baseURL: baseURL, token: token, id: account.id, reblogs: false)
-                                })
+                                }
                                 appLogger?.info("You have disabled reblogs for \(account.acct)")
                                 await updateRelationship()
                             }
@@ -143,7 +143,7 @@ struct Avatar: View {
     func updateRelationship() async {
         do {
             let service = instanceModel.service
-            let relationships = try await service.perform(type: [Relationship].self) { baseURL, token in
+            let relationships = try await service.perform { baseURL, token in
                 MastodonAPI.Accounts.Relationships(baseURL: baseURL, token: token, ids: [account.id])
             }
             guard let relationship = relationships.first else {
@@ -557,13 +557,13 @@ struct AccountNoteEditor: View {
 
     var body: some View {
         VStack {
-            TextField("Hello world", text: $note)
+            TextField("Note", text: $note)
                 .frame(minWidth: 240)
             HStack {
                 Button("Save") { [note] in
                     Task {
                         await errorHandler {
-                            _ = try await instanceModel.service.perform(type: Relationship.self) { baseURL, token in
+                            _ = try await instanceModel.service.perform { baseURL, token in
                                 MastodonAPI.Accounts.Note(baseURL: baseURL, token: token, id: relationship.id, comment: note)
                             }
                             await MainActor.run {
@@ -575,7 +575,7 @@ struct AccountNoteEditor: View {
                 Button("Delete", role: .destructive) {
                     Task {
                         await errorHandler {
-                            _ = try await instanceModel.service.perform(type: Relationship.self) { baseURL, token in
+                            _ = try await instanceModel.service.perform { baseURL, token in
                                 MastodonAPI.Accounts.Note(baseURL: baseURL, token: token, id: relationship.id, comment: nil)
                             }
                             await MainActor.run {

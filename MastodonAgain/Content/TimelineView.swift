@@ -16,7 +16,7 @@ struct TimelineView: View, Sendable {
     let timeline: Timeline
 
     @State
-    var content = PagedContent<Service.Fetch>()
+    var content = PagedContent<Fetch<Status>>()
 
     @State
     var refreshing = false

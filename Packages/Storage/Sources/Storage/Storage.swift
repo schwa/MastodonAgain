@@ -3,6 +3,9 @@ import AsyncAlgorithms
 import Foundation
 @_implementationOnly import os
 
+// TODO: Temporary
+// swiftlint:disable fatal_error_message
+
 private let logger: Logger? = Logger()
 
 public enum StorageError: Error {

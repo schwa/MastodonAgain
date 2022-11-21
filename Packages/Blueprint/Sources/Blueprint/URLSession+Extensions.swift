@@ -15,7 +15,9 @@ public extension URLRequest {
 }
 
 public extension URLSession {
-    func perform<Resp>(request: some Request, response: Resp) async throws -> Resp.Result where Resp: Response {
+    // TODO: Rename
+    @available(*, deprecated, message: "Rename")
+    func perform<Resp>(request: some Request, response: Resp) async throws -> Resp.Result where Resp: ResultGenerator {
         var partialRequest = PartialRequest()
         try request.apply(request: &partialRequest)
         let urlRequest = try URLRequest(partialRequest)
@@ -24,12 +26,13 @@ public extension URLSession {
         return result
     }
 
-    func perform<R>(_ requestResponse: R) async throws -> R.ResponseContent.Result where R: Request, R: Response {
-        var partialRequest = PartialRequest()
-        try requestResponse.apply(request: &partialRequest)
-        let urlRequest = try URLRequest(partialRequest)
-        let (data, urlResponse) = try await data(for: urlRequest)
-        let result = try requestResponse.response.process(data: data, urlResponse: urlResponse)
-        return result
-    }
+    // TODO: Cleanup
+//    func perform<R>(_ requestResponse: R) async throws -> R.ResponseContent.Result where R: Request, R: Response {
+//        var partialRequest = PartialRequest()
+//        try requestResponse.apply(request: &partialRequest)
+//        let urlRequest = try URLRequest(partialRequest)
+//        let (data, urlResponse) = try await data(for: urlRequest)
+//        let result = try requestResponse.response.process(data: data, urlResponse: urlResponse)
+//        return result
+//    }
 }

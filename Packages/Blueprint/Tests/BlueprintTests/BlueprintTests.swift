@@ -1,6 +1,8 @@
 import Blueprint
 import XCTest
 
+// swiftlint:disable fatal_error_message
+
 public enum MastodonAPI {
     struct Application: Codable, Hashable {
     }
@@ -10,6 +12,8 @@ public enum MastodonAPI {
 
     enum Apps {
         struct Verify: Request, Response {
+            typealias Result = Application
+
             let baseURL: URL
             let token: String
 
@@ -41,9 +45,18 @@ class MyTests: XCTestCase {
 
         let urlResponse = HTTPURLResponse(url: URL("http://mastodon.example/api/v1/apps/verify_credentials"), statusCode: 200, httpVersion: "1.0", headerFields: ["Content-Type": "application/json"])!
         let data = try JSONEncoder().encode(MastodonAPI.Application())
-        let result = try verify.response.process(data: data, urlResponse: urlResponse)
-        print(type(of: result))
-        // swiftlint:disable force_cast
+
+        guard let resultGenerator = verify.response as? any ResultGenerator else {
+            fatalError()
+        }
+
+        guard resultGenerator.canProcess(data: data, urlResponse: urlResponse) == true else {
+            fatalError()
+        }
+
+        let result = try resultGenerator.process(data: data, urlResponse: urlResponse)
+//        print(type(of: result))
+//        // swiftlint:disable force_cast
         XCTAssertEqual(result as! MastodonAPI.Application, MastodonAPI.Application())
 
         let result2 = try test(verify, data: data, urlResponse: urlResponse)
@@ -51,8 +64,15 @@ class MyTests: XCTestCase {
     }
 }
 
-func test<R>(_ requestResponse: R, data: Data, urlResponse: URLResponse) throws -> R.ResponseContent.Result where R: Request & Response {
-    let urlRequest = try URLRequest(requestResponse)
-    let result = try requestResponse.response.process(data: data, urlResponse: urlResponse)
+func test<R>(_ r: R, data: Data, urlResponse: URLResponse) throws -> R.Result where R: Request & Response {
+    guard let resultGenerator = r.response as? any ResultGenerator else {
+        fatalError()
+    }
+    guard resultGenerator.canProcess(data: data, urlResponse: urlResponse) == true else {
+        fatalError()
+    }
+    guard let result = try resultGenerator.process(data: data, urlResponse: urlResponse) as? R.Result else {
+        fatalError()
+    }
     return result
 }

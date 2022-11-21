@@ -51,21 +51,38 @@ public actor Service {
     }
 }
 
-public extension Service {
-    func perform<R2>(request: some Request, response: R2) async throws -> R2.Result where R2: Response {
-        try await session.perform(request: request, response: response)
-    }
+// MARK: -
 
-    func perform<Result>(type: Result.Type, _ requestResponse: (URL, Token) -> some Request & Response) async throws -> Result where Result: Decodable {
-        guard let token = authorization.token else {
-            fatalError("No host or token.")
+public extension Service {
+    // TODO: Decide what to deprecate here.
+
+    func perform<R1, R2>(request: R1, response: R2) async throws -> R2.Result where R1: Request, R2: Response {
+        guard let resultGenerator = response.response as? any ResultGenerator else {
+            fatalError("Could not get a result generator from a response.")
         }
-        let requestResponse = requestResponse(baseURL, token)
-        let result = try await session.perform(requestResponse)
-        guard let result = result as? Result else {
-            throw MastodonError.generic("Could not cast result to \(type).")
+        let result = try await session.perform(request: request, response: resultGenerator)
+        guard let result = result as? R2.Result else {
+            fatalError("Could not get a result of the correct type.")
         }
         return result
+    }
+
+    func perform<R>(requestResponse: R) async throws -> R.Result where R: Request & Response {
+        try await perform(request: requestResponse, response: requestResponse)
+    }
+
+    func perform<R>(_ requestResponse: R) async throws -> R.Result where R: Request & Response {
+        try await perform(request: requestResponse, response: requestResponse)
+    }
+
+    func perform<R>(_ requestResponse: (URL, Token) -> R) async throws -> R.Result where R: Request & Response {
+        let requestResponse = requestResponse(baseURL, authorization.token!)
+        return try await perform(requestResponse: requestResponse)
+    }
+
+    @available(*, deprecated, message: "Deprecated")
+    func perform<R>(type: R.Result.Type, _ requestResponse: (URL, Token) -> R) async throws -> R.Result where R: Request & Response {
+        try await perform(requestResponse)
     }
 }
 

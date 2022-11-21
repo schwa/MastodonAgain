@@ -7,7 +7,7 @@ analyzer_rules:
 only_rules:
     - accessibility_label_for_image
     # - anonymous_argument_in_multiline_closure
-    - anyobject_protocol
+    #- anyobject_protocol
     - array_init
     - balanced_xctest_lifecycle
     - block_based_kvo

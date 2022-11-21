@@ -44,7 +44,7 @@ struct NotificationTypeView: View {
         }
         .task {
             await errorHandler {
-                let notifications = try await instanceModel.service.perform(type: [Mastodon.Notification].self) { baseURL, token in
+                let notifications = try await instanceModel.service.perform { baseURL, token in
                     MastodonAPI.Notifications.GetAll(baseURL: baseURL, token: token, types: [type])
                 }
                 await MainActor.run {

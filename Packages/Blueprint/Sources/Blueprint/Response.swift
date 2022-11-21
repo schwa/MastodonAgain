@@ -7,22 +7,11 @@ public protocol Response {
 
     @ResponseBuilder
     var response: ResponseContent { get }
-
-    func canProcess(data: Data, urlResponse: URLResponse) -> Bool
-    func process(data: Data, urlResponse: URLResponse) throws -> Result
 }
 
-public extension Response {
-    func canProcess(data: Data, urlResponse: URLResponse) -> Bool {
-        response.canProcess(data: data, urlResponse: urlResponse)
-    }
-}
-
-public extension Response where ResponseContent.Result == Result {
-    func process(data: Data, urlResponse: URLResponse) throws -> Result {
-        try response.process(data: data, urlResponse: urlResponse)
-    }
-}
+//extension Response where ResponseContent: ResultGenerator {
+//    //typealias Result = ResultGenerator.Result
+//}
 
 extension Never: Response {
     public typealias ResponseContent = Never
@@ -32,14 +21,6 @@ extension Never: Response {
         // swiftlint:disable:next implicit_return
         return uncallable() // Return is necessary alas to short circule the @resultBuilder
     }
-
-    public func canProcess(data: Data, urlResponse: URLResponse) -> Bool {
-        uncallable()
-    }
-
-    public func process(data: Data, urlResponse: URLResponse) throws -> Never {
-        uncallable()
-    }
 }
 
 public extension Response where ResponseContent == Never {
@@ -48,46 +29,46 @@ public extension Response where ResponseContent == Never {
     }
 }
 
-public extension Response where Result == Never {
-    func canProcess(data: Data, urlResponse: URLResponse) -> Bool {
-        uncallable()
-    }
-
-    func process(data: Data, urlResponse: URLResponse) throws -> Never {
-        uncallable()
-    }
-}
-
 @resultBuilder
 public enum ResponseBuilder {
-    public static func buildBlock<C>(_ components: C?...) -> CompositeResponse<C> where C: Response {
+    public static func buildBlock <Component>(_ components: (Component)?...) -> CompositeResponse<Component.Result> where Component: ResultGenerator {
         CompositeResponse(components: components.compactMap { $0 })
     }
 }
 
 // MARK: -
 
-public struct CompositeResponse<C> where C: Response {
-    public typealias Result = C.Result
-    public let components: [C]
+public struct CompositeResponse<Result> {
+    public let components: [any ResultGenerator]
 }
 
 extension CompositeResponse: Response {
     public typealias ResponseContent = Never
+}
 
+extension CompositeResponse: ResultGenerator {
     public func canProcess(data: Data, urlResponse: URLResponse) -> Bool {
-        components.contains(where: { $0.canProcess(data: data, urlResponse: urlResponse) })
+        components.contains(where: { $0.canProcess(data: data, urlResponse: urlResponse) == true })
     }
-
     public func process(data: Data, urlResponse: URLResponse) throws -> Result {
-        guard let child = components.first(where: { $0.canProcess(data: data, urlResponse: urlResponse) }) else {
-            throw BlueprintError.generic("Unhandled response \(urlResponse).")
+        guard let component = components.first(where: { $0.canProcess(data: data, urlResponse: urlResponse) == true }) else {
+            fatalError("Could not find a component to handle data/response. Was canProcess called?")
         }
-        return try child.process(data: data, urlResponse: urlResponse)
+        guard let result = try component.process(data: data, urlResponse: urlResponse) as? Result else {
+            fatalError("Could not convert result to correct type.")
+        }
+        return result
     }
 }
 
 // MARK: -
+
+public protocol ResultGenerator {
+    associatedtype Result
+
+    func canProcess(data: Data, urlResponse: URLResponse) -> Bool
+    func process(data: Data, urlResponse: URLResponse) throws -> Result
+}
 
 public struct IfStatus<Result> {
     let codes: Set<Int>
@@ -101,7 +82,9 @@ public struct IfStatus<Result> {
 
 extension IfStatus: Response {
     public typealias ResponseContent = Never
+}
 
+extension IfStatus: ResultGenerator {
     public func canProcess(data: Data, urlResponse: URLResponse) -> Bool {
         guard let urlResponse = urlResponse as? HTTPURLResponse else {
             fatalError("Expected response to be a HTTPURLResponse. It wasn't.")
@@ -124,14 +107,22 @@ public struct ConstantResponse<Result> {
     }
 }
 
-// extension ConstantResponse: Response {
-//    public typealias ResponseContent = Never
-//
-//    public func canProcess(data: Data, urlResponse: URLResponse) throws -> Bool {
-//        return true
-//    }
-//
-//    public func process(data: Data, urlResponse: URLResponse) throws -> Result {
-//        return value
-//    }
-// }
+extension ConstantResponse: Response {
+    public typealias ResponseContent = Never
+}
+
+extension ConstantResponse: ResultGenerator {
+    public func canProcess(data: Data, urlResponse: URLResponse) -> Bool {
+        true
+    }
+
+    public func process(data: Data, urlResponse: URLResponse) throws -> Result {
+        value
+    }
+}
+
+// MARK: -
+
+enum Enum1 <C1> {
+    case c1(C1)
+}

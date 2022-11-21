@@ -5,7 +5,7 @@ import Foundation
 // swiftlint:disable file_length
 // swiftlint:disable type_body_length
 
-func standardResponse<T>(_ type: T.Type) -> some Response where T: Decodable {
+func standardResponse<T>(_ type: T.Type) -> some ResultGenerator where T: Decodable {
     IfStatus(200) { data, _ in
         try JSONDecoder.mastodonDecoder.decode(T.self, from: data)
     }
@@ -23,6 +23,8 @@ public enum MastodonAPI {
 public extension MastodonAPI {
     enum Apps {
         public struct Create: Request, Response {
+            public typealias Result = Application
+
             let baseURL: URL
             let token: Token
             let clientName: String
@@ -49,6 +51,8 @@ public extension MastodonAPI {
         }
 
         public struct Verify: Request, Response {
+            public typealias Result = Application
+
             let baseURL: URL
             let token: Token
 
@@ -73,6 +77,8 @@ public extension MastodonAPI {
 public extension MastodonAPI {
     enum Accounts {
         public struct Register: Request, Response {
+            public typealias Result = Account
+
             let baseURL: URL
             let token: Token
             let username: String
@@ -98,11 +104,12 @@ public extension MastodonAPI {
             }
 
             public var response: some Response {
-                standardResponse(Application.self)
+                standardResponse(Account.self)
             }
         }
 
         public struct Verify: Request, Response {
+            public typealias Result = Account
             let baseURL: URL
             let token: Token
 
@@ -124,6 +131,8 @@ public extension MastodonAPI {
         }
 
         public struct Update: Request, Response {
+            public typealias Result = Account
+
             let baseURL: URL
             let token: Token
             let discoverable: String?
@@ -154,6 +163,8 @@ public extension MastodonAPI {
         }
 
         public struct Retrieve: Request, Response {
+            public typealias Result = Account
+
             let baseURL: URL
             let token: Token
             let id: Account.ID
@@ -179,6 +190,8 @@ public extension MastodonAPI {
         // Statuses
 
         public struct Statuses: Request, Response {
+            public typealias Result = [Status]
+
             let baseURL: URL
             let token: Token
             let id: Account.ID
@@ -208,6 +221,8 @@ public extension MastodonAPI {
         }
 
         public struct Followers: Request, Response {
+            public typealias Result = [Account]
+
             let baseURL: URL
             let token: Token
             let id: Account.ID
@@ -231,6 +246,8 @@ public extension MastodonAPI {
         }
 
         public struct Following: Request, Response {
+            public typealias Result = [Account]
+
             let baseURL: URL
             let token: Token
             let id: Account.ID
@@ -263,6 +280,8 @@ public extension MastodonAPI {
         }
 
         public struct FeaturedTags: Request, Response {
+            public typealias Result = [FeaturedTag]
+
             // TODO: Move
             public struct FeaturedTag: Codable {
                 let id: String // TODO: Make tagged.
@@ -288,7 +307,7 @@ public extension MastodonAPI {
         }
 
         public struct Lists: Request, Response {
-            // TODO: Move
+            public typealias Result = [Mastodon.List]
 
             let baseURL: URL
             let token: Token
@@ -307,7 +326,8 @@ public extension MastodonAPI {
         }
 
         public struct IdentityProofs: Request, Response {
-            // TODO: Move
+            public typealias Result = [IdentityProof]
+
             public struct IdentityProof: Codable {
                 let provider: String
                 let provider_username: String
@@ -333,6 +353,8 @@ public extension MastodonAPI {
         }
 
         public struct Follow: Request, Response {
+            public typealias Result = Relationship
+
             let baseURL: URL
             let token: Token
             let id: Account.ID
@@ -362,6 +384,8 @@ public extension MastodonAPI {
         }
 
         public struct Unfollow: Request, Response {
+            public typealias Result = Relationship
+
             let baseURL: URL
             let token: Token
             let id: Account.ID
@@ -385,6 +409,8 @@ public extension MastodonAPI {
         }
 
         public struct Block: Request, Response {
+            public typealias Result = Relationship
+
             let baseURL: URL
             let token: Token
             let id: Account.ID
@@ -402,6 +428,8 @@ public extension MastodonAPI {
         }
 
         public struct Unblock: Request, Response {
+            public typealias Result = Relationship
+
             let baseURL: URL
             let token: Token
             let id: Account.ID
@@ -419,6 +447,8 @@ public extension MastodonAPI {
         }
 
         public struct Mute: Request, Response {
+            public typealias Result = Relationship
+
             let baseURL: URL
             let token: Token
             let id: Account.ID
@@ -440,6 +470,8 @@ public extension MastodonAPI {
         }
 
         public struct Unmute: Request, Response {
+            public typealias Result = Relationship
+
             let baseURL: URL
             let token: Token
             let id: Account.ID
@@ -457,6 +489,8 @@ public extension MastodonAPI {
         }
 
         public struct Pin: Request, Response {
+            public typealias Result = Relationship
+
             let baseURL: URL
             let token: Token
             let id: Account.ID
@@ -474,6 +508,8 @@ public extension MastodonAPI {
         }
 
         public struct Unpin: Request, Response {
+            public typealias Result = Relationship
+
             let baseURL: URL
             let token: Token
             let id: Account.ID
@@ -491,6 +527,8 @@ public extension MastodonAPI {
         }
 
         public struct Note: Request, Response {
+            public typealias Result = Relationship
+
             let baseURL: URL
             let token: Token
             let id: Account.ID
@@ -519,6 +557,8 @@ public extension MastodonAPI {
         }
 
         public struct Relationships: Request, Response {
+            public typealias Result = [Relationship]
+
             let baseURL: URL
             let token: Token
             let ids: [Account.ID]
@@ -544,6 +584,8 @@ public extension MastodonAPI {
         }
 
         public struct Search: Request, Response {
+            public typealias Result = [Account]
+
             let baseURL: URL
             let token: Token
             let query: String
@@ -601,6 +643,8 @@ public extension MastodonAPI {
         //        }
 
         public struct View: Request, Response {
+            public typealias Result = Status
+
             let baseURL: URL
             let token: Token
             let id: Status.ID
@@ -618,6 +662,8 @@ public extension MastodonAPI {
         }
 
         public struct Delete: Request, Response {
+            public typealias Result = Status
+
             let baseURL: URL
             let token: Token
             let id: Status.ID
@@ -635,6 +681,8 @@ public extension MastodonAPI {
         }
 
         public struct Context: Request, Response {
+            public typealias Result = Context_
+
             public struct Context_: Codable {
                 let ancestors: [Status]
                 let descendants: [Status]
@@ -657,6 +705,8 @@ public extension MastodonAPI {
         }
 
         public struct RebloggedBy: Request, Response {
+            public typealias Result = [Account]
+
             let baseURL: URL
             let token: Token
             let id: Status.ID
@@ -674,6 +724,8 @@ public extension MastodonAPI {
         }
 
         public struct FavouritedBy: Request, Response {
+            public typealias Result = [Account]
+
             let baseURL: URL
             let token: Token
             let id: Status.ID
@@ -691,6 +743,8 @@ public extension MastodonAPI {
         }
 
         public struct Favourite: Request, Response {
+            public typealias Result = Status
+
             let baseURL: URL
             let token: Token
             let id: Status.ID
@@ -708,6 +762,8 @@ public extension MastodonAPI {
         }
 
         public struct Unfavourite: Request, Response {
+            public typealias Result = Status
+
             let baseURL: URL
             let token: Token
             let id: Status.ID
@@ -725,6 +781,8 @@ public extension MastodonAPI {
         }
 
         public struct Reblog: Request, Response {
+            public typealias Result = Status
+
             let baseURL: URL
             let token: Token
             let id: Status.ID
@@ -742,6 +800,8 @@ public extension MastodonAPI {
         }
 
         public struct Unreblog: Request, Response {
+            public typealias Result = Status
+
             let baseURL: URL
             let token: Token
             let id: Status.ID
@@ -759,6 +819,8 @@ public extension MastodonAPI {
         }
 
         public struct Bookmark: Request, Response {
+            public typealias Result = Status
+
             let baseURL: URL
             let token: Token
             let id: Status.ID
@@ -776,6 +838,8 @@ public extension MastodonAPI {
         }
 
         public struct Unbookmark: Request, Response {
+            public typealias Result = Status
+
             let baseURL: URL
             let token: Token
             let id: Status.ID
@@ -793,6 +857,8 @@ public extension MastodonAPI {
         }
 
         public struct Mute: Request, Response {
+            public typealias Result = Status
+
             let baseURL: URL
             let token: Token
             let id: Status.ID
@@ -810,6 +876,8 @@ public extension MastodonAPI {
         }
 
         public struct Unmute: Request, Response {
+            public typealias Result = Status
+
             let baseURL: URL
             let token: Token
             let id: Status.ID
@@ -827,6 +895,8 @@ public extension MastodonAPI {
         }
 
         public struct Pin: Request, Response {
+            public typealias Result = Status
+
             let baseURL: URL
             let token: Token
             let id: Status.ID
@@ -844,6 +914,8 @@ public extension MastodonAPI {
         }
 
         public struct Unpin: Request, Response {
+            public typealias Result = Status
+
             let baseURL: URL
             let token: Token
             let id: Status.ID
@@ -867,6 +939,8 @@ public extension MastodonAPI {
 public extension MastodonAPI {
     enum Timelimes {
         public struct Public: Request, Response {
+            public typealias Result = [Status] // TODO: Make Page<Status>
+
             let baseURL: URL
             let token: Token
             let local: Bool?
@@ -909,6 +983,8 @@ public extension MastodonAPI {
         }
 
         public struct Hashtag: Request, Response {
+            public typealias Result = [Status] // TODO: Make Page<Status>
+
             let baseURL: URL
             let token: Token
             let hashtag: String
@@ -950,6 +1026,8 @@ public extension MastodonAPI {
         }
 
         public struct Home: Request, Response {
+            public typealias Result = [Status] // TODO: Make Page<Status>
+
             let baseURL: URL
             let token: Token
             let local: Bool?
@@ -986,6 +1064,8 @@ public extension MastodonAPI {
         }
 
         public struct List: Request, Response {
+            public typealias Result = [Status] // TODO: Make Page<Status>
+
             let baseURL: URL
             let token: Token
             let id: Mastodon.List.ID
@@ -1027,6 +1107,8 @@ public extension MastodonAPI {
 public extension MastodonAPI {
     enum Notifications {
         public struct GetAll: Request, Response {
+            public typealias Result = [Notification] // TODO: Make Page<xxx>
+
             let baseURL: URL
             let token: Token
             let maxID: Status.ID?
@@ -1071,6 +1153,8 @@ public extension MastodonAPI {
         }
 
         public struct Single: Request, Response {
+            public typealias Result = Notification
+
             let baseURL: URL
             let token: Token
             let id: Notification.ID
@@ -1088,6 +1172,8 @@ public extension MastodonAPI {
         }
 
         public struct Clear: Request, Response {
+            public typealias Result = Notification // TODO: Empty
+
             let baseURL: URL
             let token: Token
 
@@ -1104,6 +1190,8 @@ public extension MastodonAPI {
         }
 
         public struct Dismiss: Request, Response {
+            public typealias Result = Notification // TODO: Empty
+
             let baseURL: URL
             let token: Token
             let id: Notification.ID
