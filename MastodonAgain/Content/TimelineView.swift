@@ -37,8 +37,8 @@ struct TimelineView: View, Sendable {
             DebugDescriptionView(timeline.url).debuggingInfo()
             PagedContentView(content: $content, isFetching: $refreshing) { status in
                 StatusRow(status: status, mode: appModel.statusRowMode)
-                .isSelected(selection.contains(status.id))
-                .listRowSeparator(.visible, edges: .bottom)
+                    .isSelected(selection.contains(status.id))
+                    .listRowSeparator(.visible, edges: .bottom)
             }
             .listSectionSeparator(.visible, edges: .bottom)
         }
@@ -133,7 +133,6 @@ struct SelectedModifier: ViewModifier {
 
 extension View {
     func isSelected(_ value: Bool) -> some View {
-        self.modifier(SelectedModifier(value: value))
+        modifier(SelectedModifier(value: value))
     }
 }
-

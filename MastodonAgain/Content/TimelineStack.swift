@@ -33,9 +33,9 @@ struct TimelineStack: View {
     var body: some View {
         NavigationStack(path: $stackModel.path) {
             view(for: root)
-            .navigationDestination(for: NavigationPage.self) { page in
-                view(for: page)
-            }
+                .navigationDestination(for: NavigationPage.self) { page in
+                    view(for: page)
+                }
         }
         .environmentObject(appModel)
         .environmentObject(stackModel)

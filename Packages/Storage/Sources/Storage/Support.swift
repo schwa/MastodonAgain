@@ -3,7 +3,7 @@ import Foundation
 public struct TypeID: Hashable {
     public let rawValue: String
 
-    public init<T>(_ type: T.Type) {
+    public init(_ type: (some Any).Type) {
         rawValue = String(describing: type)
     }
 }
@@ -20,7 +20,7 @@ internal extension iovec {
     }
 }
 
-public struct WeakBox <Content> where Content: AnyObject {
+public struct WeakBox<Content> where Content: AnyObject {
     public weak var content: Content?
 
     public init(_ content: Content) {
@@ -29,7 +29,7 @@ public struct WeakBox <Content> where Content: AnyObject {
 }
 
 public extension Storage {
-    func registerJSON <T>(type: T.Type, encoder: JSONEncoder = JSONEncoder(), decoder: JSONDecoder = JSONDecoder()) where T: Codable {
+    func registerJSON(type: (some Codable).Type, encoder: JSONEncoder = JSONEncoder(), decoder: JSONDecoder = JSONDecoder()) {
         register(type: type) {
             try encoder.encode($0)
         } decoder: {

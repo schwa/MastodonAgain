@@ -140,7 +140,7 @@ struct Refresh: View {
 
     init(_ title: String, refreshing: Binding<Bool>, action: @escaping () -> Void) {
         self.title = title
-        self._refreshing = refreshing
+        _refreshing = refreshing
         self.action = action
     }
 

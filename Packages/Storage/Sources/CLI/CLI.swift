@@ -27,7 +27,7 @@ public struct CLI {
 
 //        print(storage["hello"] as String)
         print("Writing N identical keys")
-        for x in 0..<100_000 {
+        for x in 0 ..< 100_000 {
             storage["hello"] = "world \(x)"
         }
         print(try storage.size())

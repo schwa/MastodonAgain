@@ -134,7 +134,7 @@ struct StatusActions: View {
             debugView
         }
         .buttonStyle(TODOButtonStyle())
-}
+    }
 
     @ViewBuilder
     var debugView: some View {
@@ -230,14 +230,15 @@ struct TODOButtonStyle: ButtonStyle {
         func makeBody(configuration: Configuration) -> some View {
             HStack(spacing: 1) {
                 configuration.icon
-                .foregroundColor(isHighlighted ? .accentColor : nil)
+                    .foregroundColor(isHighlighted ? .accentColor : nil)
                 Text(count ?? 0, format: .number)
-                .font(.caption)
-                .monospacedDigit()
+                    .font(.caption)
+                    .monospacedDigit()
             }
         }
     }
 }
+
 struct TODOButtonPreview: PreviewProvider {
     static var previews: some View {
         VStack {

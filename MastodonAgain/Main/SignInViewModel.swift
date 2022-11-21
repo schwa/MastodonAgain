@@ -10,37 +10,36 @@ import Mastodon
 
 @MainActor
 class SignInViewModel: NSObject, ObservableObject {
-    
     private let scopes = "read+write+follow+push"
     private let redirectURI = "mastodonagain://oauth"
     private let callbackScheme = "mastodonagain"
-    
+
     @Published var host: String?
-    
+
     @Published var authorization: Authorization = .unauthorized
-    
+
     enum SignInError: Swift.Error {
         case cancelled
         case authenticationSessionError(Swift.Error)
         case noAuthorizationCode
         case noHost
-        
+
         var localizedDescription: String {
             switch self {
-                case .cancelled:
-                    return "Login Cancelled"
-                case .authenticationSessionError(let error):
-                    return error.localizedDescription
-                case .noAuthorizationCode:
-                    return "No authorization code"
-                case .noHost:
-                    return "No host set"
+            case .cancelled:
+                return "Login Cancelled"
+            case .authenticationSessionError(let error):
+                return error.localizedDescription
+            case .noAuthorizationCode:
+                return "No authorization code"
+            case .noHost:
+                return "No host set"
             }
         }
     }
 
-    func register( applicationName : String, applicationWebsite : String ) async throws {
-        guard let host = host else { throw SignInError.noHost }
+    func register(applicationName: String, applicationWebsite: String) async throws {
+        guard let host else { throw SignInError.noHost }
 
         let url = URL(string: "https://\(host)/api/v1/apps")!
         let request = URLRequest(url: url, formParameters: [
@@ -49,14 +48,14 @@ class SignInViewModel: NSObject, ObservableObject {
             "scopes": scopes,
             "website": applicationWebsite,
         ])
-        
+
         let (application, _) = try await URLSession.shared.json(RegisteredApplication.self, for: request)
-        
-        self.authorization = .registered(application)
+
+        authorization = .registered(application)
     }
 
-    func signIn( clientID : String ) async throws -> String {
-        guard let host = host else { throw SignInError.noHost }
+    func signIn(clientID: String) async throws -> String {
+        guard let host else { throw SignInError.noHost }
 
         let url = URL(string: "https://\(host)/oauth/authorize")!
 
@@ -65,43 +64,46 @@ class SignInViewModel: NSObject, ObservableObject {
             URLQueryItem(name: "client_id", value: clientID),
             URLQueryItem(name: "response_type", value: "code"),
             URLQueryItem(name: "scope", value: scopes),
-            URLQueryItem(name: "redirect_uri", value: redirectURI)
+            URLQueryItem(name: "redirect_uri", value: redirectURI),
         ]
         let authUrl = components.url!
 
         return try await withCheckedThrowingContinuation({ continuation in
             let authSession = ASWebAuthenticationSession(
                 url: authUrl, callbackURLScheme:
-                    callbackScheme) { (url, error) in
-                        if let error = error {
-                            if (error as? ASWebAuthenticationSessionError)?.code == .canceledLogin {
-                                continuation.resume(throwing: SignInError.cancelled)
-                            } else {
-                                continuation.resume(throwing: SignInError.authenticationSessionError(error))
-                            }
-                        } else if let url = url,
-                                  let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
-                                  let item = components.queryItems?.first(where: { $0.name == "code" }),
-                                  let code = item.value {
-                            
-                            print( "Have access code - \(code)")
-                            continuation.resume(returning: code)
-                        } else {
-                            continuation.resume(throwing: SignInError.noAuthorizationCode)
-                        }
+                callbackScheme
+            ) { url, error in
+                if let error {
+                    if (error as? ASWebAuthenticationSessionError)?.code == .canceledLogin {
+                        continuation.resume(throwing: SignInError.cancelled)
                     }
-            
+                    else {
+                        continuation.resume(throwing: SignInError.authenticationSessionError(error))
+                    }
+                }
+                else if let url,
+                        let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
+                        let item = components.queryItems?.first(where: { $0.name == "code" }),
+                        let code = item.value {
+                    print("Have access code - \(code)")
+                    continuation.resume(returning: code)
+                }
+                else {
+                    continuation.resume(throwing: SignInError.noAuthorizationCode)
+                }
+            }
+
             authSession.presentationContextProvider = self
             authSession.prefersEphemeralWebBrowserSession = true
             authSession.start()
         })
     }
-    
-    func exchangeCodeForToken(application: RegisteredApplication, authorisationCode : String) async throws {
-        guard let host = host else { throw SignInError.noHost }
+
+    func exchangeCodeForToken(application: RegisteredApplication, authorisationCode: String) async throws {
+        guard let host else { throw SignInError.noHost }
 
         let url = URL(string: "https://\(host)/oauth/token")!
-        let formParams : [String:String] = [
+        let formParams: [String: String] = [
             "client_id": application.clientID,
             "client_secret": application.clientSecret,
             "redirect_uri": redirectURI,
@@ -111,11 +113,11 @@ class SignInViewModel: NSObject, ObservableObject {
         ]
         let request = URLRequest(url: url, formParameters: formParams)
         let (token, _) = try await URLSession.shared.json(Token.self, for: request)
-        self.authorization = Authorization.authorized(application, token)
+        authorization = Authorization.authorized(application, token)
     }
 
     func getAccountDetails() async throws -> SignIn {
-        guard let host = host else { throw SignInError.noHost }
+        guard let host else { throw SignInError.noHost }
 
         let service = Service(host: host, authorization: authorization)
         let account = try await service.perform(type: Account.self) { baseURL, token in
@@ -128,13 +130,10 @@ class SignInViewModel: NSObject, ObservableObject {
     }
 }
 
-extension SignInViewModel : ASWebAuthenticationPresentationContextProviding {
-    
+extension SignInViewModel: ASWebAuthenticationPresentationContextProviding {
     // MARK: - ASWebAuthenticationPresentationContextProviding
-    
-    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
-        return ASPresentationAnchor()
-    }
 
-    
+    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+        ASPresentationAnchor()
+    }
 }

@@ -35,8 +35,8 @@ struct MiniStatusRow: View, Sendable {
             }
             else {
                 Avatar(account: status.account).frame(width: 20, height: 20)
-                    Text(status.account.displayName).bold()
-                    (try? status.attributedContent).map { Text($0).lineLimit(1) }
+                Text(status.account.displayName).bold()
+                (try? status.attributedContent).map { Text($0).lineLimit(1) }
             }
             if !status.mediaAttachments.isEmpty || (status.reblog?.mediaAttachments.isEmpty ?? false) {
                 Image(systemName: "photo")

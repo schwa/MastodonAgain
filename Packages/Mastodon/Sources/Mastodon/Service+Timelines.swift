@@ -34,7 +34,7 @@ public extension Service {
         }
 
         public static func == (lhs: Service.Fetch, rhs: Service.Fetch) -> Bool {
-            return lhs.url == rhs.url
+            lhs.url == rhs.url
         }
 
         public func hash(into hasher: inout Hasher) {
@@ -44,7 +44,6 @@ public extension Service {
 
     // TODO: this seems totally generic.
     private func fetchStatusesPage(url: URL) async throws -> PagedContent<Fetch>.Page {
-        
         guard let token = authorization.token else {
             fatalError("No host or token.")
         }
@@ -73,7 +72,7 @@ public extension Service {
         update(statuses)
 
         let page = PagedContent<Fetch>.Page(previous: previous, next: next, elements: statuses)
-        //storage[PagedContent<Fetch>.Page.self, page.id] = page
+        // storage[PagedContent<Fetch>.Page.self, page.id] = page
         return page
     }
 

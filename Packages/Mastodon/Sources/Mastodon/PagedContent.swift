@@ -72,7 +72,7 @@ public struct PagedContent<Fetch>: Identifiable, Sendable where Fetch: FetchProt
 
 public extension PagedContent {
     var allElements: [Element] {
-        return pages.flatMap(\.elements)
+        pages.flatMap(\.elements)
     }
 
     func reducePageToFit(_ page: Page) -> Page {

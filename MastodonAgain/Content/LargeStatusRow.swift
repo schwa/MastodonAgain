@@ -48,9 +48,9 @@ struct LargeStatusRow: View, Sendable {
                 } label: {
                     Text(status.created, style: .relative).foregroundColor(.secondary)
                 }
-#if os(macOS)
+                #if os(macOS)
                 .buttonStyle(.link)
-#endif
+                #endif
                 .fixedSize()
             }
         }
@@ -110,4 +110,3 @@ struct LargeStatusRow: View, Sendable {
         .buttonStyle(ActionButtonStyle())
     }
 }
-

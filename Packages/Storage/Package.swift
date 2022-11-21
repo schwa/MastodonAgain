@@ -10,7 +10,7 @@ let package = Package(
         .iOS("16.0"),
     ],
     products: [
-        .library(name: "Storage", targets: ["Storage"])
+        .library(name: "Storage", targets: ["Storage"]),
     ],
     dependencies: [
         .package(url: "https://github.com/schwa/Everything", branch: "main"),
@@ -19,7 +19,7 @@ let package = Package(
     targets: [
         .target(name: "Storage", dependencies: [
             .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"),
-            "Everything"
+            "Everything",
         ]),
         .executableTarget(name: "CLI", dependencies: ["Storage"]),
         .testTarget(name: "StorageTests", dependencies: ["Storage"]),

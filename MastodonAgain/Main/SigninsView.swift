@@ -65,13 +65,13 @@ struct SigninsView: View {
 struct SignInView: View {
     @EnvironmentObject
     var appModel: AppModel
-    
+
     @Environment(\.errorHandler)
     var errorHandler
 
     @StateObject
     var signInModel = SignInViewModel()
-        
+
     let result: (SignIn?) -> Void
 
     var body: some View {
@@ -80,9 +80,9 @@ struct SignInView: View {
                 .frame(maxWidth: .infinity)
                 .padding()
                 .background(Color.orange)
-            
+
             if let _ = signInModel.host {
-                Text( "Registering app....." )
+                Text("Registering app.....")
             }
             else {
                 HostPicker(host: $signInModel.host)
@@ -93,15 +93,14 @@ struct SignInView: View {
             Task {
                 await errorHandler {
                     switch await signInModel.authorization {
-                        case .unauthorized:
-                            // Register application
-                            try await signInModel.register(applicationName: appModel.applicationName, applicationWebsite: appModel.applicationWebsite)
+                    case .unauthorized:
+                        // Register application
+                        try await signInModel.register(applicationName: appModel.applicationName, applicationWebsite: appModel.applicationWebsite)
 
-                        default:
-                            // handled below
-                            break
+                    default:
+                        // handled below
+                        break
                     }
-                    
                 }
             }
         }
@@ -109,34 +108,34 @@ struct SignInView: View {
             Task {
                 await errorHandler {
                     switch await signInModel.authorization {
-                        case .registered(let application):
-                            let authCode = try await signInModel.signIn(clientID: application.clientID)
-                            
-                            try await signInModel.exchangeCodeForToken(application: application, authorisationCode: authCode)
+                    case .registered(let application):
+                        let authCode = try await signInModel.signIn(clientID: application.clientID)
 
-                        case .authorized:
-                            let signin = try await signInModel.getAccountDetails()
-                            result(signin)
+                        try await signInModel.exchangeCodeForToken(application: application, authorisationCode: authCode)
 
-                        default:
-                            // Do nothing - handled above
-                            break
+                    case .authorized:
+                        let signin = try await signInModel.getAccountDetails()
+                        result(signin)
+
+                    default:
+                        // Do nothing - handled above
+                        break
                     }
                 }
             }
         }
     }
-    
+
     func registerApplication() async throws {
         try await signInModel.register(applicationName: appModel.applicationName, applicationWebsite: appModel.applicationWebsite)
     }
-    
-    func authoriseApp( application : RegisteredApplication ) async throws {
+
+    func authoriseApp(application: RegisteredApplication) async throws {
         let authCode = try await signInModel.signIn(clientID: application.clientID)
-        
+
         try await signInModel.exchangeCodeForToken(application: application, authorisationCode: authCode)
     }
-    
+
     func getAccountDetails() async throws {
         let signin = try await signInModel.getAccountDetails()
         result(signin)
@@ -169,8 +168,8 @@ struct HostPicker: View {
                 }
             }
             TextField("Host", text: $userHost)
-            .buttonStyle(.borderedProminent)
-            .disabled(userHost.isEmpty)
+                .buttonStyle(.borderedProminent)
+                .disabled(userHost.isEmpty)
         }
         .toolbar {
             Button("Next...") {

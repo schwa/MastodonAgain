@@ -36,14 +36,14 @@ struct RedlineModifier: ViewModifier {
                         }
                     }
                 symbols: {
-                    Text(verbatim: "\(proxy.size.width, format: .number)")
-                        .padding(1)
-                        .background(.thickMaterial)
-                        .tag("width")
-                    Text(verbatim: "\(proxy.size.height, format: .number)")
-                        .padding(1)
-                        .background(.thickMaterial)
-                        .tag("height")
+                        Text(verbatim: "\(proxy.size.width, format: .number)")
+                            .padding(1)
+                            .background(.thickMaterial)
+                            .tag("width")
+                        Text(verbatim: "\(proxy.size.height, format: .number)")
+                            .padding(1)
+                            .background(.thickMaterial)
+                            .tag("height")
                     }
                 }
             }
@@ -161,7 +161,6 @@ struct Avatar: View {
         }
     }
 }
-
 
 struct RequestDebugView: View {
     let request: URLRequest
@@ -311,11 +310,11 @@ extension Path {
 }
 
 extension FSPath {
-#if os(macOS)
-    func reveal() {
-        NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: "")
-    }
-#endif
+    #if os(macOS)
+        func reveal() {
+            NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: "")
+        }
+    #endif
 }
 
 struct DebugDescriptionView<Value>: View {
@@ -512,7 +511,7 @@ struct Stored<Value>: DynamicProperty where Value: Codable {
     init(wrappedValue: Value, _ key: String) {
         defaultValue = wrappedValue
         self.key = key
-        self.storage = storedStorage
+        storage = storedStorage
     }
 }
 
@@ -598,12 +597,12 @@ struct ImageToggleStyle: ToggleStyle {
     func makeBody(configuration: Configuration) -> some View {
         Button { configuration.isOn.toggle() }
     label: {
-        if configuration.isOn {
-            Image(systemName: "ladybug").foregroundColor(.red).symbolVariant(.circle)
-        }
-        else {
-            Image(systemName: "ladybug")
-        }
+                if configuration.isOn {
+                    Image(systemName: "ladybug").foregroundColor(.red).symbolVariant(.circle)
+                }
+                else {
+                    Image(systemName: "ladybug")
+                }
         }
     }
 }
@@ -680,7 +679,6 @@ extension Locale {
     }
 }
 
-
 extension View {
     func logging(_ s: String) -> Self {
         appLogger?.log("\(s)")
@@ -693,7 +691,7 @@ struct JSONDocument: FileDocument {
 
     let data: Data
 
-    init <T>(_ value: T, encoder: JSONEncoder = JSONEncoder()) throws where T: Codable {
+    init(_ value: some Codable, encoder: JSONEncoder = JSONEncoder()) throws {
         data = try encoder.encode(value)
     }
 

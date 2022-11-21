@@ -20,7 +20,7 @@ public enum StorageError: Error {
 
 public class Storage {
     @_spi(SPI)
-    public private(set)var cache: [Key: Record] = [:]
+    public private(set) var cache: [Key: Record] = [:]
 
     @_spi(SPI)
     public private(set) var log: StorageLog?
@@ -45,8 +45,7 @@ public class Storage {
         let type = TypeID(T.self)
         encoders[type] = {
             // swiftlint:disable:next force_cast
-            try encoder($0 as! T)             // TODO: FIx this
-
+            try encoder($0 as! T) // TODO: FIx this
         }
         decoders[type] = {
             try decoder($0)
@@ -87,12 +86,11 @@ public class Storage {
 
         let tempPath = try FSPath.makeTemporaryDirectory() / "compacted.data"
 
-
         // TODO: This is all rather ugly and likely error prone.
         do {
             let newLog = try StorageLog(path: tempPath.path)
             for (key, record) in cache {
-                let encoder = try self.encoders[record.type].safelyUnwrap(StorageError.noEncoderFound(record.type))
+                let encoder = try encoders[record.type].safelyUnwrap(StorageError.noEncoderFound(record.type))
                 newLog.post {
                     switch record.value {
                     case .raw(let value):
@@ -115,7 +113,7 @@ public class Storage {
     }
 
     @_spi(SPI)
-    public func get <V>(key: Key, type: V.Type) throws -> V? where V: Codable {
+    public func get<V>(key: Key, type: V.Type) throws -> V? where V: Codable {
         guard let record = cache[key] else {
             return nil
         }
@@ -131,7 +129,7 @@ public class Storage {
     }
 
     @_spi(SPI)
-    public func update <V>(key: Key, newValue: V?) throws where V: Codable {
+    public func update<V>(key: Key, newValue: V?) throws where V: Codable {
         guard let log else {
             fatalError()
         }
@@ -169,7 +167,7 @@ public class Storage {
 // MARK: -
 
 public extension Storage {
-    subscript<K, V>(key: K) -> V? where K: Codable, V: Codable {
+    subscript<V>(key: some Codable) -> V? where V: Codable {
         get {
             self[key, V.self]
         }
@@ -178,7 +176,7 @@ public extension Storage {
         }
     }
 
-    subscript<K, V>(_ key: K, type: V.Type) -> V? where K: Codable, V: Codable {
+    subscript<V>(_ key: some Codable, type: V.Type) -> V? where V: Codable {
         get {
             do {
                 let key = try Key(key)
@@ -206,7 +204,7 @@ public extension Storage {
         case remove
     }
 
-    func observe <K>(_ key: K) throws -> AsyncChannel<Event> where K: Codable {
+    func observe(_ key: some Codable) throws -> AsyncChannel<Event> {
         let key = try Key(key)
         if let channel = channels[key]?.content {
             return channel
@@ -225,7 +223,7 @@ public extension Storage {
 public struct Key: Hashable {
     let rawValue: String
 
-    init<T>(_ key: T) throws where T: Codable {
+    init(_ key: some Codable) throws {
         let data = try JSONEncoder().encode(key)
         let string = try String(data: data, encoding: .utf8).safelyUnwrap(StorageError.utfDecodingFailure)
         rawValue = string
@@ -343,7 +341,7 @@ public class StorageLog {
                                 iovec(iov_base: data.baseAddress, iov_len: data.count),
                             ]
                             return vector.withUnsafeBufferPointer { vectorPointer in
-                                return writev(fd, vectorPointer.baseAddress, Int32(vector.count))
+                                writev(fd, vectorPointer.baseAddress, Int32(vector.count))
                             }
                         }
                         guard result > 0 else {
