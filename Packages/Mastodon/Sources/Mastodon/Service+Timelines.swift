@@ -5,7 +5,7 @@ import Foundation
 public extension Service {
     func timelime(_ timeline: Timeline) async throws -> PagedContent<Fetch<Status>>.Page {
         let request = timeline.request(baseURL: baseURL, token: authorization.token!)
-        let fetch = Fetch<Status>(service: self, request: request)
+        let fetch = Fetch(Status.self, service: self, request: request)
         return try await fetch()
     }
 }
@@ -14,49 +14,27 @@ public extension Service {
 
 public struct Fetch <Element>: FetchProtocol where Element: Codable & Identifiable & Sendable, Element.ID: Comparable & Sendable {
     let service: Service?
-    let request: any Request
+    let request: (any Request)?
+
+    public init(_ elementType: Element.Type, service: Service? = nil, request: (any Request)?) {
+        self.service = service
+        self.request = request
+    }
 
     public func callAsFunction() async throws -> Page<Self> {
-        guard let service else {
-            fatalError("No service.")
+        guard let service, let request else {
+            // TODO: Log this.
+            return Page(previous: nil, next: nil, elements: [])
         }
         let response = PageResponse<Element> { url in
             let request = OverrideURLRequest(content: request, overrideURL: url)
-            let fetch = Fetch<Element>(service: service, request: request)
+            let fetch = Fetch(Element.self, service: service, request: request)
             return fetch
         }
         let page = try await service.perform(request: request, response: response)
         return page
     }
 }
-
-// TODO: We want to make Fetch Codable so we can make Timeline PagedContent Codable so we can cache these.
-
-//extension Fetch: Hashable {
-//    public static func == (lhs: Self, rhs: Self) -> Bool {
-//        lhs.url == rhs.url
-//    }
-//
-//    public func hash(into hasher: inout Hasher) {
-//        url.hash(into: &hasher)
-//    }
-//}
-//
-//extension Fetch: Codable {
-//    public init(from decoder: Decoder) throws {
-//        let container = try decoder.singleValueContainer()
-//        guard let service = decoder.userInfo[CodingUserInfoKey(rawValue: "service")!] as? Service else {
-//            fatalError("No service set on decoder userinfo.")
-//        }
-//        self.service = service
-//        url = try container.decode(URL.self)
-//    }
-//
-//    public func encode(to encoder: Encoder) throws {
-//        var container = encoder.singleValueContainer()
-//        try container.encode(url)
-//    }
-//}
 
 // MARK: -
 
@@ -86,5 +64,32 @@ struct PageResponse <Element>: Response where Element: Codable & Identifiable, E
             }
             return Page(previous: previous, next: next, elements: elements)
         }
+    }
+}
+
+
+// TODO: We want to make Fetch Codable so we can make Timeline PagedContent Codable so we can cache these.
+
+//extension Fetch: Hashable {
+//    public static func == (lhs: Self, rhs: Self) -> Bool {
+//        lhs.url == rhs.url
+//    }
+//
+//    public func hash(into hasher: inout Hasher) {
+//        url.hash(into: &hasher)
+//    }
+//}
+
+extension Fetch: Codable {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        guard let service = decoder.userInfo[CodingUserInfoKey(rawValue: "service")!] as? Service else {
+            fatalError("No service set on decoder userinfo.")
+        }
+        self.service = service
+        self.request = nil
+    }
+
+    public func encode(to encoder: Encoder) throws {
     }
 }
