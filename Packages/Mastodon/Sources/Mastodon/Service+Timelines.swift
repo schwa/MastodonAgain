@@ -1,10 +1,10 @@
+import Blueprint
 import Everything
 import Foundation
 
 public extension Service {
     // TODO: This will have to become generic for generic pagedcontentviews
     struct Fetch: FetchProtocol, Codable, Hashable {
-
         public typealias Element = Status
 
         let service: Service
@@ -44,6 +44,7 @@ public extension Service {
 
     // TODO: this seems totally generic.
     private func fetchStatusesPage(url: URL) async throws -> PagedContent<Fetch>.Page {
+        
         guard let token = authorization.token else {
             fatalError("No host or token.")
         }

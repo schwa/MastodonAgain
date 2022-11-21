@@ -43,6 +43,15 @@ struct TimelineView: View, Sendable {
             .listSectionSeparator(.visible, edges: .bottom)
         }
         .toolbar {
+            Button("Refresh") {
+                guard refreshing == false else {
+                    return
+                }
+                refreshTask()
+            }
+            .keyboardShortcut(.init("R", modifiers: .command))
+            .disabled(refreshing)
+
             Picker("Mode", selection: $appModel.statusRowMode) {
                 Image(systemName: "tablecells").tag(StatusRow.Mode.large)
                 Image(systemName: "list.dash").tag(StatusRow.Mode.mini)
@@ -82,9 +91,17 @@ struct TimelineView: View, Sendable {
                     return
                 }
                 let page = try await instanceModel.service.timelime(timeline)
+                guard !page.elements.isEmpty else {
+                    return
+                }
                 appLogger?.log("Fetched page: \(page.debugDescription)")
                 await MainActor.run {
-                    content.pages = [page]
+                    guard !content.pages.contains(where: { $0.id == page.id }) else {
+                        appLogger?.log("Paged content already contains page \(FunHash(page.id).description)")
+                        return
+                    }
+                    let page = content.reducePageToFit(page)
+                    content.pages.insert(page, at: 0)
                 }
             }
             refreshing = false

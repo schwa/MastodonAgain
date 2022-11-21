@@ -70,6 +70,17 @@ public struct PagedContent<Fetch>: Identifiable, Sendable where Fetch: FetchProt
     }
 }
 
+public extension PagedContent {
+    var allElements: [Element] {
+        return pages.flatMap(\.elements)
+    }
+
+    func reducePageToFit(_ page: Page) -> Page {
+        let allElementIDs = Set(pages.flatMap(\.elements).map(\.id))
+        return Page(previous: page.previous, next: page.next, elements: page.elements.filter { !allElementIDs.contains($0.id) })
+    }
+}
+
 // MARK: -
 
 extension Page: Codable where Fetch: Codable, Element.ID: Codable, Element: Codable {
@@ -83,7 +94,6 @@ extension Page: Equatable where Fetch: Equatable, Element.ID: Equatable, Element
 
 extension PagedContent: Equatable where Page: Equatable {
 }
-
 
 // MARK: -
 

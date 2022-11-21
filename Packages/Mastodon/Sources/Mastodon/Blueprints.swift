@@ -934,6 +934,16 @@ public extension MastodonAPI {
             let minID: Status.ID?
             let limit: Int?
 
+            public init(baseURL: URL, token: Token, local: Bool? = nil, maxID: Status.ID? = nil, sinceID: Status.ID? = nil, minID: Status.ID? = nil, limit: Int? = nil) {
+                self.baseURL = baseURL
+                self.token = token
+                self.local = local
+                self.maxID = maxID
+                self.sinceID = sinceID
+                self.minID = minID
+                self.limit = limit
+            }
+
             public var request: some Request {
                 Method.get
                 baseURL
