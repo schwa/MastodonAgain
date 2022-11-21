@@ -1,6 +1,8 @@
 import Foundation
 
-public protocol Request {
+// TODO: Make more of Blueprint Sendable
+
+public protocol Request: Sendable {
     associatedtype RequestContent: Request
 
     func apply(request: inout PartialRequest) throws

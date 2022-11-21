@@ -58,13 +58,14 @@ struct TimelineView: View, Sendable {
             }
             .pickerStyle(.inline)
 
-            ValueView(value: false) { value in
-                Button("Save") {
-                    value.wrappedValue = true
-                }
-                // swiftlint:disable:next force_try
-                .fileExporter(isPresented: value, document: try! JSONDocument(content), contentType: .json) { _ in }
-            }
+            // TODO: Broken while Fetch() isn't Codable.
+//            ValueView(value: false) { value in
+//                Button("Save") {
+//                    value.wrappedValue = true
+//                }
+//                // swiftlint:disable:next force_try
+//                .fileExporter(isPresented: value, document: try! JSONDocument(content), contentType: .json) { _ in }
+//            }
         }
         .task {
             /* TODO: Bug this is getting called multiple times (x2). The guard isn't preventing multiple hits. Also seeing

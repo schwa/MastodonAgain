@@ -126,3 +126,19 @@ extension FormParameter: Request {
         unimplemented()
     }
 }
+
+public struct OverrideURLRequest: Request {
+    let content: any Request
+    let overrideURL: URL?
+
+    public init(content: any Request, overrideURL: URL?) {
+        self.content = content
+        self.overrideURL = overrideURL
+    }
+
+    public var request: some Request {
+        content
+        overrideURL
+    }
+}
+
