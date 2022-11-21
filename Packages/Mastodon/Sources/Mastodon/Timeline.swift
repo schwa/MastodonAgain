@@ -66,15 +66,29 @@ public enum TimelineType: Codable, Hashable, Sendable {
 // MARK: -
 
 public struct Timeline: Codable, Hashable, Sendable {
-    public var url: URL? {
-        timelineType.path.map { URL(string: "https://\(host)\($0)")! }
-    }
-
     public let host: String
     public let timelineType: TimelineType
 
     public init(host: String, timelineType: TimelineType) {
         self.host = host
         self.timelineType = timelineType
+    }
+
+    @RequestBuilder
+    func request(baseURL: URL, token: Token) -> some Request {
+        switch timelineType {
+        case .public:
+            MastodonAPI.Timelimes.Public(baseURL: baseURL, token: token)
+        case .federated:
+            MastodonAPI.Timelimes.Public(baseURL: baseURL, token: token, remote: true)
+        case .local:
+            MastodonAPI.Timelimes.Public(baseURL: baseURL, token: token, local: true)
+        case .hashtag(let hashtag):
+            MastodonAPI.Timelimes.Hashtag(baseURL: baseURL, token: token, hashtag: hashtag)
+        case .home:
+            MastodonAPI.Timelimes.Home(baseURL: baseURL, token: token)
+        case .list(let string):
+            MastodonAPI.Timelimes.List(baseURL: baseURL, token: token, id: Mastodon.List.ID(string)) // TODO:
+        }
     }
 }

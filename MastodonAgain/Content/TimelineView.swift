@@ -34,7 +34,7 @@ struct TimelineView: View, Sendable {
     @ViewBuilder
     var body: some View {
         List(selection: $selection) {
-            DebugDescriptionView(timeline.url).debuggingInfo()
+            DebugDescriptionView(timeline).debuggingInfo()
             PagedContentView(content: $content, isFetching: $refreshing) { status in
                 StatusRow(status: status, mode: appModel.statusRowMode)
                     .isSelected(selection.contains(status.id))
