@@ -19,6 +19,7 @@ let package = Package(
         .package(path: "../Storage"),
         .package(path: "../Support"),
         .package(url: "https://gitlab.com/mflint/HTML2Markdown.git", branch: "main"),
+        .package(url: "https://github.com/scinfu/SwiftSoup.git", from: "2.4.3"),
     ],
     targets: [
         .target(
@@ -30,6 +31,7 @@ let package = Package(
                 "Storage",
                 "Support",
                 "HTML2Markdown",
+                "SwiftSoup",
             ]
         ),
         .testTarget(

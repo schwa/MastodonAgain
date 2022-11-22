@@ -2,6 +2,7 @@ import Everything
 import Foundation
 import RegexBuilder
 import HTML2Markdown
+import SwiftSoup
 
 // swiftlint:disable file_length
 
@@ -375,14 +376,6 @@ public extension JSONDecoder {
     }
 }
 
-public extension HTML {
-    var attributedString: AttributedString {
-        get throws {
-            try AttributedString(markdown: markdown)
-        }
-    }
-}
-
 public struct HTML: Codable, Hashable, Sendable {
     public let string: String
 
@@ -405,3 +398,23 @@ extension HTML {
         }
     }
 }
+
+public extension HTML {
+    var attributedStringOld: AttributedString {
+        get throws {
+            try AttributedString(markdown: markdown)
+        }
+    }
+}
+
+public extension HTML {
+    var attributedString: AttributedString {
+        get throws {
+            let doc: Document = try SwiftSoup.parse(string)
+            let plain = try doc.text()
+
+            return AttributedString(plain)
+        }
+    }
+}
+
