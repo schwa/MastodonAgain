@@ -3,7 +3,12 @@ import CachedAsyncImage
 import Mastodon
 import SwiftUI
 
-let dateFormatter = RelativeDateTimeFormatter()
+let dateFormatter = {
+    var formatter = RelativeDateTimeFormatter()
+    formatter.unitsStyle = .short
+    return formatter
+}()
+
 
 // TODO: Sendable view?
 struct AltStatusRow: View, Sendable {
@@ -27,7 +32,6 @@ struct AltStatusRow: View, Sendable {
             avatar
             VStack(alignment: .leading) {
                 header
-                    .padding(.bottom, 2.0)
                 content
                 if hover {
                     footer
@@ -37,8 +41,10 @@ struct AltStatusRow: View, Sendable {
         .padding(.vertical, 2.0)
         .listRowSeparator(.visible, edges: .bottom)
         .onHover { hover in
-            withAnimation(.easeIn(duration: 0.5)) {
-                self.hover = hover
+            if self.hover != hover {
+                withAnimation(.easeIn(duration: 0.5)) {
+                    self.hover = hover
+                }
             }
         }
     }
@@ -49,17 +55,24 @@ struct AltStatusRow: View, Sendable {
             .frame(width: 40, height: 40)
     }
 
+    var label: Text {
+        var text = Text(originalAccount, showHandle: false)
+        if let _ = status.reblog {
+            text = text + Text(" (via ") +
+            Text(status.account, showHandle: false) +
+            Text(")")
+        }
+        return text
+    }
+    
     @ViewBuilder
     var header: some View {
         HStack {
-            Text(originalAccount, showHandle: false)
-            if let _ = status.reblog {
-                Text("(via ") +
-                Text(status.account, showHandle: false) +
-                Text(")")
-            }
-            Spacer()
+            label
+                .lineLimit(1)
+                .truncationMode(.tail)
             if let url = status.url {
+                Spacer()
                 Button {
                     openURL(url)
                 } label: {
@@ -67,6 +80,7 @@ struct AltStatusRow: View, Sendable {
                     Text(formatted)
                         .font(.footnote)
                         .foregroundColor(.secondary)
+                        .fixedSize()
                 }
                 #if os(macOS)
                 .buttonStyle(.link)
@@ -74,6 +88,7 @@ struct AltStatusRow: View, Sendable {
                 .fixedSize()
             }
         }
+        .padding(.bottom, 2.0)
     }
 
     @ViewBuilder

@@ -97,7 +97,7 @@ struct StatusContent<StatusType>: View where StatusType: StatusProtocol {
                 }
             }
             .sensitiveContent(hideContent)
-            .frame(maxWidth: .infinity, alignment: .leading)
+//            .frame(maxWidth: .infinity, alignment: .leading)
             //            .overlay {
             //                if sensitive && !allowSensitive {
             //                    Color.red.opacity(1).backgroundStyle(.thickMaterial)
