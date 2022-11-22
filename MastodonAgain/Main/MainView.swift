@@ -12,8 +12,10 @@ struct MainView: View {
     @State
     var selection: MainTabs? = MainTabs.home
 
+    @State var columnVisibility = NavigationSplitViewVisibility.automatic
+
     var body: some View {
-        NavigationSplitView {
+        NavigationSplitView(columnVisibility: $columnVisibility) {
             List(selection: $selection) {
                 SignInPicker()
                 Divider()
