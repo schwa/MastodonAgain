@@ -25,12 +25,14 @@ struct AltStatusRow: View, Sendable {
             avatar
             VStack(alignment: .leading) {
                 header
+                    .padding(.bottom, 2.0)
                 content
                 if hover {
                     footer
                 }
             }
         }
+        .padding(.vertical, 2.0)
         .listRowSeparator(.visible, edges: .bottom)
         .onHover { hover in
             withAnimation {
@@ -48,13 +50,11 @@ struct AltStatusRow: View, Sendable {
     @ViewBuilder
     var header: some View {
         HStack {
-            Text(originalAccount)
+            Text(originalAccount, showHandle: false)
             if let _ = status.reblog {
-                HStack {
-                    Text("(via")
-                    Text(status.account)
-                    Text(")")
-                }
+                Text("(via ") +
+                Text(status.account, showHandle: false) +
+                Text(")")
             }
             Spacer()
             if let url = status.url {

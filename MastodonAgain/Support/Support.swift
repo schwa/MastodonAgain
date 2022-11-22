@@ -630,14 +630,19 @@ extension Collection {
 }
 
 extension Text {
-    init(_ account: Account) {
+    init(_ account: Account, showHandle: Bool = true) { // TODO: showHandle should be a global setting possibly?
         var text = Text("")
         if !account.displayName.isEmpty {
             // swiftlint:disable shorthand_operator
             text = text + Text("\(account.displayName)").bold()
         }
-        self = text + Text(" ") + Text("@\(account.acct)")
-            .foregroundColor(.secondary)
+        
+        if showHandle {
+            text = text + Text(" ") + Text("@\(account.acct)")
+                .foregroundColor(.secondary)
+        }
+        
+        self = text
     }
 }
 
