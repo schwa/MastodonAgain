@@ -14,7 +14,7 @@ While it can compile and run on iOS 16 devices it has not been tested on any iOS
 
 (There's a good chance this README list is not up to date - be warned).
 
-- [X] Login (using an authentication code)
+- [X] Login
 - [X] Timeline (to some extent)
 - [X] Favouriting
 - [X] Reposting
@@ -31,7 +31,6 @@ While it can compile and run on iOS 16 devices it has not been tested on any iOS
   - All the other actions
   - Open in browser
   - Disable reposts
-- A real API - right now Service.swift is just a bunch of hard coded GET/POST URLRequests. I have some experiments going on in jwight/wip branch to improve this
 - A real Status Detail view - right now just shows JSON :-)
 - A real Account Detail view - again just ~~JSON~~ basic placeholder UI
 - A thread view
