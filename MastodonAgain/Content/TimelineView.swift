@@ -38,7 +38,6 @@ struct TimelineView: View, Sendable {
             PagedContentView(content: $content, isFetching: $refreshing) { status in
                 StatusRow(status: status, mode: appModel.statusRowMode)
                     .isSelected(selection.contains(status.id))
-                    .listRowSeparator(.visible, edges: .bottom)
             }
             .listSectionSeparator(.visible, edges: .bottom)
         }

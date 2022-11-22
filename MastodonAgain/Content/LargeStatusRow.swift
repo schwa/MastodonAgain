@@ -18,7 +18,7 @@ struct LargeStatusRow: View, Sendable {
     var instanceModel: InstanceModel
 
     var body: some View {
-        HStack(alignment: .top) {
+        HStack(alignment: .top, spacing: 8) {
             avatar
             VStack(alignment: .leading) {
                 header
@@ -26,6 +26,7 @@ struct LargeStatusRow: View, Sendable {
                 footer
             }
         }
+        .listRowSeparator(.visible, edges: .bottom)
     }
 
     @ViewBuilder
