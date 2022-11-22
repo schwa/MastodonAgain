@@ -6,22 +6,21 @@ final class HTMLTests: XCTestCase {
     func test1() throws {
         let html = HTML("<p>A simple link <a href=\"http://apple.com/\" target=\"_blank\" rel=\"nofollow noopener noreferrer\"><span class=\"invisible\">http://</span><span class=\"\">apple.com/</span><span class=\"invisible\"></span></a></p>")
         let safe = try html.safeHTML
-        print(safe)
-        let expected = HTML(#"<p>A simple link <a href="http://apple.com/" rel="nofollow"><span>http://</span><span>apple.com/</span><span></span></a></p>"#)
+        let expected = HTML(#"<p>A simple link <a href="http://apple.com/" rel="nofollow"><span class="invisible">http://</span><span class="">apple.com/</span><span class="invisible"></span></a></p>"#)
         XCTAssertEqual(safe, expected)
     }
 
     func test2() throws {
         let html = HTML("<p>A <a href=\"https://fosstodon.org/tags/hashtag\" class=\"mention hashtag\" rel=\"tag\">#<span>hashtag</span></a>, a username @schwa, a link <a href=\"http://apple.com/\" target=\"_blank\" rel=\"nofollow noopener noreferrer\"><span class=\"invisible\">http://</span><span class=\"\">apple.com/</span><span class=\"invisible\"></span></a></p>")
         let safe = try html.safeHTML
-        let expected = HTML(#"<p>A <a href="https://fosstodon.org/tags/hashtag" rel="nofollow">#<span>hashtag</span></a>, a username @schwa, a link <a href="http://apple.com/" rel="nofollow"><span>http://</span><span>apple.com/</span><span></span></a></p>"#)
+        let expected = HTML(#"<p>A <a href="https://fosstodon.org/tags/hashtag" class="mention hashtag" rel="nofollow">#<span>hashtag</span></a>, a username @schwa, a link <a href="http://apple.com/" rel="nofollow"><span class="invisible">http://</span><span class="">apple.com/</span><span class="invisible"></span></a></p>"#)
         XCTAssertEqual(safe, expected)
     }
 
     func test3() throws {
         let html = HTML("<p>A working username <span class=\"h-card\"><a href=\"https://fosstodon.org/@schwadev\" class=\"u-url mention\">@<span>schwadev</span></a></span></p>")
         let safe = try html.safeHTML
-        let expected = HTML(#"<p>A working username <span><a href="https://fosstodon.org/@schwadev" rel="nofollow">@<span>schwadev</span></a></span></p>"#)
+        let expected = HTML(#"<p>A working username <span class="h-card"><a href="https://fosstodon.org/@schwadev" class="u-url mention" rel="nofollow">@<span>schwadev</span></a></span></p>"#)
         XCTAssertEqual(safe, expected)
     }
 
