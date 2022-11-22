@@ -1,8 +1,6 @@
 import Everything
 import Foundation
 import RegexBuilder
-import HTML2Markdown
-import SwiftSoup
 
 // swiftlint:disable file_length
 
@@ -373,48 +371,6 @@ public extension JSONDecoder {
             fatalError("Failed to decode date \(string)")
         })
         return decoder
-    }
-}
-
-public struct HTML: Codable, Hashable, Sendable {
-    public let string: String
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        self.string = try container.decode(String.self)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(self.string)
-    }
-}
-
-extension HTML {
-    var markdown: String {
-        get throws {
-            let dom = try HTMLParser().parse(html: string)
-            return dom.toMarkdown(options: .unorderedListBullets)
-        }
-    }
-}
-
-public extension HTML {
-    var attributedStringOld: AttributedString {
-        get throws {
-            try AttributedString(markdown: markdown)
-        }
-    }
-}
-
-public extension HTML {
-    var attributedString: AttributedString {
-        get throws {
-            let doc: Document = try SwiftSoup.parse(string)
-            let plain = try doc.text()
-
-            return AttributedString(plain)
-        }
     }
 }
 
