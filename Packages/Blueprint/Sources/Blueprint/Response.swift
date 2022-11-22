@@ -52,7 +52,7 @@ extension CompositeResponse: ResultGenerator {
     }
     public func process(data: Data, urlResponse: URLResponse) throws -> Result {
         guard let component = components.first(where: { $0.canProcess(data: data, urlResponse: urlResponse) == true }) else {
-            fatalError("Could not find a component to handle data/response. Was canProcess called?")
+            throw BlueprintError.generic("Cannot handle \(urlResponse)")
         }
         guard let result = try component.process(data: data, urlResponse: urlResponse) as? Result else {
             fatalError("Could not convert result to correct type.")
