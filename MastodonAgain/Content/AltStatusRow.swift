@@ -3,6 +3,8 @@ import CachedAsyncImage
 import Mastodon
 import SwiftUI
 
+let dateFormatter = RelativeDateTimeFormatter()
+
 // TODO: Sendable view?
 struct AltStatusRow: View, Sendable {
     @Binding
@@ -35,7 +37,7 @@ struct AltStatusRow: View, Sendable {
         .padding(.vertical, 2.0)
         .listRowSeparator(.visible, edges: .bottom)
         .onHover { hover in
-            withAnimation {
+            withAnimation(.easeIn(duration: 0.5)) {
                 self.hover = hover
             }
         }
@@ -61,7 +63,10 @@ struct AltStatusRow: View, Sendable {
                 Button {
                     openURL(url)
                 } label: {
-                    Text(status.created, style: .relative).foregroundColor(.secondary)
+                    let formatted = dateFormatter.localizedString(for: status.created, relativeTo: .now)
+                    Text(formatted)
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
                 }
                 #if os(macOS)
                 .buttonStyle(.link)
