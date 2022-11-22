@@ -28,7 +28,7 @@ struct AltStatusRow: View, Sendable {
     var hover = false
 
     var body: some View {
-        HStack(alignment: .top, spacing: 8) {
+        HStack(alignment: .top, spacing: 12) {
             avatar
             VStack(alignment: .leading) {
                 header
@@ -40,6 +40,7 @@ struct AltStatusRow: View, Sendable {
         }
         .padding(.vertical, 2.0)
         .listRowSeparator(.visible, edges: .bottom)
+        .listRowSeparatorTint(.secondary.opacity(0.1), edges: .bottom)
         .onHover { hover in
             if self.hover != hover {
 //                withAnimation(.easeIn(duration: 0.5)) {

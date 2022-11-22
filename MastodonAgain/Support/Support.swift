@@ -85,7 +85,7 @@ struct Avatar: View {
             image
                 .resizable()
                 .background(.ultraThinMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: 8.0))
+                .clipShape(Circle())
                 .shadow(radius: 2.0)
         } placeholder: {
             Image(systemName: "person.circle.fill")
