@@ -62,13 +62,13 @@ struct LargeStatusRow: View, Sendable {
         if let reblog = status.reblog {
             VStack(alignment: .leading) {
                 Text(reblog.account)
-                StatusContent(status: reblog, quotedBy: nil)
+                StatusContent(status: reblog)
             }
             .padding(4)
             .background(Color.blue.opacity(0.1).cornerRadius(4))
         }
         else {
-            StatusContent(status: status, quotedBy: nil)
+            StatusContent(status: status)
         }
     }
 

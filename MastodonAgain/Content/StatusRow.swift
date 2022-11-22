@@ -57,8 +57,6 @@ struct StatusContent<StatusType>: View where StatusType: StatusProtocol {
     var appModel: AppModel
 
     let status: StatusType
-
-    let quotedBy: Status?
     
     var sensitive: Bool {
         status.sensitive

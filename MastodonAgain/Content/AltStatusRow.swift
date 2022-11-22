@@ -74,9 +74,9 @@ struct AltStatusRow: View, Sendable {
     @ViewBuilder
     var content: some View {
         if let reblog = status.reblog {
-            StatusContent(status: reblog, quotedBy: status)
+            StatusContent(status: reblog)
         } else {
-            StatusContent(status: status, quotedBy: nil)
+            StatusContent(status: status)
         }
     }
 
