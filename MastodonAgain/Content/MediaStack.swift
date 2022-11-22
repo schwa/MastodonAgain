@@ -1,5 +1,6 @@
 import AVKit
 import CachedAsyncImage
+import Everything
 import Mastodon
 import SwiftUI
 
@@ -67,7 +68,9 @@ struct ContentImage: View {
         }
         placeholder: {
             if let blurhash, let size {
-                blurhash.image(size: size)
+                tryElseLog {
+                    try blurhash.image(size: size)
+                }
             }
             else {
                 LinearGradient(colors: [.cyan, .purple], startPoint: .topLeading, endPoint: .bottomTrailing)

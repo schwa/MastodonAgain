@@ -4,12 +4,13 @@ import SwiftUI
 public struct Blurhash: Codable, Sendable, Equatable {
     let string: String
 
+    internal init(_ string: String) {
+        self.string = string
+    }
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         string = try container.decode(String.self)
-//        if string.isEmpty {
-//            throw GeneralError.missingValue
-//        }
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -17,9 +18,9 @@ public struct Blurhash: Codable, Sendable, Equatable {
         try container.encode(string)
     }
 
-    public func image(size: CGSize) -> Image {
+    public func image(size: CGSize) throws -> Image {
         guard let cgImage = decodedBlurHash(blurHash: string, size: size) else {
-            fatalError("Could not decode blurhash")
+            throw MastodonError.generic("Could not decode blurhash \"\(string)\"")
         }
         return Image(cgImage: cgImage)
     }

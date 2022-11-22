@@ -1,6 +1,5 @@
 @testable import Mastodon
 import XCTest
-import SwiftSoup
 
 final class HTMLTests: XCTestCase {
     func test1() throws {
@@ -45,7 +44,8 @@ final class HTMLTests: XCTestCase {
         let result = try html.mastodonAttributedString
 //        print("###############################################")
 //        print(html.rawValue.replacing("<br />", with: "<br>\n"))
-        print(result)
+//        print(result)
+        // TODO: Compare
     }
 
     func test6() throws {
@@ -54,7 +54,8 @@ final class HTMLTests: XCTestCase {
         let result = try html.mastodonAttributedString
 //        print("###############################################")
 //        print(html.rawValue.replacing("<br />", with: "<br>\n"))
-        print(result)
+//        print(result)
+        // TODO: Compare!
     }
 }
 
