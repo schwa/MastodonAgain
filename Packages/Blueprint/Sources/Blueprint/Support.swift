@@ -36,7 +36,7 @@ extension URL: ExpressibleByStringLiteral {
     }
 }
 
-public struct URLPath: Hashable {
+public struct URLPath: Hashable, Sendable {
     public let rawValue: String
 
     public init(_ path: String) {

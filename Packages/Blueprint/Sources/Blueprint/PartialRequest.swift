@@ -1,6 +1,6 @@
 import Foundation
 
-public struct PartialRequest: Hashable {
+public struct PartialRequest: Hashable, Sendable {
     public var url: URL?
     public var method: Method
     public var headers: [Header]
@@ -14,13 +14,13 @@ public struct PartialRequest: Hashable {
     }
 }
 
-public enum Method: String {
+public enum Method: String, Sendable {
     case get = "GET"
     case post = "POST"
     case delete = "DELETE"
 }
 
-public struct Header: Hashable {
+public struct Header: Hashable, Sendable {
     public let name: String
     public let value: String
 

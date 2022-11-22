@@ -41,6 +41,10 @@ class SignInViewModel: NSObject, ObservableObject {
     func register(applicationName: String, applicationWebsite: String) async throws {
         guard let host else { throw SignInError.noHost }
 
+        // TODO: Finish
+//        let r = MastodonAPI.Apps.Create(baseURL: URL(string: "https://\(host)")!, clientName: applicationName, redirectURIs: redirectURI, scopes: scopes, website: applicationWebsite)
+//        URLSession.shared.perform(request: r, response: r.response)
+
         let url = URL(string: "https://\(host)/api/v1/apps")!
         let request = URLRequest(url: url, formParameters: [
             "client_name": applicationName,

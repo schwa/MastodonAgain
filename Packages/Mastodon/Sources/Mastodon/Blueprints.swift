@@ -27,17 +27,23 @@ public extension MastodonAPI {
             public typealias Result = Application
 
             let baseURL: URL
-            let token: Token
             let clientName: String
             let redirectURIs: String
             let scopes: String?
             let website: String?
 
+            public init(baseURL: URL, clientName: String, redirectURIs: String, scopes: String? = nil, website: String? = nil) {
+                self.baseURL = baseURL
+                self.clientName = clientName
+                self.redirectURIs = redirectURIs
+                self.scopes = scopes
+                self.website = website
+            }
+
             public var request: some Request {
                 Method.post
                 baseURL
                 URLPath("/api/v1/apps")
-                Header(name: "Authorization", value: "Bearer \(token.accessToken)")
                 Form {
                     FormParameter(name: "client_name", value: clientName)
                     FormParameter(name: "redirect_uris", value: clientName)
@@ -1265,7 +1271,7 @@ public extension MastodonAPI {
     }
 }
 
-public enum NotificationType: String, Codable, CaseIterable {
+public enum NotificationType: String, Codable, CaseIterable, Sendable {
     case follow
     case favourite
     case reblog
@@ -1274,7 +1280,7 @@ public enum NotificationType: String, Codable, CaseIterable {
     case followRequest = "follow_request"
 }
 
-public struct Notification: Identifiable, Codable {
+public struct Notification: Identifiable, Codable, Sendable {
     public typealias ID = Tagged<Notification, String>
 
     public var id: ID
