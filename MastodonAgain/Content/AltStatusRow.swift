@@ -41,16 +41,20 @@ struct AltStatusRow: View, Sendable {
 
     @ViewBuilder
     var avatar: some View {
-        Avatar(account: status.account)
+        Avatar(account: originalAccount)
             .frame(width: 40, height: 40)
     }
 
     @ViewBuilder
     var header: some View {
         HStack {
-            Text(status.account)
-            if status.reblog != nil {
-                Text("reblogged")
+            Text(originalAccount)
+            if let _ = status.reblog {
+                HStack {
+                    Text("(via")
+                    Text(status.account)
+                    Text(")")
+                }
             }
             Spacer()
             if let url = status.url {
@@ -112,5 +116,9 @@ struct AltStatusRow: View, Sendable {
             }
             .debuggingInfo()
         }
+    }
+    
+    var originalAccount: Account {
+        status.reblog?.account ?? status.account
     }
 }
