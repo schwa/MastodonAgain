@@ -22,6 +22,7 @@
 		455AC884290D96F600137415 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455AC883290D96F600137415 /* ContentView.swift */; };
 		455AC886290D96F700137415 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 455AC885290D96F700137415 /* Assets.xcassets */; };
 		455AC88A290D96F700137415 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 455AC889290D96F700137415 /* Preview Assets.xcassets */; };
+		455E6D7E292D27E300ACACF8 /* NavigationSplitViewVisibility+RawRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455E6D7D292D27E300ACACF8 /* NavigationSplitViewVisibility+RawRepresentable.swift */; };
 		4592E171292C5A230037416B /* ActionButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4592E170292C5A230037416B /* ActionButtonStyle.swift */; };
 		45A27F49291053FB00662B71 /* TimelineStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A27F48291053FB00662B71 /* TimelineStack.swift */; };
 		45B45CC2291065870070F1C5 /* PagedContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B45CC1291065870070F1C5 /* PagedContentView.swift */; };
@@ -73,6 +74,7 @@
 		455AC885290D96F700137415 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		455AC887290D96F700137415 /* MastodonAgain.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MastodonAgain.entitlements; sourceTree = "<group>"; };
 		455AC889290D96F700137415 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		455E6D7D292D27E300ACACF8 /* NavigationSplitViewVisibility+RawRepresentable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NavigationSplitViewVisibility+RawRepresentable.swift"; sourceTree = "<group>"; };
 		4592E170292C5A230037416B /* ActionButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionButtonStyle.swift; sourceTree = "<group>"; };
 		45A27F48291053FB00662B71 /* TimelineStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineStack.swift; sourceTree = "<group>"; };
 		45B45CC1291065870070F1C5 /* PagedContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PagedContentView.swift; sourceTree = "<group>"; };
@@ -159,6 +161,7 @@
 				45B45CC1291065870070F1C5 /* PagedContentView.swift */,
 				45F1A2B5290E0F4B0093A8AC /* Support.swift */,
 				45F1A2BC290E31360093A8AC /* Minikeychain.swift */,
+				455E6D7D292D27E300ACACF8 /* NavigationSplitViewVisibility+RawRepresentable.swift */,
 			);
 			path = Support;
 			sourceTree = "<group>";
@@ -386,6 +389,7 @@
 				45F1A2B9290E1FB60093A8AC /* TimelineView.swift in Sources */,
 				45F1A2C3290E4FF60093A8AC /* AppSettings.swift in Sources */,
 				4514349D29184E05004A9208 /* SigninsView.swift in Sources */,
+				455E6D7E292D27E300ACACF8 /* NavigationSplitViewVisibility+RawRepresentable.swift in Sources */,
 				45F1A2B6290E0F4B0093A8AC /* Support.swift in Sources */,
 				4529E98229286D0300ABFA42 /* NotificationsView.swift in Sources */,
 			);

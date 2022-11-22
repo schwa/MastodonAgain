@@ -13,13 +13,19 @@ import SwiftUI
 // it in @AppStorage and/or @SceneStorage
 extension NavigationSplitViewVisibility: RawRepresentable {
     public init?(rawValue: String) {
-        guard let data = rawValue.data(using: .utf8) else { return nil }
-        guard let decoded = try? JSONDecoder().decode(Self.self, from: data) else { return nil }
+        guard let data = rawValue.data(using: .utf8) else {
+            return nil
+        }
+        guard let decoded = try? JSONDecoder().decode(Self.self, from: data) else {
+            return nil
+        }
         self = decoded
     }
-    
+
     public var rawValue: String {
-        guard let decoded = try? JSONEncoder().encode(self) else { return "" }
+        guard let decoded = try? JSONEncoder().encode(self) else {
+            return ""
+        }
         return String(data: decoded, encoding: .utf8) ?? ""
     }
 }
