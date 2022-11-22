@@ -52,11 +52,11 @@ extension View {
 
 // MARK: -
 
-struct StatusContent<StatusType>: View where StatusType: StatusProtocol {
+struct StatusContent<Status>: View where Status: StatusProtocol {
     @EnvironmentObject
     var appModel: AppModel
 
-    let status: StatusType
+    let status: Status
     
     var sensitive: Bool {
         status.sensitive
