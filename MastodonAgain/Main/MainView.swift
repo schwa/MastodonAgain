@@ -2,7 +2,12 @@ import Everything
 import Mastodon
 import SwiftUI
 
+
+
 struct MainView: View {
+    @SceneStorage(wrappedValue: .automatic, "columnVisibility")
+    var columnVisibility: NavigationSplitViewVisibility
+
     @EnvironmentObject
     var appModel: AppModel
 
@@ -12,11 +17,9 @@ struct MainView: View {
     @State
     var selection: MainTabs? = MainTabs.home
 
-    @SceneStorage("columnVisibility")
-    var columnVisibility = Data()
 
     var body: some View {
-        NavigationSplitView(columnVisibility: $columnVisibility.adaptor(defaultValue: .automatic)) {
+        NavigationSplitView(columnVisibility: $columnVisibility) {
             List(selection: $selection) {
                 SignInPicker()
                 Divider()
