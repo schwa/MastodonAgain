@@ -12,4 +12,4 @@ While it can compile and run on iOS 16 devices it has not been tested on any iOS
 
 ## TODO
 
-See https://github.com/users/schwa/projects/6/views/ for more.
+See https://github.com/schwa/MastodonAgain/projects for more.
