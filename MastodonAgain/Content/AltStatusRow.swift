@@ -76,7 +76,7 @@ struct AltStatusRow: View, Sendable {
                 Button {
                     openURL(url)
                 } label: {
-                    let formatted = dateFormatter.localizedString(for: status.created, relativeTo: .now)
+                    let formatted = appModel.relativeDate(status.created)
                     Text(formatted)
                         .font(.footnote)
                         .foregroundColor(.secondary)
