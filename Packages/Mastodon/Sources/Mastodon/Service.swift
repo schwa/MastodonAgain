@@ -80,10 +80,6 @@ public extension Service {
         return try await perform(requestResponse: requestResponse)
     }
 
-    @available(*, deprecated, message: "Deprecated")
-    func perform<R>(type: R.Result.Type, _ requestResponse: (URL, Token) -> R) async throws -> R.Result where R: Request & Response {
-        try await perform(requestResponse)
-    }
 }
 
 // MARK: -

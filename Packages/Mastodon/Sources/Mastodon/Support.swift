@@ -293,11 +293,13 @@ func processLinks(string: String) throws -> [String: URL] {
     return Dictionary(uniqueKeysWithValues: s)
 }
 
+@available(*, deprecated, message: "Remove")
 public enum FormValue {
     case value(_ name: String, _ value: String)
     case file(_ name: String, _ filename: String, _ mimeType: String, _ data: Data)
 }
 
+@available(*, deprecated, message: "Remove")
 public extension Sequence<FormValue> {
     func data(boundary: String) -> Data {
         let chunks = map { value in
@@ -330,6 +332,7 @@ public extension Sequence<FormValue> {
 }
 
 public extension URLRequest {
+    @available(*, deprecated, message: "Remove")
     func form(_ form: [String: String]) -> URLRequest {
         var copy = self
         copy.httpMethod = "POST"
@@ -340,6 +343,7 @@ public extension URLRequest {
         return copy
     }
 
+    @available(*, deprecated, message: "Remove")
     func multipartForm(_ values: [FormValue]) -> URLRequest {
         var copy = self
         copy.httpMethod = "POST"
