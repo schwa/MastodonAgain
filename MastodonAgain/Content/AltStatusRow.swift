@@ -56,24 +56,16 @@ struct AltStatusRow: View, Sendable {
     }
 
     @ViewBuilder
-    var label: some View {
-        HStack(spacing: 0) {
+    var header: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 0) {
             AccountLabel(originalAccount)
             if let _ = status.reblog {
                 Text(" (via ")
                 AccountLabel(status.account)
                 Text(")")
             }
-        }
-    }
-    
-    @ViewBuilder
-    var header: some View {
-        HStack {
-            label
-                .lineLimit(1)
-                .truncationMode(.tail)
-            if let url = status.url {
+
+            if let url = originalURL {
                 Spacer()
                 Button {
                     openURL(url)
@@ -82,15 +74,14 @@ struct AltStatusRow: View, Sendable {
                     Text(formatted)
                         .font(.footnote)
                         .foregroundColor(.secondary)
-                        .fixedSize()
                 }
                 #if os(macOS)
                 .buttonStyle(.link)
                 #endif
-                .fixedSize()
             }
         }
-        .padding(.bottom, 2.0)
+        .lineLimit(1)
+        .truncationMode(.tail)
     }
 
     @ViewBuilder
@@ -142,5 +133,9 @@ struct AltStatusRow: View, Sendable {
     
     var originalAccount: Account {
         status.reblog?.account ?? status.account
+    }
+    
+    var originalURL: URL? {
+        status.reblog?.url ?? status.url
     }
 }
