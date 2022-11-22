@@ -42,9 +42,9 @@ struct AltStatusRow: View, Sendable {
         .listRowSeparator(.visible, edges: .bottom)
         .onHover { hover in
             if self.hover != hover {
-                withAnimation(.easeIn(duration: 0.5)) {
+//                withAnimation(.easeIn(duration: 0.5)) {
                     self.hover = hover
-                }
+//                }
             }
         }
     }
