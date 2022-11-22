@@ -10,7 +10,7 @@ struct ContentView: View {
         Group {
             if let signin = appModel.currentSignin {
                 MainView()
-                    .environmentObject(InstanceModel(signin: signin))
+                    .environmentObject(appModel.instance(for: signin))
             }
             else {
                 SignInView() { signin in

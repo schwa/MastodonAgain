@@ -22,9 +22,9 @@ struct MastodonAgainApp: App {
             WindowGroup("New Post", for: NewPostWindow.self) { open in
                 NewPostView(open: open)
                     .environmentObject(appModel)
-                    .environmentObject(InstanceModel(signin: appModel.currentSignin!))
+                    .environmentObject(appModel.instance(for: appModel.currentSignin!)) // TODO: Bang
             }
-            .keyboardShortcut(.init("N"))
+            .keyboardShortcut("N", modifiers: .command)
             Settings {
                 AppSettings()
                     .environmentObject(appModel)

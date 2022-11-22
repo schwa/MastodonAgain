@@ -43,4 +43,20 @@ class AppModel: ObservableObject {
             currentSigninID = newValue.id
         }
     }
+
+    private
+    var instances: [String: InstanceModel] = [:]
+
+    func instance(for signIn: SignIn) -> InstanceModel {
+
+        if let instance = instances[signIn.name] {
+            return instance
+        }
+        else {
+            let instance = InstanceModel(signin: signIn)
+            instances[signIn.name] = instance
+            return instance
+        }
+
+    }
 }
