@@ -15,27 +15,17 @@ public extension Service {
 }
 
 public extension Service {
-    // https://mastodon.example/api/v1/statuses
     @available(*, deprecated, message: "Use MastodonAPI directly")
     func postStatus(_ newPost: NewPost) async throws -> Status {
-        guard let token = authorization.token else {
-            fatalError("No host or token.")
-        }
         logger?.log("Posting")
-        let url = URL(string: "https://\(host)/api/v1/statuses")!
-        var request = URLRequest.post(url)
-            .headers(token.headers)
-            .headers(["Content-Type": "application/json; charset=utf-8"])
-        request.httpBody = try JSONEncoder().encode(newPost)
-        let (data, _) = try await session.validatedData(for: request)
-        let status = try decoder.decode(Status.self, from: data)
-        update(status)
-        logger?.log("Posted: \(String(describing: status))")
+        let status = await try perform { baseURL, token in
+            MastodonAPI.Statuses.Publish(baseURL: baseURL, token: token, post: newPost)
+        }
         return status
     }
 
     @available(*, deprecated, message: "Use MastodonAPI directly")
-    func uploadAttachment(file: URL, description: String) async throws -> MediaAttachment {
+    func uploadAttachmentOld(file: URL, description: String) async throws -> MediaAttachment {
         guard let token = authorization.token else {
             fatalError("No host or token.")
         }
@@ -57,4 +47,39 @@ public extension Service {
         let attachment = try decoder.decode(MediaAttachment.self, from: data)
         return attachment
     }
+
+    @available(*, deprecated, message: "Use MastodonAPI directly")
+    func uploadAttachment(file: URL, description: String) async throws -> MediaAttachment {
+
+        fatalError()
+    }
 }
+
+struct TODOMediaUpload: Request, Response {
+    typealias Result = MediaAttachment
+
+    let baseURL: URL
+    let token: Token
+    let post: NewPost
+    let description: String
+    let file: URL
+
+    var request: some Request {
+        Method.post
+        baseURL
+        URLPath("/api/v1/media")
+        Header(name: "Authorization", value: "Bearer \(token.accessToken)")
+        Form {
+            FormParameter(name: "description", value: description)
+            // TODO: Mimetype is bullshit ;-)
+            FormParameter(name: "file", file: .init(filename: file.lastPathComponent, mimetype: "image/png") {
+                try Data(contentsOf: file)
+            })
+        }
+    }
+
+    var response: some Response {
+        standardResponse(Result.self)
+    }
+}
+

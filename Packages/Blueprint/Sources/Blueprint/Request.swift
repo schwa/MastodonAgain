@@ -93,3 +93,28 @@ extension URLPath: Request {
         request.url?.append(path: rawValue)
     }
 }
+
+// MARK: -
+
+public struct Body {
+
+    public let contentType: String?
+    public let data: () throws -> Data
+
+    public init(_ contentType: String? = nil, data: @escaping () throws -> Data) {
+        self.contentType = contentType
+        self.data = data
+    }
+}
+
+extension Body: Request {
+    public typealias RequestContent = Never
+
+    public func apply(request: inout PartialRequest) throws {
+        if let contentType {
+            request.headers.append(Header(name: "Content-Type", value: contentType))
+        }
+        request.body = try data()
+    }
+}
+

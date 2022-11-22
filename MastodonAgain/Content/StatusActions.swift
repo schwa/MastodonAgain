@@ -185,6 +185,5 @@ struct StatusActions: View {
         await MainActor.run {
             self.status = newStatus
         }
-
     }
 }

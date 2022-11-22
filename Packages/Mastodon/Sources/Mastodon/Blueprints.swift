@@ -627,21 +627,32 @@ public extension MastodonAPI {
 
 public extension MastodonAPI {
     enum Statuses {
-        //        struct Publish: Request, Response {
-        //            let baseURL: URL
-        //            let token: Token
-        //
-        //            var request: some Request {
-        //                Method.post
-        //                baseURL
-        //                URLPath("/api/v1/statuses")
-        //                Header(name: "Authorization", value: "Bearer \(token.accessToken)")
-        //            }
-        //
-        //            var response: some Response {
-        //                standardResponse(Status.self)
-        //            }
-        //        }
+        public struct Publish: Request, Response {
+            public typealias Result = Status
+            let baseURL: URL
+            let token: Token
+            let post: NewPost
+
+            public init(baseURL: URL, token: Token, post: NewPost) {
+                self.baseURL = baseURL
+                self.token = token
+                self.post = post
+            }
+
+            public var request: some Request {
+                Method.post
+                baseURL
+                URLPath("/api/v1/statuses")
+                Header(name: "Authorization", value: "Bearer \(token.accessToken)")
+                Body("application/json; charset=utf-8") {
+                    try JSONEncoder().encode(post)
+                }
+            }
+
+            public var response: some Response {
+                standardResponse(Status.self)
+            }
+        }
 
         public struct View: Request, Response {
             public typealias Result = Status

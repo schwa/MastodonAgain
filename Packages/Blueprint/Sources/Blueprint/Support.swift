@@ -80,7 +80,8 @@ public struct Form {
 }
 
 extension Form: Request {
-    public func apply(request: inout PartialRequest) throws {
+
+    func simpleFormApply(request: inout PartialRequest) throws {
         let bodyString = parameters.map { parameter in
             let key = parameter.name
                 .replacing(" ", with: "+")
@@ -90,9 +91,26 @@ extension Form: Request {
                 .addingPercentEncoding(withAllowedCharacters: .alphanumerics + .punctuationCharacters + "+")!
             return "\(key)=\(value)"
         }
-        .joined(separator: "&")
+            .joined(separator: "&")
         request.headers.append(.init(name: "Content-Type", value: "application/x-www-form-urlencoded; charset=utf-8"))
         request.body = bodyString.data(using: .utf8)!
+    }
+
+    func multipartFormApply(request: inout PartialRequest) throws {
+        fatalError()
+    }
+
+    var isMultipart: Bool {
+        return false
+    }
+
+    public func apply(request: inout PartialRequest) throws {
+        if isMultipart {
+            try multipartFormApply(request: &request)
+        }
+        else {
+            try simpleFormApply(request: &request)
+        }
     }
 }
 
@@ -104,12 +122,26 @@ public enum FormBuilder {
 }
 
 public struct FormParameter {
-    public let name: String
-    public let value: String?
+    public struct File: Sendable {
+        public var filename: String
+        public var mimetype: String
+        public var data: @Sendable () throws -> Data
 
-    public init(name: String, value: String? = nil) {
+        public init(filename: String, mimetype: String, data: @escaping @Sendable () throws -> Data) {
+            self.filename = filename
+            self.mimetype = mimetype
+            self.data = data
+        }
+    }
+
+    public var name: String
+    public var value: String?
+    public var file: File?
+
+    public init(name: String, value: String? = nil, file: File? = nil) {
         self.name = name
         self.value = value
+        self.file = file
     }
 }
 
