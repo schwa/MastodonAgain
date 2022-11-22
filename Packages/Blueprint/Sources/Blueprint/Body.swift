@@ -1,6 +1,7 @@
 import Foundation
 import UniformTypeIdentifiers
 
+@available(*, deprecated, message: "Deprecated")
 public struct JSONBody<Content> where Content: Codable {
     public let contentType = "application/json"
     public let content: Content
@@ -16,30 +17,31 @@ public struct JSONBody<Content> where Content: Codable {
     }
 }
 
+//@available(*, deprecated, message: "Deprecated")
+//public struct FormBody {
+//    public let contentType = "application/x-www-form-urlencoded; charset=utf-8"
+//    public let content: [String: String]
+//
+//    public init(content: [String: String]) {
+//        self.content = content
+//    }
+//
+//    public func toData() throws -> some DataProtocol {
+//        let bodyString = content.map { key, value in
+//            let key = key
+//                .replacing(" ", with: "+")
+//                .addingPercentEncoding(withAllowedCharacters: .alphanumerics + .punctuationCharacters + "+")!
+//            let value = value
+//                .replacing(" ", with: "+")
+//                .addingPercentEncoding(withAllowedCharacters: .alphanumerics + .punctuationCharacters + "+")!
+//            return "\(key)=\(value)"
+//        }
+//        .joined(separator: "&")
+//        return bodyString.data(using: .utf8)!
+//    }
+//}
+
 @available(*, deprecated, message: "Deprecated")
-public struct FormBody {
-    public let contentType = "application/x-www-form-urlencoded; charset=utf-8"
-    public let content: [String: String]
-
-    public init(content: [String: String]) {
-        self.content = content
-    }
-
-    public func toData() throws -> some DataProtocol {
-        let bodyString = content.map { key, value in
-            let key = key
-                .replacing(" ", with: "+")
-                .addingPercentEncoding(withAllowedCharacters: .alphanumerics + .punctuationCharacters + "+")!
-            let value = value
-                .replacing(" ", with: "+")
-                .addingPercentEncoding(withAllowedCharacters: .alphanumerics + .punctuationCharacters + "+")!
-            return "\(key)=\(value)"
-        }
-        .joined(separator: "&")
-        return bodyString.data(using: .utf8)!
-    }
-}
-
 public struct MultipartForm {
     public struct FormValue {
         internal let data: (_ name: String) -> Data

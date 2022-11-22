@@ -50,8 +50,9 @@ public extension Service {
 
     @available(*, deprecated, message: "Use MastodonAPI directly")
     func uploadAttachment(file: URL, description: String) async throws -> MediaAttachment {
-
-        fatalError()
+        try await perform { baseURL, token in
+            TODOMediaUpload(baseURL: baseURL, token: token, description: description, file: file)
+        }
     }
 }
 
@@ -60,7 +61,6 @@ struct TODOMediaUpload: Request, Response {
 
     let baseURL: URL
     let token: Token
-    let post: NewPost
     let description: String
     let file: URL
 
@@ -71,10 +71,7 @@ struct TODOMediaUpload: Request, Response {
         Header(name: "Authorization", value: "Bearer \(token.accessToken)")
         Form {
             FormParameter(name: "description", value: description)
-            // TODO: Mimetype is bullshit ;-)
-            FormParameter(name: "file", file: .init(filename: file.lastPathComponent, mimetype: "image/png") {
-                try Data(contentsOf: file)
-            })
+            FormParameter(name: "file", url: file)
         }
     }
 
@@ -82,4 +79,3 @@ struct TODOMediaUpload: Request, Response {
         standardResponse(Result.self)
     }
 }
-

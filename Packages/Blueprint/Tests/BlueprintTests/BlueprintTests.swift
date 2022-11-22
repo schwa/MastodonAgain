@@ -64,7 +64,7 @@ class MyTests: XCTestCase {
     }
 }
 
-func test<R>(_ r: R, data: Data, urlResponse: URLResponse) throws -> R.Result where R: Request & Response {
+func test<R>(_ r: R, data: Data, urlResponse: HTTPURLResponse) throws -> R.Result where R: Request & Response {
     guard let resultGenerator = r.response as? any ResultGenerator else {
         fatalError()
     }

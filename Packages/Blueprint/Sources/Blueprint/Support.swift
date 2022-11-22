@@ -1,3 +1,4 @@
+import Algorithms
 import Everything
 import Foundation
 
@@ -27,11 +28,7 @@ extension Character {
     }
 }
 
-extension String {
-    static func random(count: Int, of set: String) -> String {
-        String((0 ..< count).map({ _ in Character.random(in: set) }))
-    }
-}
+// MARK: -
 
 extension URL: ExpressibleByStringLiteral {
     public init(stringLiteral value: String) {
@@ -71,91 +68,11 @@ extension URLPath: CustomStringConvertible {
     }
 }
 
-public struct Form {
-    let parameters: [FormParameter]
-
-    public init(@FormBuilder _ parameters: () -> [FormParameter]) {
-        self.parameters = parameters()
-    }
-}
-
-extension Form: Request {
-
-    func simpleFormApply(request: inout PartialRequest) throws {
-        let bodyString = parameters.map { parameter in
-            let key = parameter.name
-                .replacing(" ", with: "+")
-                .addingPercentEncoding(withAllowedCharacters: .alphanumerics + .punctuationCharacters + "+")!
-            let value = parameter.value ?? ""
-                .replacing(" ", with: "+")
-                .addingPercentEncoding(withAllowedCharacters: .alphanumerics + .punctuationCharacters + "+")!
-            return "\(key)=\(value)"
-        }
-            .joined(separator: "&")
-        request.headers.append(.init(name: "Content-Type", value: "application/x-www-form-urlencoded; charset=utf-8"))
-        request.body = bodyString.data(using: .utf8)!
-    }
-
-    func multipartFormApply(request: inout PartialRequest) throws {
-        fatalError()
-    }
-
-    var isMultipart: Bool {
-        return false
-    }
-
-    public func apply(request: inout PartialRequest) throws {
-        if isMultipart {
-            try multipartFormApply(request: &request)
-        }
-        else {
-            try simpleFormApply(request: &request)
-        }
-    }
-}
-
-@resultBuilder
-public enum FormBuilder {
-    public static func buildBlock(_ components: FormParameter?...) -> [FormParameter] {
-        components.compactMap { $0 }
-    }
-}
-
-public struct FormParameter {
-    public struct File: Sendable {
-        public var filename: String
-        public var mimetype: String
-        public var data: @Sendable () throws -> Data
-
-        public init(filename: String, mimetype: String, data: @escaping @Sendable () throws -> Data) {
-            self.filename = filename
-            self.mimetype = mimetype
-            self.data = data
-        }
-    }
-
-    public var name: String
-    public var value: String?
-    public var file: File?
-
-    public init(name: String, value: String? = nil, file: File? = nil) {
-        self.name = name
-        self.value = value
-        self.file = file
-    }
-}
-
 extension Array: Request where Element: Request {
     public func apply(request: inout PartialRequest) throws {
         try forEach { element in
             try element.apply(request: &request)
         }
-    }
-}
-
-extension FormParameter: Request {
-    public func apply(request: inout PartialRequest) throws {
-        unimplemented()
     }
 }
 
@@ -171,6 +88,51 @@ public struct OverrideURLRequest: Request {
     public var request: some Request {
         content
         overrideURL
+    }
+}
+
+// MARK: -
+
+public enum Chunk {
+    case string(String)
+    case data(Data)
+}
+
+extension Chunk: ExpressibleByStringLiteral {
+    public init(stringLiteral value: String) {
+        self = .string(value)
+    }
+}
+
+extension Chunk: ExpressibleByStringInterpolation {
+}
+
+public extension Data {
+    init<C>(_ chunks: C) where C: Collection, C.Element == Chunk {
+        self = chunks.reduce(into: Data()) { partialResult, chunk in
+            switch chunk {
+            case .data(let data):
+                partialResult += data
+            case .string(let string):
+                partialResult += string.utf8
+            }
+        }
+    }
+}
+
+// MARK: -
+
+public extension PartialRequest {
+    var data: Data {
+        var chunks: [Chunk] = [
+            "\(method.rawValue) \(url?.path ?? "/") HTTP/1.1"
+        ]
+        + headers.map { header in
+            .string("\(header.name): \(header.value)")
+        }
+        + [""]
+        + [.data(body ?? Data())]
+        return Data(chunks.interspersed(with: "\r\n"))
     }
 }
 

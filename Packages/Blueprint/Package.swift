@@ -13,13 +13,19 @@ let package = Package(
         .library(name: "Blueprint", targets: ["Blueprint"]),
     ],
     dependencies: [
+        .package(url: "https://github.com/apple/swift-algorithms", from: "1.0.0"),
         .package(url: "https://github.com/schwa/Everything.git", branch: "main"),
     ],
     targets: [
-        .target(name: "Blueprint", dependencies: ["Everything"]),
+        .target(name: "Blueprint", dependencies: [
+            "Everything",
+            .product(name: "Algorithms", package: "swift-algorithms"),
+        ]),
         .testTarget(
             name: "BlueprintTests",
-            dependencies: ["Blueprint"]
+            dependencies: [
+                "Blueprint"
+            ]
         ),
     ]
 )
