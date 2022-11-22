@@ -2,7 +2,7 @@ import Foundation
 import SwiftSoup
 import SwiftUI
 
-// swiftlint:ignore cyclomatic_complexity
+// swiftlint:disable cyclomatic_complexity
 
 private typealias Element = SwiftSoup.Element
 
