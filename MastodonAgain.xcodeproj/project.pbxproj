@@ -22,6 +22,7 @@
 		455AC884290D96F600137415 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455AC883290D96F600137415 /* ContentView.swift */; };
 		455AC886290D96F700137415 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 455AC885290D96F700137415 /* Assets.xcassets */; };
 		455AC88A290D96F700137415 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 455AC889290D96F700137415 /* Preview Assets.xcassets */; };
+		4592E171292C5A230037416B /* ActionButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4592E170292C5A230037416B /* ActionButtonStyle.swift */; };
 		45A27F49291053FB00662B71 /* TimelineStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A27F48291053FB00662B71 /* TimelineStack.swift */; };
 		45B45CC2291065870070F1C5 /* PagedContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B45CC1291065870070F1C5 /* PagedContentView.swift */; };
 		45B45CC4291086660070F1C5 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B45CC3291086660070F1C5 /* CardView.swift */; };
@@ -72,6 +73,7 @@
 		455AC885290D96F700137415 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		455AC887290D96F700137415 /* MastodonAgain.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MastodonAgain.entitlements; sourceTree = "<group>"; };
 		455AC889290D96F700137415 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		4592E170292C5A230037416B /* ActionButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionButtonStyle.swift; sourceTree = "<group>"; };
 		45A27F48291053FB00662B71 /* TimelineStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineStack.swift; sourceTree = "<group>"; };
 		45B45CC1291065870070F1C5 /* PagedContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PagedContentView.swift; sourceTree = "<group>"; };
 		45B45CC3291086660070F1C5 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
@@ -139,6 +141,7 @@
 				45F1A2B8290E1FB60093A8AC /* TimelineView.swift */,
 				45E5959F292A89500005F5B6 /* StatusRow.swift */,
 				45E595A1292AAE600005F5B6 /* StatusActions.swift */,
+				4592E170292C5A230037416B /* ActionButtonStyle.swift */,
 				45F1A2BA290E1FE50093A8AC /* LargeStatusRow.swift */,
 				45FDAF812916EE5A0073E8E0 /* MiniStatusRow.swift */,
 				45B45CC3291086660070F1C5 /* CardView.swift */,
@@ -362,6 +365,7 @@
 			files = (
 				45B45CC2291065870070F1C5 /* PagedContentView.swift in Sources */,
 				45E595A0292A89500005F5B6 /* StatusRow.swift in Sources */,
+				4592E171292C5A230037416B /* ActionButtonStyle.swift in Sources */,
 				455AC884290D96F600137415 /* ContentView.swift in Sources */,
 				45E595A2292AAE600005F5B6 /* StatusActions.swift in Sources */,
 				452020132910281300469569 /* MainView.swift in Sources */,

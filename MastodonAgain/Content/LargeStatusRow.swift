@@ -108,6 +108,5 @@ struct LargeStatusRow: View, Sendable {
             }
             .debuggingInfo()
         }
-        .buttonStyle(ActionButtonStyle())
     }
 }

@@ -49,7 +49,6 @@ struct MiniStatusRow: View, Sendable {
             Spacer()
             if hover {
                 StatusActions(status: _status)
-                    .buttonStyle(ActionButtonStyle())
             }
         }
         .onHover { hover in

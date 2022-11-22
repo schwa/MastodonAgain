@@ -245,25 +245,6 @@ public extension Button {
     }
 }
 
-struct ActionButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .labelStyle(ActionButtonLabelStyle())
-            .foregroundColor(configuration.isPressed ? Color.primary : Color.secondary)
-            .background((configuration.isPressed ? .thickMaterial : .bar))
-            .cornerRadius(2)
-    }
-}
-
-struct ActionButtonLabelStyle: LabelStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        HStack(spacing: 2) {
-            configuration.icon
-            configuration.title.font(.caption)
-        }
-    }
-}
-
 struct WorkInProgressView: View {
     var body: some View {
         let tileSize = CGSize(16, 16)
