@@ -44,6 +44,7 @@ struct MainView: View {
                 NotificationsView()
             }
         }
+        .navigationSplitViewStyle(.prominentDetail)
         .toolbar {
             Toggle("Debug", isOn: $appModel.showDebuggingInfo)
                 .toggleStyle(ImageToggleStyle())
