@@ -17,7 +17,10 @@ class AppModel: ObservableObject {
 
     @AppStorage("useMarkdownContent")
     var useMarkdownContent = false
-
+    
+    @AppStorage("showAccountHandles")
+    var showAccountHandles = false
+    
     @AppStorage("statusRowMode")
     var statusRowMode = StatusRow.Mode.alt
 

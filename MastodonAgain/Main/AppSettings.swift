@@ -91,6 +91,7 @@ struct AppSettings: View {
         List {
             Form {
                 Toggle("Hide Sensitive Content", isOn: $appModel.hideSensitiveContent)
+                Toggle("Show Account Handles", isOn: $appModel.showAccountHandles)
                 Toggle("Show Debugging Info", isOn: $appModel.showDebuggingInfo)
                 Toggle("Use Markdown Content (Very Experimental)", isOn: $appModel.useMarkdownContent)
             }

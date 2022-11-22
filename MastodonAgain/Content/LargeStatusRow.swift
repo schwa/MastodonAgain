@@ -38,7 +38,7 @@ struct LargeStatusRow: View, Sendable {
     @ViewBuilder
     var header: some View {
         HStack {
-            Text(status.account)
+            AccountLabel(status.account)
             if status.reblog != nil {
                 Text("reblogged")
             }
@@ -61,7 +61,7 @@ struct LargeStatusRow: View, Sendable {
     var content: some View {
         if let reblog = status.reblog {
             VStack(alignment: .leading) {
-                Text(reblog.account)
+                AccountLabel(reblog.account)
                 StatusContent(status: reblog)
             }
             .padding(4)

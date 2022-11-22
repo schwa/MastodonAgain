@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		22ECADAD292D3A28008AE403 /* AltStatusRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22ECADAC292D3A28008AE403 /* AltStatusRow.swift */; };
+		22ECADAF292D3F5D008AE403 /* AccountLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22ECADAE292D3F5D008AE403 /* AccountLabel.swift */; };
 		451434982918386E004A9208 /* InstanceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451434972918386E004A9208 /* InstanceModel.swift */; };
 		4514349D29184E05004A9208 /* SigninsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4514349C29184E05004A9208 /* SigninsView.swift */; };
 		4520200F290F87A200469569 /* MediaStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4520200E290F87A200469569 /* MediaStack.swift */; };
@@ -44,6 +46,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		22ECADAC292D3A28008AE403 /* AltStatusRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AltStatusRow.swift; sourceTree = "<group>"; };
+		22ECADAE292D3F5D008AE403 /* AccountLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountLabel.swift; sourceTree = "<group>"; };
 		4511AFBC2929D07E008A1858 /* MastodonAgain.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = MastodonAgain.xctestplan; sourceTree = "<group>"; };
 		451434972918386E004A9208 /* InstanceModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceModel.swift; sourceTree = "<group>"; };
 		4514349C29184E05004A9208 /* SigninsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigninsView.swift; sourceTree = "<group>"; };
@@ -146,6 +150,7 @@
 				4592E170292C5A230037416B /* ActionButtonStyle.swift */,
 				45F1A2BA290E1FE50093A8AC /* LargeStatusRow.swift */,
 				45FDAF812916EE5A0073E8E0 /* MiniStatusRow.swift */,
+				22ECADAC292D3A28008AE403 /* AltStatusRow.swift */,
 				45B45CC3291086660070F1C5 /* CardView.swift */,
 				4520200E290F87A200469569 /* MediaStack.swift */,
 				45FDAF83291714F40073E8E0 /* StatusInfoView.swift */,
@@ -159,6 +164,7 @@
 			isa = PBXGroup;
 			children = (
 				45B45CC1291065870070F1C5 /* PagedContentView.swift */,
+				22ECADAE292D3F5D008AE403 /* AccountLabel.swift */,
 				45F1A2B5290E0F4B0093A8AC /* Support.swift */,
 				45F1A2BC290E31360093A8AC /* Minikeychain.swift */,
 				455E6D7D292D27E300ACACF8 /* NavigationSplitViewVisibility+RawRepresentable.swift */,
@@ -385,8 +391,10 @@
 				45F1A2BD290E31360093A8AC /* Minikeychain.swift in Sources */,
 				455AC882290D96F600137415 /* MastodonAgainApp.swift in Sources */,
 				45FDAF86291715130073E8E0 /* AccountInfoView.swift in Sources */,
+				22ECADAD292D3A28008AE403 /* AltStatusRow.swift in Sources */,
 				453BB94A292720A800FAA259 /* SigninPicker.swift in Sources */,
 				45F1A2B9290E1FB60093A8AC /* TimelineView.swift in Sources */,
+				22ECADAF292D3F5D008AE403 /* AccountLabel.swift in Sources */,
 				45F1A2C3290E4FF60093A8AC /* AppSettings.swift in Sources */,
 				4514349D29184E05004A9208 /* SigninsView.swift in Sources */,
 				455E6D7E292D27E300ACACF8 /* NavigationSplitViewVisibility+RawRepresentable.swift in Sources */,

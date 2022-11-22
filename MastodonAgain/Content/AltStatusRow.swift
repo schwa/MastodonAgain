@@ -55,14 +55,16 @@ struct AltStatusRow: View, Sendable {
             .frame(width: 40, height: 40)
     }
 
-    var label: Text {
-        var text = Text(originalAccount, showHandle: false)
-        if let _ = status.reblog {
-            text = text + Text(" (via ") +
-            Text(status.account, showHandle: false) +
-            Text(")")
+    @ViewBuilder
+    var label: some View {
+        HStack(spacing: 0) {
+            AccountLabel(originalAccount)
+            if let _ = status.reblog {
+                Text(" (via ")
+                AccountLabel(status.account)
+                Text(")")
+            }
         }
-        return text
     }
     
     @ViewBuilder
