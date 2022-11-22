@@ -5,8 +5,8 @@ import SwiftUI
 
 
 struct MainView: View {
-    @SceneStorage(wrappedValue: .automatic, "columnVisibility")
-    var columnVisibility: NavigationSplitViewVisibility
+    @SceneStorage("columnVisibility")
+    var columnVisibility: NavigationSplitViewVisibility = .automatic
 
     @EnvironmentObject
     var appModel: AppModel
