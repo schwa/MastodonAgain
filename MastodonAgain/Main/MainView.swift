@@ -12,10 +12,11 @@ struct MainView: View {
     @State
     var selection: MainTabs? = MainTabs.home
 
-    @State var columnVisibility = NavigationSplitViewVisibility.automatic
+    @SceneStorage("columnVisibility")
+    var persistentColumnVisibility = Data()
 
     var body: some View {
-        NavigationSplitView(columnVisibility: $columnVisibility) {
+        NavigationSplitView(columnVisibility: columnVisibility) {
             List(selection: $selection) {
                 SignInPicker()
                 Divider()
@@ -44,6 +45,25 @@ struct MainView: View {
             Toggle("Debug", isOn: $appModel.showDebuggingInfo)
                 .toggleStyle(ImageToggleStyle())
         }
+    }
+    
+    var columnVisibility: Binding<NavigationSplitViewVisibility> {
+        return Binding(
+            get: {
+                do {
+                    let decoded = try JSONDecoder().decode(NavigationSplitViewVisibility.self, from: persistentColumnVisibility)
+                    return decoded
+                } catch {
+                    return .automatic
+                }
+            }, set: { newValue in
+                do {
+                    let encoded = try JSONEncoder().encode(newValue)
+                    persistentColumnVisibility = encoded
+                } catch {
+                    
+                }
+            })
     }
 }
 
