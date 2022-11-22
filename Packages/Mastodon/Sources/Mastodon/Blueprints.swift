@@ -1283,3 +1283,35 @@ public struct Notification: Identifiable, Codable {
     public var account: Account?
     public var status: Status?
 }
+
+// TODO: Rename
+public struct TODOMediaUpload: Request, Response {
+    public typealias Result = MediaAttachment
+
+    let baseURL: URL
+    let token: Token
+    let description: String
+    let file: URL
+
+    public init(baseURL: URL, token: Token, description: String, file: URL) {
+        self.baseURL = baseURL
+        self.token = token
+        self.description = description
+        self.file = file
+    }
+
+    public var request: some Request {
+        Method.post
+        baseURL
+        URLPath("/api/v1/media")
+        Header(name: "Authorization", value: "Bearer \(token.accessToken)")
+        Form {
+            FormParameter(name: "description", value: description)
+            FormParameter(name: "file", url: file)
+        }
+    }
+
+    public var response: some Response {
+        standardResponse(Result.self)
+    }
+}

@@ -132,13 +132,18 @@ struct NewPostView: View {
                     let mediaAttachments = try await withThrowingTaskGroup(of: MediaAttachment.self) { group in
                         imageUrls.forEach { url in
                             group.addTask {
-                                try await instanceModel.service.uploadAttachment(file: url, description: "<description forthcoming>")
+                                try await instanceModel.service.perform { baseURL, token in
+                                    TODOMediaUpload(baseURL: baseURL, token: token, description: "<description forthcoming>", file: url)
+                                }
                             }
                         }
                         return try await Array(group)
                     }
                     newPost.mediaIds = mediaAttachments.map(\.id)
-                    _ = try await instanceModel.service.postStatus(newPost)
+
+                    _ = try await instanceModel.service.perform { baseURL, token in
+                        MastodonAPI.Statuses.Publish(baseURL: baseURL, token: token, post: newPost)
+                    }
                 }
             }
         }

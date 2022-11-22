@@ -398,3 +398,25 @@ extension FunHash: CustomStringConvertible {
         rawValue
     }
 }
+
+// MARK: -
+
+public extension JSONDecoder {
+    static var mastodonDecoder: JSONDecoder {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .custom({ decoder in
+            let string = try decoder.singleValueContainer().decode(String.self)
+            let formatter = ISO8601DateFormatter()
+            formatter.formatOptions.insert(.withFractionalSeconds)
+            if let date = formatter.date(from: string) {
+                return date
+            }
+            formatter.formatOptions.remove(.withFullTime)
+            if let date = formatter.date(from: string) {
+                return date
+            }
+            fatalError("Failed to decode date \(string)")
+        })
+        return decoder
+    }
+}

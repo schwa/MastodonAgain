@@ -79,27 +79,13 @@ public extension Service {
         let requestResponse = requestResponse(baseURL, authorization.token!)
         return try await perform(requestResponse: requestResponse)
     }
-
 }
 
 // MARK: -
 
-public extension JSONDecoder {
-    static var mastodonDecoder: JSONDecoder {
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .custom({ decoder in
-            let string = try decoder.singleValueContainer().decode(String.self)
-            let formatter = ISO8601DateFormatter()
-            formatter.formatOptions.insert(.withFractionalSeconds)
-            if let date = formatter.date(from: string) {
-                return date
-            }
-            formatter.formatOptions.remove(.withFullTime)
-            if let date = formatter.date(from: string) {
-                return date
-            }
-            fatalError("Failed to decode date \(string)")
-        })
-        return decoder
+public extension Service {
+    @available(*, deprecated, message: "Use MastodonAPI directly")
+    func status(for id: Status.ID) async -> Status? {
+        storage[id.rawValue, Dated<Status>.self]?.content
     }
 }
