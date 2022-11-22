@@ -54,6 +54,7 @@ struct TimelineView: View, Sendable {
             Picker("Mode", selection: $appModel.statusRowMode) {
                 Image(systemName: "tablecells").tag(StatusRow.Mode.large)
                 Image(systemName: "list.dash").tag(StatusRow.Mode.mini)
+                Image(systemName: "list.bullet.below.rectangle").tag(StatusRow.Mode.alt)
             }
             .pickerStyle(.inline)
 

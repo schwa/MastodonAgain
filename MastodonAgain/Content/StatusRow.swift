@@ -5,6 +5,7 @@ struct StatusRow: View {
     enum Mode: String, RawRepresentable, CaseIterable, Sendable {
         case mini
         case large
+        case alt
     }
 
     @Binding
@@ -18,6 +19,8 @@ struct StatusRow: View {
             MiniStatusRow(status: _status)
         case .large:
             LargeStatusRow(status: _status)
+        case .alt:
+            AltStatusRow(status: _status)
         }
     }
 }
@@ -49,12 +52,14 @@ extension View {
 
 // MARK: -
 
-struct StatusContent<Status>: View where Status: StatusProtocol {
+struct StatusContent<StatusType>: View where StatusType: StatusProtocol {
     @EnvironmentObject
     var appModel: AppModel
 
-    let status: Status
+    let status: StatusType
 
+    let quotedBy: Status?
+    
     var sensitive: Bool {
         status.sensitive
     }

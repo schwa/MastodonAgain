@@ -19,7 +19,7 @@ class AppModel: ObservableObject {
     var useMarkdownContent = false
 
     @AppStorage("statusRowMode")
-    var statusRowMode = StatusRow.Mode.large
+    var statusRowMode = StatusRow.Mode.alt
 
     @Stored("Signins")
     var signins: [SignIn] = []

@@ -4,7 +4,7 @@ import Mastodon
 import SwiftUI
 
 // TODO: Sendable view?
-struct LargeStatusRow: View, Sendable {
+struct AltStatusRow: View, Sendable {
     @Binding
     var status: Status
 
@@ -17,16 +17,26 @@ struct LargeStatusRow: View, Sendable {
     @EnvironmentObject
     var instanceModel: InstanceModel
 
+    @State
+    var hover = false
+
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
             avatar
             VStack(alignment: .leading) {
                 header
                 content
-                footer
+                if hover {
+                    footer
+                }
             }
         }
         .listRowSeparator(.visible, edges: .bottom)
+        .onHover { hover in
+            withAnimation {
+                self.hover = hover
+            }
+        }
     }
 
     @ViewBuilder
@@ -47,7 +57,7 @@ struct LargeStatusRow: View, Sendable {
                 Button {
                     openURL(url)
                 } label: {
-                    Text(appModel.relativeDate(status.created)).foregroundColor(.secondary)
+                    Text(status.created, style: .relative).foregroundColor(.secondary)
                 }
                 #if os(macOS)
                 .buttonStyle(.link)
@@ -60,14 +70,8 @@ struct LargeStatusRow: View, Sendable {
     @ViewBuilder
     var content: some View {
         if let reblog = status.reblog {
-            VStack(alignment: .leading) {
-                Text(reblog.account)
-                StatusContent(status: reblog, quotedBy: nil)
-            }
-            .padding(4)
-            .background(Color.blue.opacity(0.1).cornerRadius(4))
-        }
-        else {
+            StatusContent(status: reblog, quotedBy: status)
+        } else {
             StatusContent(status: status, quotedBy: nil)
         }
     }
