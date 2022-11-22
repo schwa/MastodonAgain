@@ -65,7 +65,17 @@ struct StatusActions: View {
                     defer {
                         inflight.wrappedValue = false
                     }
-                    _ = try await instanceModel.service.reblog(status: resolvedStatus.id, set: !reblogged)
+
+                    if !reblogged {
+                        _ = try await instanceModel.service.perform { baseURL, token in
+                            MastodonAPI.Statuses.Reblog(baseURL: baseURL, token: token, id: resolvedStatus.id)
+                        }
+                    }
+                    else {
+                        _ = try await instanceModel.service.perform { baseURL, token in
+                            MastodonAPI.Statuses.Unreblog(baseURL: baseURL, token: token, id: resolvedStatus.id)
+                        }
+                    }
                     try await updateStatus()
                 }
             }
@@ -87,7 +97,16 @@ struct StatusActions: View {
                     defer {
                         inflight.wrappedValue = false
                     }
-                    _ = try await instanceModel.service.favorite(status: resolvedStatus.id, set: !favourited)
+                    if !favourited {
+                        _ = try await instanceModel.service.perform { baseURL, token in
+                            MastodonAPI.Statuses.Favourite(baseURL: baseURL, token: token, id: resolvedStatus.id)
+                        }
+                    }
+                    else {
+                        _ = try await instanceModel.service.perform { baseURL, token in
+                            MastodonAPI.Statuses.Unfavourite(baseURL: baseURL, token: token, id: resolvedStatus.id)
+                        }
+                    }
                     try await updateStatus()
                 }
             }
@@ -108,7 +127,16 @@ struct StatusActions: View {
                     defer {
                         inflight.wrappedValue = false
                     }
-                    _ = try await instanceModel.service.bookmark(status: resolvedStatus.id, set: !bookmarked)
+                    if !bookmarked {
+                        _ = try await instanceModel.service.perform { baseURL, token in
+                            MastodonAPI.Statuses.Bookmark(baseURL: baseURL, token: token, id: resolvedStatus.id)
+                        }
+                    }
+                    else {
+                        _ = try await instanceModel.service.perform { baseURL, token in
+                            MastodonAPI.Statuses.Unbookmark(baseURL: baseURL, token: token, id: resolvedStatus.id)
+                        }
+                    }
                     try await updateStatus()
                 }
             }
@@ -151,9 +179,12 @@ struct StatusActions: View {
     // MARK: -
 
     func updateStatus() async throws {
-        let newStatus = try await instanceModel.service.fetchStatus(for: status.id)
+        let newStatus = try await instanceModel.service.perform { baseURL, token in
+            MastodonAPI.Statuses.View(baseURL: baseURL, token: token, id: status.id)
+        }
         await MainActor.run {
             self.status = newStatus
         }
+
     }
 }

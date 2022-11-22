@@ -12,65 +12,6 @@ public extension Service {
     func status(for id: Status.ID) async -> Status? {
         storage[id.rawValue, Dated<Status>.self]?.content
     }
-
-    // TODO: All this needs cleanup. Use URLPath to return a (pre-configured) URLRequest
-    @available(*, deprecated, message: "Use MastodonAPI directly")
-    func fetchStatus(for id: Status.ID) async throws -> Status {
-        guard let token = authorization.token else {
-            fatalError("No host or token.")
-        }
-        let status = try await perform(MastodonAPI.Statuses.View(baseURL: baseURL, token: token, id: id))
-        update(status)
-        return status
-    }
-
-    @available(*, deprecated, message: "Use MastodonAPI directly")
-    func favorite(status id: Status.ID, set: Bool = true) async throws -> Status {
-        guard let token = authorization.token else {
-            fatalError("No host or token.")
-        }
-        let status: Status
-        if set {
-            status = try await perform(MastodonAPI.Statuses.Favourite(baseURL: baseURL, token: token, id: id))
-        }
-        else {
-            status = try await perform(MastodonAPI.Statuses.Unfavourite(baseURL: baseURL, token: token, id: id))
-        }
-        update(status)
-        return status
-    }
-
-    @available(*, deprecated, message: "Use MastodonAPI directly")
-    func reblog(status id: Status.ID, set: Bool = true) async throws -> Status {
-        guard let token = authorization.token else {
-            fatalError("No host or token.")
-        }
-        let status: Status
-        if set {
-            status = try await perform(MastodonAPI.Statuses.Reblog(baseURL: baseURL, token: token, id: id))
-        }
-        else {
-            status = try await perform(MastodonAPI.Statuses.Unreblog(baseURL: baseURL, token: token, id: id))
-        }
-        update(status)
-        return status
-    }
-
-    @available(*, deprecated, message: "Use MastodonAPI directly")
-    func bookmark(status id: Status.ID, set: Bool = true) async throws -> Status {
-        guard let token = authorization.token else {
-            fatalError("No host or token.")
-        }
-        let status: Status
-        if set {
-            status = try await perform(MastodonAPI.Statuses.Bookmark(baseURL: baseURL, token: token, id: id))
-        }
-        else {
-            status = try await perform(MastodonAPI.Statuses.Unbookmark(baseURL: baseURL, token: token, id: id))
-        }
-        update(status)
-        return status
-    }
 }
 
 public extension Service {

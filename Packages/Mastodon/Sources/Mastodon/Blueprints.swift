@@ -650,6 +650,12 @@ public extension MastodonAPI {
             let token: Token
             let id: Status.ID
 
+            public init(baseURL: URL, token: Token, id: Status.ID) {
+                self.baseURL = baseURL
+                self.token = token
+                self.id = id
+            }
+
             public var request: some Request {
                 Method.get
                 baseURL
@@ -750,6 +756,12 @@ public extension MastodonAPI {
             let token: Token
             let id: Status.ID
 
+            public init(baseURL: URL, token: Token, id: Status.ID) {
+                self.baseURL = baseURL
+                self.token = token
+                self.id = id
+            }
+
             public var request: some Request {
                 Method.post
                 baseURL
@@ -763,11 +775,18 @@ public extension MastodonAPI {
         }
 
         public struct Unfavourite: Request, Response {
+
             public typealias Result = Status
 
             let baseURL: URL
             let token: Token
             let id: Status.ID
+
+            public init(baseURL: URL, token: Token, id: Status.ID) {
+                self.baseURL = baseURL
+                self.token = token
+                self.id = id
+            }
 
             public var request: some Request {
                 Method.post
@@ -788,6 +807,12 @@ public extension MastodonAPI {
             let token: Token
             let id: Status.ID
 
+            public init(baseURL: URL, token: Token, id: Status.ID) {
+                self.baseURL = baseURL
+                self.token = token
+                self.id = id
+            }
+
             public var request: some Request {
                 Method.post
                 baseURL
@@ -806,6 +831,12 @@ public extension MastodonAPI {
             let baseURL: URL
             let token: Token
             let id: Status.ID
+
+            public init(baseURL: URL, token: Token, id: Status.ID) {
+                self.baseURL = baseURL
+                self.token = token
+                self.id = id
+            }
 
             public var request: some Request {
                 Method.post
@@ -826,6 +857,12 @@ public extension MastodonAPI {
             let token: Token
             let id: Status.ID
 
+            public init(baseURL: URL, token: Token, id: Status.ID) {
+                self.baseURL = baseURL
+                self.token = token
+                self.id = id
+            }
+
             public var request: some Request {
                 Method.post
                 baseURL
@@ -844,6 +881,12 @@ public extension MastodonAPI {
             let baseURL: URL
             let token: Token
             let id: Status.ID
+
+            public init(baseURL: URL, token: Token, id: Status.ID) {
+                self.baseURL = baseURL
+                self.token = token
+                self.id = id
+            }
 
             public var request: some Request {
                 Method.post
