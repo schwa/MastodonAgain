@@ -1,6 +1,9 @@
 import Everything
 import Foundation
 import RegexBuilder
+import HTML2Markdown
+
+// swiftlint:disable file_length
 
 public enum MastodonError: Error {
     case authorisationFailure
@@ -177,55 +180,6 @@ public extension URLSession {
         let (data, response) = try await data(for: request)
         let json = try decoder.decode(type, from: data)
         return (json, response)
-    }
-}
-
-public extension StatusProtocol {
-    var markdownContent: AttributedString {
-        get throws {
-            guard !content.isEmpty else {
-                return AttributedString()
-            }
-            let pattern = #/^<p>(.+)</p>$/#
-            let match = content.firstMatch(of: pattern)!
-            let (_, content) = match.output
-
-            var options = AttributedString.MarkdownParsingOptions()
-            options.languageCode = language.nilify()
-            options.allowsExtendedAttributes = true
-            options.appliesSourcePositionAttributes = true
-            options.failurePolicy = .throwError
-            options.interpretedSyntax = .full
-
-            // TODO: Danger danger
-            return try AttributedString(markdown: String(content), options: options, baseURL: nil)
-        }
-    }
-
-    var attributedContent: AttributedString {
-        get throws {
-            #if os(macOS)
-                let header = #"<meta charset="UTF-8">"#
-                let html = header + content
-                guard let htmlData = html.data(using: .utf8) else {
-                    throw MastodonError.generic("Could not decode UTF-8 encoded data.")
-                }
-                guard let nsAttributedContent = NSAttributedString(html: htmlData, documentAttributes: nil) else {
-                    throw MastodonError.generic("Could create HTML from data.")
-                }
-                var attributedContent = AttributedString(nsAttributedContent)
-                var container = AttributeContainer()
-                container[AttributeScopes.SwiftUIAttributes.FontAttribute.self] = .body
-                attributedContent.mergeAttributes(container, mergePolicy: .keepNew)
-                // Remove trailing newline caused by <p>…</p>
-                if !attributedContent.characters.isEmpty {
-                    attributedContent.characters.removeLast()
-                }
-                return attributedContent
-            #elseif os(iOS)
-                return AttributedString() // TODO: Placeholder
-            #endif
-        }
     }
 }
 
@@ -418,5 +372,36 @@ public extension JSONDecoder {
             fatalError("Failed to decode date \(string)")
         })
         return decoder
+    }
+}
+
+public extension HTML {
+    var attributedString: AttributedString {
+        get throws {
+            try AttributedString(markdown: markdown)
+        }
+    }
+}
+
+public struct HTML: Codable, Hashable, Sendable {
+    public let string: String
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.string = try container.decode(String.self)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(self.string)
+    }
+}
+
+extension HTML {
+    var markdown: String {
+        get throws {
+            let dom = try HTMLParser().parse(html: string)
+            return dom.toMarkdown(options: .unorderedListBullets)
+        }
     }
 }

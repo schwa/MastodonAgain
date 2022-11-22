@@ -222,7 +222,7 @@ public protocol StatusProtocol: Sendable, Equatable {
     var reblogsCount: Int { get }
     var favouritesCount: Int { get }
     var editedAt: Date? { get }
-    var content: String { get }
+    var content: HTML { get }
     var application: Application? { get }
     var account: Account { get }
     var mediaAttachments: [MediaAttachment] { get }
@@ -291,7 +291,7 @@ public struct Status: StatusProtocol, Identifiable, Codable, Sendable, Equatable
     public let reblogsCount: Int
     public let favouritesCount: Int
     public let editedAt: Date?
-    public let content: String
+    public let content: HTML
     public let reblog: ReblogStatus?
     public let application: Application?
     public let account: Account
@@ -355,7 +355,7 @@ public struct ReblogStatus: StatusProtocol, Identifiable, Codable, Sendable, Equ
     public let reblogsCount: Int
     public let favouritesCount: Int
     public let editedAt: Date?
-    public let content: String
+    public let content: HTML
     public let reblog: PlaceholderCodable?
     public let application: Application?
     public let account: Account

@@ -19,6 +19,15 @@
       }
     },
     {
+      "identity" : "html2markdown",
+      "kind" : "remoteSourceControl",
+      "location" : "https://gitlab.com/mflint/HTML2Markdown.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "3ca89a6bbe7e0b0810405d130c75a0b37ca632e2"
+      }
+    },
+    {
       "identity" : "swift-algorithms",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-algorithms",

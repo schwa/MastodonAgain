@@ -77,12 +77,12 @@ struct StatusContent<Status>: View where Status: StatusProtocol {
             }
             VStack(alignment: .leading) {
                 // TODO: Gross.
-                if appModel.useMarkdownContent {
-                    (try? status.markdownContent).map { Text($0).textSelection(.enabled) }
-                }
-                else {
-                    (try? status.attributedContent).map { Text($0).textSelection(.enabled) }
-                }
+//                if appModel.useMarkdownContent {
+//                    (try? status.markdownContent).map { Text($0).textSelection(.enabled) }
+//                }
+//                else {
+                    (try? status.content.attributedString).map { Text($0).textSelection(.enabled) }
+//                }
                 if !status.mediaAttachments.isEmpty {
                     MediaStack(attachments: status.mediaAttachments)
                 }

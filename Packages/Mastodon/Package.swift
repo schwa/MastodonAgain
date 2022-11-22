@@ -18,6 +18,7 @@ let package = Package(
         .package(path: "../Blueprint"),
         .package(path: "../Storage"),
         .package(path: "../Support"),
+        .package(url: "https://gitlab.com/mflint/HTML2Markdown.git", branch: "main"),
     ],
     targets: [
         .target(
@@ -28,6 +29,7 @@ let package = Package(
                 .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"),
                 "Storage",
                 "Support",
+                "HTML2Markdown",
             ]
         ),
         .testTarget(
