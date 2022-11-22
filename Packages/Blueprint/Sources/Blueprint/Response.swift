@@ -47,10 +47,10 @@ extension CompositeResponse: Response {
 }
 
 extension CompositeResponse: ResultGenerator {
-    public func canProcess(data: Data, urlResponse: URLResponse) -> Bool {
+    public func canProcess(data: Data, urlResponse: HTTPURLResponse) -> Bool {
         components.contains(where: { $0.canProcess(data: data, urlResponse: urlResponse) == true })
     }
-    public func process(data: Data, urlResponse: URLResponse) throws -> Result {
+    public func process(data: Data, urlResponse: HTTPURLResponse) throws -> Result {
         guard let component = components.first(where: { $0.canProcess(data: data, urlResponse: urlResponse) == true }) else {
             throw BlueprintError.generic("Cannot handle \(urlResponse)")
         }
@@ -66,15 +66,15 @@ extension CompositeResponse: ResultGenerator {
 public protocol ResultGenerator {
     associatedtype Result
 
-    func canProcess(data: Data, urlResponse: URLResponse) -> Bool
-    func process(data: Data, urlResponse: URLResponse) throws -> Result
+    func canProcess(data: Data, urlResponse: HTTPURLResponse) -> Bool
+    func process(data: Data, urlResponse: HTTPURLResponse) throws -> Result
 }
 
 public struct IfStatus<Result> {
     let codes: Set<Int>
-    let block: (_ data: Data, _ urlResponse: URLResponse) throws -> Result
+    let block: (_ data: Data, _ urlResponse: HTTPURLResponse) throws -> Result
 
-    public init(_ code: Int, block: @escaping (_ data: Data, _ urlResponse: URLResponse) throws -> Result) {
+    public init(_ code: Int, block: @escaping (_ data: Data, _ urlResponse: HTTPURLResponse) throws -> Result) {
         codes = [code]
         self.block = block
     }
@@ -85,14 +85,11 @@ extension IfStatus: Response {
 }
 
 extension IfStatus: ResultGenerator {
-    public func canProcess(data: Data, urlResponse: URLResponse) -> Bool {
-        guard let urlResponse = urlResponse as? HTTPURLResponse else {
-            fatalError("Expected response to be a HTTPURLResponse. It wasn't.")
-        }
+    public func canProcess(data: Data, urlResponse: HTTPURLResponse) -> Bool {
         return codes.contains(urlResponse.statusCode)
     }
 
-    public func process(data: Data, urlResponse: URLResponse) throws -> Result {
+    public func process(data: Data, urlResponse: HTTPURLResponse) throws -> Result {
         try block(data, urlResponse)
     }
 }
@@ -112,11 +109,11 @@ extension ConstantResponse: Response {
 }
 
 extension ConstantResponse: ResultGenerator {
-    public func canProcess(data: Data, urlResponse: URLResponse) -> Bool {
+    public func canProcess(data: Data, urlResponse: HTTPURLResponse) -> Bool {
         true
     }
 
-    public func process(data: Data, urlResponse: URLResponse) throws -> Result {
+    public func process(data: Data, urlResponse: HTTPURLResponse) throws -> Result {
         value
     }
 }

@@ -6,8 +6,9 @@ import Foundation
 // swiftlint:disable type_body_length
 
 func standardResponse<T>(_ type: T.Type) -> some ResultGenerator where T: Decodable {
-    IfStatus(200) { data, _ in
-        try JSONDecoder.mastodonDecoder.decode(T.self, from: data)
+    IfStatus(200) { data, response in
+        print("X-RateLimit-Remaining: \(response.value(forHTTPHeaderField: "X-RateLimit-Remaining"))")
+        return try JSONDecoder.mastodonDecoder.decode(T.self, from: data)
     }
 }
 

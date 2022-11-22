@@ -45,9 +45,6 @@ struct PageResponse <Element>: Response where Element: Codable & Identifiable, E
 
     var response: some Response {
         IfStatus(200) { data, response -> Result in
-            guard let response = response as? HTTPURLResponse else {
-                fatalError("Could not get HTTPURLResponse.") // TODO: Why bother with URLResponse at all any more?
-            }
             let elements = try JSONDecoder.mastodonDecoder.decode([Element].self, from: data)
             var previous: Fetch<Element>?
             var next: Fetch<Element>?

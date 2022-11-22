@@ -22,6 +22,10 @@ public extension URLSession {
         try request.apply(request: &partialRequest)
         let urlRequest = try URLRequest(partialRequest)
         let (data, urlResponse) = try await data(for: urlRequest)
+
+        guard let urlResponse = urlResponse as? HTTPURLResponse else {
+            fatalError("Failed to get a HTTPURLResponse. Did we try to talk to a gopher server?")
+        }
         let result = try response.process(data: data, urlResponse: urlResponse)
         return result
     }
