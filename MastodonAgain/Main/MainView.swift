@@ -16,7 +16,7 @@ struct MainView: View {
     var columnVisibility = Data()
 
     var body: some View {
-        NavigationSplitView(columnVisibility: $columnVisibility.adaptor(defaultValue: NavigationSplitViewVisibility.automatic)) {
+        NavigationSplitView(columnVisibility: $columnVisibility.adaptor(defaultValue: .automatic)) {
             List(selection: $selection) {
                 SignInPicker()
                 Divider()
