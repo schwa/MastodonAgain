@@ -2,8 +2,6 @@ import Everything
 import Mastodon
 import SwiftUI
 
-
-
 struct MainView: View {
     @SceneStorage("columnVisibility")
     var columnVisibility: NavigationSplitViewVisibility = .automatic
@@ -16,7 +14,6 @@ struct MainView: View {
 
     @State
     var selection: MainTabs? = MainTabs.home
-
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
@@ -40,8 +37,14 @@ struct MainView: View {
                 TimelineStack(root: .timeline(timeline))
             case .me:
                 TimelineStack(root: .me)
-            default:
+            case .notifications:
                 NotificationsView()
+#if os(iOS)
+            case .settings:
+                AppSettings()
+#endif
+            default:
+                EmptyView() // TODO: Why are we getting nil for selection?
             }
         }
         .toolbar {
@@ -56,10 +59,11 @@ enum MainTabs: String, CaseIterable {
     case `public`
     case federated
     case local
-//    case directMessages
-//    case search
     case me
     case notifications
+#if os(iOS)
+    case settings
+#endif
 
     var timelineType: TimelineType? {
         switch self {
@@ -80,14 +84,14 @@ enum MainTabs: String, CaseIterable {
         switch (self, timelineType) {
         case (_, .some(let timeline)):
             return timeline.title
-//        case (.directMessages, nil):
-//            return "Direct Messages"
-//        case (.search, nil):
-//            return "Search"
         case (.me, nil):
             return "Me"
         case (.notifications, nil):
             return "Notifications"
+#if os(iOS)
+        case (.settings, nil):
+            return "Settings"
+#endif
         default:
             fatalError("Fallthrough")
         }
@@ -99,16 +103,12 @@ enum MainTabs: String, CaseIterable {
             return timeline.image
         case (.me, nil):
             return Image(systemName: "person")
+#if os(iOS)
+        case (.settings, nil):
+            return Image(systemName: "gear")
+#endif
         default:
             return Image(systemName: "gear")
         }
     }
-
-//        Label("Home", systemImage: "house").tag(MainTabs.home)
-//        Label("Public", systemImage: "person.3").tag(MainTabs.public)
-//        Label("Federated", systemImage: "person.3").tag(MainTabs.federated)
-//        Label("Local", systemImage: "person.3").tag(MainTabs.local)
-//        Label("Direct Messages", systemImage: "bubble.left").tag(MainTabs.directMessages)
-//        Label("Search", systemImage: "magnifyingglass").tag(MainTabs.search)
-//        Label("Me", systemImage: "person.text.rectangle").badge(1).tag(MainTabs.me)
 }

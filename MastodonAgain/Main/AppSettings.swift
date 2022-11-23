@@ -99,6 +99,7 @@ struct AppSettings: View {
     }
 }
 
+// TODO: Move
 struct MyGroupBoxStyle: GroupBoxStyle {
     func makeBody(configuration: Configuration) -> some View {
         GroupBox {
