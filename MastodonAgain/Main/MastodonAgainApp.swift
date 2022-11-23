@@ -23,6 +23,7 @@ struct MastodonAgainApp: App {
                 NewPostHost(open: open)
                     .environmentObject(appModel)
                     .environmentObject(appModel.instance(for: appModel.currentSignin!)) // TODO: Bang
+                    .errorHost()
             }
             .keyboardShortcut("N", modifiers: .command)
             Settings {

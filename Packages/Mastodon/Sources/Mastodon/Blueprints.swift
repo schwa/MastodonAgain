@@ -1,6 +1,8 @@
 import Blueprint
 import Everything
 import Foundation
+import SwiftUI
+import UniformTypeIdentifiers
 
 // swiftlint:disable file_length
 // swiftlint:disable type_body_length
@@ -159,8 +161,8 @@ public extension MastodonAPI {
                 baseURL
                 URLPath("/api/v1/accounts/update_credentials")
                 Header(name: "Authorization", value: "Bearer \(token.accessToken)")
-                Form {
-                }
+//                Form {
+//                }
                 unimplemented() // TODO: TODO
             }
 
@@ -1297,13 +1299,13 @@ public struct TODOMediaUpload: Request, Response {
     let baseURL: URL
     let token: Token
     let description: String
-    let file: URL
+    let upload: Upload
 
-    public init(baseURL: URL, token: Token, description: String, file: URL) {
+    public init(baseURL: URL, token: Token, description: String, upload: Upload) {
         self.baseURL = baseURL
         self.token = token
         self.description = description
-        self.file = file
+        self.upload = upload
     }
 
     public var request: some Request {
@@ -1313,11 +1315,37 @@ public struct TODOMediaUpload: Request, Response {
         Header(name: "Authorization", value: "Bearer \(token.accessToken)")
         Form {
             FormParameter(name: "description", value: description)
-            FormParameter(name: "file", url: file)
+            FormParameter(name: "file", upload: upload)
         }
     }
 
     public var response: some Response {
         standardResponse(Result.self)
+    }
+}
+
+public struct Upload {
+    public var filename: String
+    public var contentType: UTType
+    public var thumbnail: (@Sendable () throws -> Image)?
+    public var content: @Sendable () throws -> Data
+
+    public init(filename: String, contentType: UTType, thumbnail: (@Sendable () throws -> Image)? = nil, content: @escaping @Sendable () throws -> Data) {
+        self.filename = filename
+        self.contentType = contentType
+        self.thumbnail = thumbnail
+        self.content = content
+    }
+
+}
+
+extension Upload: Sendable {
+}
+
+extension FormParameter {
+    init(name: String, upload: Upload) {
+        self = .init(name: name, filename: upload.filename, mimetype: upload.contentType.preferredMIMEType, content: {
+            try upload.content()
+        })
     }
 }

@@ -1,6 +1,7 @@
 import Everything
 import Foundation
 import RegexBuilder
+import SwiftUI
 
 // swiftlint:disable file_length
 
@@ -381,5 +382,27 @@ public extension Locale {
 
     static var availableTopLevelIdentifiers: [String] {
         Locale.availableIdentifiers.filter({ !$0.contains("_") })
+    }
+}
+
+public extension Image {
+    init(data: Data) throws {
+#if os(macOS)
+        guard let nsImage = NSImage(data: data) else {
+            throw MastodonError.generic("Could not load image")
+        }
+        self = Image(nsImage: nsImage)
+#else
+        guard let uiImage = UIImage(data: data) else {
+            throw MastodonError.generic("Could not load image")
+        }
+        self = Image(uiImage: uiImage)
+#endif
+    }
+}
+
+public extension Image {
+    init(url: URL) throws {
+        fatalError()
     }
 }

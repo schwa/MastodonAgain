@@ -1,3 +1,4 @@
+import Algorithms
 import AsyncAlgorithms
 import Everything
 import Foundation
@@ -40,6 +41,8 @@ struct NewPostHost: View {
     }
 }
 
+// MARK: -
+
 struct NewPostView: View {
     @EnvironmentObject
     var appModel: AppModel
@@ -48,11 +51,10 @@ struct NewPostView: View {
     var instanceModel: InstanceModel
 
     @State
-    var images: [Resource<Image>] = []
+    var mediaUploads: [Upload] = []
 
     @State
     var isTargeted = false
-
 
     @Environment(\.errorHandler)
     var errorHandler
@@ -71,6 +73,8 @@ struct NewPostView: View {
         self._isPresented = isPresented
     }
 
+    // TODO: this needs a pretty healthy cleanup
+
     var body: some View {
         VStack {
             VStack {
@@ -80,11 +84,17 @@ struct NewPostView: View {
             if let inReplyTo {
                 Text("Replying to \(inReplyTo.account.acct)") // TODO: use full name
             }
+            TextEditor(text: $newPost.status)
             HStack {
-                TextEditor(text: $newPost.status)
-                ForEach(images, id: \.source) { image in
-                    image.content.resizable().scaledToFit()
+                ForEach(mediaUploads.indexed(), id: \.0) { _, upload in
+                    // TODO: Gross
+                    if let thumbnail = try? upload.thumbnail?() {
+                        thumbnail.resizable().scaledToFit()
                         .frame(maxWidth: 80, maxHeight: 80, alignment: .trailing)
+                        }
+                    else {
+                        Image(systemName: "questionmark.square.dashed")
+                    }
                 }
             }
             if newPost.sensitive {
@@ -109,13 +119,26 @@ struct NewPostView: View {
                 fatalError("No provider")
             }
             Task {
-                let image = try await Resource(provider: provider)
-                guard !images.contains(image) else {
-                    return
+                let resource = try await Resource(provider: provider)
+
+                let thumbnail = {
+                    resource.content
                 }
-                images.append(image)
+                guard let filename = resource.filename, let contentType = try resource.contentType else {
+                    fatalError("No filename or no contentType.")
+                }
+                let upload = Upload(filename: filename, contentType: contentType, thumbnail: thumbnail) {
+                    try resource.data
+                }
+                mediaUploads.append(upload)
             }
             return true
+        }
+        .onChange(of: photosPickerItem) { photosPickerItem in
+            guard let photosPickerItem else {
+                return
+            }
+            updatePhotosPickerItem(photosPickerItem)
         }
     }
 
@@ -127,9 +150,11 @@ struct NewPostView: View {
         PhotosPicker(selection: $photosPickerItem, preferredItemEncoding: .compatible) {
             Image(systemName: "paperclip")
         }
+
         Button(systemImage: "eye.trianglebadge.exclamationmark", action: {
             newPost.sensitive.toggle()
         })
+
         Picker("Language", selection: $newPost.language) {
             Text("\(Locale.current.localizedString(forIdentifier: Locale.current.topLevelIdentifier)!) (current)").tag(String?.none)
             Divider()
@@ -139,6 +164,7 @@ struct NewPostView: View {
         }
         .pickerStyle(.menu)
         .fixedSize()
+
         Picker("Visibility", selection: $newPost.visibility) {
             ForEach(Status.Visibility.allCases, id: \.self) { visibility in
                 Text(visibility.rawValue).tag(visibility)
@@ -146,89 +172,71 @@ struct NewPostView: View {
         }
         .pickerStyle(.menu)
         .fixedSize()
+
         Spacer()
+
         Text(newPost.status.count, format: .number).monospacedDigit()
+
         Button("Post") {
-            let imageUrls = images.map { image in
-                if case .url(let url) = image.source {
-                    return url
-                }
-                else {
-                    fatalError("Image without URL")
-                }
-            }
-            let newPost = newPost
-            Task {
-                await errorHandler { [instanceModel] in
-                    var newPost = newPost
-                    let mediaAttachments = try await withThrowingTaskGroup(of: MediaAttachment.self) { group in
-                        imageUrls.forEach { url in
-                            group.addTask {
-                                try await instanceModel.service.perform { baseURL, token in
-                                    TODOMediaUpload(baseURL: baseURL, token: token, description: "<description forthcoming>", file: url)
-                                }
-                            }
-                        }
-                        return try await Array(group)
-                    }
-                    newPost.mediaIds = mediaAttachments.map(\.id)
-
-                    _ = try await instanceModel.service.perform { baseURL, token in
-                        MastodonAPI.Statuses.Publish(baseURL: baseURL, token: token, post: newPost)
-                    }
-
-                    await MainActor.run {
-                        isPresented = false
-                    }
-                }
-            }
+            post()
         }
         .disabled(newPost.status.isEmpty || newPost.status.count > 500) // TODO: get limit from instance?
-        .onChange(of: photosPickerItem) { newValue in
-            guard let photosPickerItem else {
-                return
-            }
+    }
 
-            print(photosPickerItem.supportedContentTypes)
-            Task {
-                await errorHandler {
-                    let data = try await photosPickerItem.loadTransferable(type: Data.self)
-                    guard let data else {
-                        throw MastodonError.generic("Oops")
-                    }
-                        // TODO: We shouldn't have to do this...
+    func updatePhotosPickerItem(_ photosPickerItem: PhotosPickerItem) {
+        Task {
+            await errorHandler {
 
-//                    let source = try ImageSource(data: data)
-//                    print(try source.properties(at: 0))
-                    // TODO: Content type.
+                if let video = try await photosPickerItem.loadTransferable(type: Video.self) {
+                    print(video)
+                }
 
 
-                        //FSPath.temporaryDirectory
-                    let image = try Image(data: data)
-                    let resource = Resource<Image>(source: .data(data), content: image)
-                    await MainActor.run {
-                        images.append(resource)
-                    }
+                let data = try await photosPickerItem.loadTransferable(type: Data.self)
+                guard let data else {
+                    throw MastodonError.generic("loadTransferable returned nil.")
+                }
+                // TODO: this may not even be an image?!?!?!?!?!?
+                let source = try ImageSource(data: data)
+                guard let type = source.contentType, let filenameExtension = type.preferredFilenameExtension else {
+                    throw MastodonError.generic("No idea of the content type for that upload")
+                }
+                let filename = "Untitled.\(filenameExtension)"
+
+                // TODO: get thumbnail from image source
+                let upload = Upload(filename: filename, contentType: type, thumbnail: { try Image(data: data) }) {
+                    data
+                }
+                await MainActor.run {
+                    mediaUploads.append(upload)
                 }
             }
-            self.photosPickerItem = nil
         }
+        self.photosPickerItem = nil
     }
-}
 
-extension Image {
-    init(data: Data) throws {
-        #if os(macOS)
-        guard let nsImage = NSImage(data: data) else {
-            throw MastodonError.generic("Could not load image")
+    func post() {
+        Task {
+            await errorHandler { [instanceModel, newPost] in
+                var newPost = newPost
+                let mediaAttachments = try await withThrowingTaskGroup(of: MediaAttachment.self) { group in
+                    await mediaUploads.forEach { upload in
+                        group.addTask {
+                            try await instanceModel.service.perform { baseURL, token in
+                                TODOMediaUpload(baseURL: baseURL, token: token, description: "<description forthcoming>", upload: upload)
+                            }
+                        }
+                    }
+                    return try await Array(group)
+                }
+                newPost.mediaIds = mediaAttachments.map(\.id)
+                _ = try await instanceModel.service.perform { baseURL, token in
+                    MastodonAPI.Statuses.Publish(baseURL: baseURL, token: token, post: newPost)
+                }
+                await MainActor.run {
+                    isPresented = false
+                }
+            }
         }
-        self = Image(nsImage: nsImage)
-        #else
-        guard let uiImage = UIImage(data: data) else {
-            throw MastodonError.generic("Could not load image")
-        }
-        self = Image(uiImage: uiImage)
-        #endif
-
     }
 }
