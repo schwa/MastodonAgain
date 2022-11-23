@@ -39,14 +39,15 @@ struct PagedContentView<Row, Fetch>: View where Row: View, Fetch: FetchProtocol 
             }
         }
         else {
-            HStack {
-                Spacer()
-                Refresh("Newer", refreshing: $isFetching) {
-                    fetchPrevious()
+            if content.pages.first?.previous != nil {
+                HStack {
+                    Spacer()
+                    Refresh("Newer", refreshing: $isFetching) {
+                        fetchPrevious()
+                    }
+                    Spacer()
                 }
-                Spacer()
             }
-            .hidden(content.pages.first?.previous == nil)
             ForEach(content.pages) { page in
                 let id = page.id
                 let pageBinding = Binding {
@@ -59,14 +60,15 @@ struct PagedContentView<Row, Fetch>: View where Row: View, Fetch: FetchProtocol 
                 }
                 PageView(page: pageBinding, filter: filter, row: row)
             }
-            HStack {
-                Spacer()
-                Refresh("Older", refreshing: $isFetching) {
-                    fetchNext()
+            if content.pages.last?.next != nil {
+                HStack {
+                    Spacer()
+                    Refresh("Older", refreshing: $isFetching) {
+                        fetchNext()
+                    }
+                    Spacer()
                 }
-                Spacer()
             }
-            .hidden(content.pages.last?.next == nil)
         }
     }
 
