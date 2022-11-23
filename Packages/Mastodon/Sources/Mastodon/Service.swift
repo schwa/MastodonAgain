@@ -102,20 +102,23 @@ public extension Service {
 }
 
 public class AsyncChannelBroadcaster<Element> where Element: Sendable {
+    @MainActor
     public var channels: [WeakBox<AsyncChannel<Element>>] = []
 
     public init() {
     }
 
     public func broadcast(_ element: Element) async {
-        for channel in channels {
+        for channel in await channels {
             await channel.content?.send(element)
         }
     }
 
-    public func makeChannel() -> AsyncChannel<Element> {
+    public func makeChannel() async -> AsyncChannel<Element> {
         let channel = AsyncChannel<Element>()
-        channels.append(WeakBox(channel))
+        await MainActor.run {
+            channels.append(WeakBox(channel))
+        }
         return channel
     }
 }
