@@ -217,7 +217,7 @@ extension Fetch: Codable {
 
 // MARK: -
 
-extension Service {
+public extension Service {
 
     // TODO: String keys.
 

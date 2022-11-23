@@ -96,7 +96,14 @@ struct Avatar: View {
         .task {
             // TODO: this hits the server once per view. WE can batch requests into a single relationships fetch
             await errorHandler {
-//                try await updateRelationship()
+                for await relationships in await instanceModel.service.relationshipChannel() {
+                    if let relationship = relationships[account.id] {
+                        await MainActor.run {
+                            self.relationship = relationship
+                        }
+                        break
+                    }
+                }
             }
         }
         .contextMenu {
@@ -122,7 +129,7 @@ struct Avatar: View {
                                     MastodonAPI.Accounts.Follow(baseURL: baseURL, token: token, id: account.id, reblogs: false)
                                 }
                                 appLogger?.info("You have disabled reblogs for \(account.acct)")
-//                                try await updateRelationship()
+                                try await instanceModel.service.fetchRelationship(ids: [account.id])
                             }
                         }
                     }
