@@ -17,10 +17,9 @@ struct MainView: View {
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
+            SignInPicker()
+            .padding()
             List(selection: $selection) {
-                SignInPicker()
-                Divider()
-
                 ForEach(MainTabs.allCases, id: \.self) { tab in
                     Label {
                         Text(tab.title)
@@ -30,6 +29,7 @@ struct MainView: View {
                     .tag(tab)
                 }
             }
+            .padding()
         } detail: {
             switch selection {
             case .public, .federated, .home, .local:
@@ -50,6 +50,22 @@ struct MainView: View {
         .toolbar {
             Toggle("Debug", isOn: $appModel.showDebuggingInfo)
                 .toggleStyle(ImageToggleStyle())
+        }
+        .overlay(alignment: .bottomLeading) {
+            VStack(spacing: 2) {
+                // swiftlint:disable force_cast
+
+                Link(destination: "https://github.com/schwa/MastodonAgain/issues/new") {
+                    VStack {
+                        Label("File a bug…", systemImage: "ladybug")
+                        Text("(Build #\(Bundle.main.infoDictionary!["CFBundleVersion"] as! String))")
+                    }
+                }
+            }
+            .padding(4)
+            .background(Color.orange.opacity(0.75).cornerRadius(8))
+            .padding()
+
         }
     }
 }

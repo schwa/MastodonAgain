@@ -249,13 +249,19 @@ public extension Button {
 }
 
 struct WorkInProgressView: View {
+    let colors: (Color, Color)
+
+    init(colors: (Color, Color) = (.black, .yellow)) {
+        self.colors = colors
+    }
+
     var body: some View {
         let tileSize = CGSize(16, 16)
         // swiftlint:disable:next accessibility_label_for_image
         let tile = Image(size: tileSize) { context in
-            context.fill(Path(tileSize), with: .color(.black))
-            context.fill(Path(vertices: [[0.0, 0.0], [0.0, 0.5], [0.5, 0]].map { $0 * CGPoint(tileSize) }), with: .color(.yellow))
-            context.fill(Path(vertices: [[0.0, 1], [1.0, 0.0], [1, 0.5], [0.5, 1]].map { $0 * CGPoint(tileSize) }), with: .color(.yellow))
+            context.fill(Path(tileSize), with: .color(colors.0))
+            context.fill(Path(vertices: [[0.0, 0.0], [0.0, 0.5], [0.5, 0]].map { $0 * CGPoint(tileSize) }), with: .color(colors.1))
+            context.fill(Path(vertices: [[0.0, 1], [1.0, 0.0], [1, 0.5], [0.5, 1]].map { $0 * CGPoint(tileSize) }), with: .color(colors.1))
         }
         Canvas { context, size in
             context.fill(Path(size), with: .tiledImage(tile, sourceRect: CGRect(size: tileSize)))
