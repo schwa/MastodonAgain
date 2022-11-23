@@ -26,6 +26,7 @@
 		4592E171292C5A230037416B /* ActionButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4592E170292C5A230037416B /* ActionButtonStyle.swift */; };
 		4596FB3B292DAAE200BFDD90 /* NarrowStatusRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4596FB3A292DAAE200BFDD90 /* NarrowStatusRow.swift */; };
 		45A27F49291053FB00662B71 /* TimelineStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A27F48291053FB00662B71 /* TimelineStack.swift */; };
+		45A3C25B292EB6E7009A3243 /* RelationshipsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A3C25A292EB6E7009A3243 /* RelationshipsView.swift */; };
 		45B45CC2291065870070F1C5 /* PagedContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B45CC1291065870070F1C5 /* PagedContentView.swift */; };
 		45B45CC4291086660070F1C5 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B45CC3291086660070F1C5 /* CardView.swift */; };
 		45E595A0292A89500005F5B6 /* StatusRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E5959F292A89500005F5B6 /* StatusRow.swift */; };
@@ -80,6 +81,7 @@
 		4592E170292C5A230037416B /* ActionButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionButtonStyle.swift; sourceTree = "<group>"; };
 		4596FB3A292DAAE200BFDD90 /* NarrowStatusRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NarrowStatusRow.swift; sourceTree = "<group>"; };
 		45A27F48291053FB00662B71 /* TimelineStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineStack.swift; sourceTree = "<group>"; };
+		45A3C25A292EB6E7009A3243 /* RelationshipsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelationshipsView.swift; sourceTree = "<group>"; };
 		45B45CC1291065870070F1C5 /* PagedContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PagedContentView.swift; sourceTree = "<group>"; };
 		45B45CC3291086660070F1C5 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		45E5959F292A89500005F5B6 /* StatusRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusRow.swift; sourceTree = "<group>"; };
@@ -157,6 +159,7 @@
 				45FDAF83291714F40073E8E0 /* StatusInfoView.swift */,
 				45202010290F8DC600469569 /* NewPostWindow.swift */,
 				4529E98129286D0300ABFA42 /* NotificationsView.swift */,
+				45A3C25A292EB6E7009A3243 /* RelationshipsView.swift */,
 			);
 			path = Content;
 			sourceTree = "<group>";
@@ -380,6 +383,7 @@
 				45E6F3CA292DFDA40021205F /* AccountActions.swift in Sources */,
 				452020132910281300469569 /* MainView.swift in Sources */,
 				4520200F290F87A200469569 /* MediaStack.swift in Sources */,
+				45A3C25B292EB6E7009A3243 /* RelationshipsView.swift in Sources */,
 				45B45CC4291086660070F1C5 /* CardView.swift in Sources */,
 				4596FB3B292DAAE200BFDD90 /* NarrowStatusRow.swift in Sources */,
 				45FDAF84291714F40073E8E0 /* StatusInfoView.swift in Sources */,

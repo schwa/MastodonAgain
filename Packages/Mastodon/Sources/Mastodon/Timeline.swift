@@ -231,27 +231,40 @@ public extension Service {
         }
     }
 
+    func fetchRelationship() async throws {
+        let relationships = storage["relationships"] ?? [Account.ID: Relationship]()
+        logger?.log("XX: Fetched \(relationships.count) relationships from storage")
+        await relationshipChannel().send(relationships)
+    }
+
     func fetchRelationship(ids: [Account.ID]) async throws {
         let storedRelationships = storage["relationships"] ?? [Account.ID: Relationship]()
-        do {
-            let relationships = storedRelationships.filter({ ids.contains($0.key) })
-            if !relationships.isEmpty {
-                await relationshipChannel().send(relationships)
-            }
+        logger?.log("XX: Fetched \(storedRelationships.count) relationships from storage")
+
+        let relationships = storedRelationships.filter({ ids.contains($0.key) })
+        if !relationships.isEmpty {
+            logger?.log("XX: Sending \(relationships.count) relationships.")
+            await relationshipChannel().send(relationships)
         }
 
         Task {
             // Dedupe.
             let ids = Array(Set(ids))
+            logger?.log("XX: Fetching \(ids.count) relationships")
             let relationships = try await perform { baseURL, token in
                 MastodonAPI.Accounts.Relationships(baseURL: baseURL, token: token, ids: ids)
             }
             let allRelationships = storedRelationships.merging(zip(relationships.map(\.id), relationships)) { _, rhs in
                 rhs
             }
-            storage["relationships"] = allRelationships
+            await MainActor.run {
+                logger?.log("XX: Storing \(allRelationships.count) relationships.")
+                storage["relationships"] = allRelationships
+            }
+
             let filteredRelationships = storedRelationships.filter({ ids.contains($0.key) })
             if !filteredRelationships.isEmpty {
+                logger?.log("XX: Sending \(filteredRelationships.count) relationships.")
                 await relationshipChannel().send(filteredRelationships)
             }
         }

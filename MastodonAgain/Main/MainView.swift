@@ -42,7 +42,9 @@ struct MainView: View {
                 case .settings:
                     AppSettings()
             #endif
-            default:
+            case .relationships:
+                RelationshipsView()
+            case .none:
                 EmptyView() // TODO: Why are we getting nil for selection?
             }
         }
@@ -78,6 +80,7 @@ enum MainTabs: String, CaseIterable {
     #if os(iOS)
         case settings
     #endif
+    case relationships
 
     var timelineType: TimelineType? {
         switch self {
@@ -106,6 +109,8 @@ enum MainTabs: String, CaseIterable {
             case (.settings, nil):
                 return "Settings"
         #endif
+        case (.relationships, nil):
+            return "Relationships"
         default:
             fatalError("Fallthrough")
         }
