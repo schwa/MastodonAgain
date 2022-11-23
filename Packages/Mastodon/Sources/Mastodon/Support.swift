@@ -374,3 +374,12 @@ public extension JSONDecoder {
     }
 }
 
+public extension Locale {
+    var topLevelIdentifier: String {
+        String(identifier.prefix(upTo: identifier.firstIndex(of: "_") ?? identifier.endIndex))
+    }
+
+    static var availableTopLevelIdentifiers: [String] {
+        Locale.availableIdentifiers.filter({ !$0.contains("_") })
+    }
+}

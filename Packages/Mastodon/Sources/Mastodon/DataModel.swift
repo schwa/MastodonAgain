@@ -411,6 +411,12 @@ public struct NewPost: Codable, Sendable, Equatable {
     }
 }
 
+public extension NewPost {
+    init() {
+        self.init(status: "", sensitive: false, spoiler: "", visibility: .public, language: Locale.current.topLevelIdentifier)
+    }
+}
+
 public struct Relationship: Codable {
     public let id: Account.ID
     public let following, showingReblogs, notifying, followedBy: Bool

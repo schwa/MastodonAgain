@@ -20,7 +20,7 @@ struct MastodonAgainApp: App {
         #endif
         #if os(macOS)
             WindowGroup("New Post", for: NewPostWindow.self) { open in
-                NewPostView(open: open)
+                NewPostHost(open: open)
                     .environmentObject(appModel)
                     .environmentObject(appModel.instance(for: appModel.currentSignin!)) // TODO: Bang
             }

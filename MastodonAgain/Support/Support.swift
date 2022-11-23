@@ -652,15 +652,6 @@ extension Collection<Text> {
 extension NSItemProvider: @unchecked Sendable {
 }
 
-extension Locale {
-    var topLevelIdentifier: String {
-        String(identifier.prefix(upTo: identifier.firstIndex(of: "_") ?? identifier.endIndex))
-    }
-
-    static var availableTopLevelIdentifiers: [String] {
-        Locale.availableIdentifiers.filter({ !$0.contains("_") })
-    }
-}
 
 extension View {
     func logging(_ s: String) -> Self {

@@ -3,7 +3,6 @@ import CachedAsyncImage
 import Mastodon
 import SwiftUI
 
-// TODO: Sendable view?
 struct LargeStatusRow: View, Sendable {
     @Binding
     var status: Status
@@ -62,13 +61,13 @@ struct LargeStatusRow: View, Sendable {
         if let reblog = status.reblog {
             VStack(alignment: .leading) {
                 Text(reblog.account)
-                StatusContent(status: reblog)
+                LargeStatusContent(status: reblog)
             }
             .padding(4)
             .background(Color.blue.opacity(0.1).cornerRadius(4))
         }
         else {
-            StatusContent(status: status)
+            LargeStatusContent(status: status)
         }
     }
 
@@ -110,3 +109,56 @@ struct LargeStatusRow: View, Sendable {
         }
     }
 }
+
+// MARK: -
+
+
+struct LargeStatusContent<Status>: View where Status: StatusProtocol {
+    @EnvironmentObject
+    var appModel: AppModel
+
+    let status: Status
+
+    var sensitive: Bool {
+        status.sensitive
+    }
+
+    var hideContent: Bool {
+        sensitive && !allowSensitive && appModel.hideSensitiveContent
+    }
+
+    @State
+    var allowSensitive = false
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            if sensitive && appModel.hideSensitiveContent == true {
+                HStack() {
+                    status.spoilerText.nilify().map(Text.init)
+                    Toggle("Show Sensitive Content", isOn: $allowSensitive)
+                }
+                .controlSize(.small)
+            }
+            VStack(alignment: .leading) {
+                Text(status.content.safeMastodonAttributedString).textSelection(.enabled)
+                if !status.mediaAttachments.isEmpty {
+                    MediaStack(attachments: status.mediaAttachments)
+                }
+                if let poll = status.poll {
+                    Text("Poll: \(String(describing: poll))").debuggingInfo()
+                }
+                if let card = status.card {
+                    CardView(card: card)
+                }
+            }
+            .sensitiveContent(hideContent)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            //            .overlay {
+            //                if sensitive && !allowSensitive {
+            //                    Color.red.opacity(1).backgroundStyle(.thickMaterial)
+            //                }
+            //            }
+        }
+    }
+}
+

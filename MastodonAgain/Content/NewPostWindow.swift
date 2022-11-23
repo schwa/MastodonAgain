@@ -1,11 +1,43 @@
 import AsyncAlgorithms
+import Everything
 import Foundation
 import Mastodon
 import SwiftUI
+import PhotosUI
 
 enum NewPostWindow: Codable, Hashable {
     case empty
     case reply(Status.ID) // TODO: Make full status?
+}
+
+struct NewPostHost: View {
+    @EnvironmentObject
+    var instanceModel: InstanceModel
+
+    @Binding
+    var open: NewPostWindow?
+
+    @State
+    var inReplyTo: Status?
+
+    @State
+    var newPost: NewPost
+
+    init(open: Binding<NewPostWindow?>) {
+        _open = open
+        _newPost = State(initialValue: NewPost())
+    }
+
+    var body: some View {
+        // TODO: isPresented
+        NewPostView(newPost: newPost, isPresented: .constant(true))
+            .task {
+                if case .reply(let id) = open {
+                    inReplyTo = await instanceModel.service.status(for: id)
+                    newPost.inReplyTo = id
+                }
+            }
+    }
 }
 
 struct NewPostView: View {
@@ -15,27 +47,28 @@ struct NewPostView: View {
     @EnvironmentObject
     var instanceModel: InstanceModel
 
-    @Binding
-    var open: NewPostWindow?
-
-    @State
-    var newPost: NewPost
-
     @State
     var images: [Resource<Image>] = []
 
     @State
-    var inReplyTo: Status?
-
-    @State
     var isTargeted = false
+
 
     @Environment(\.errorHandler)
     var errorHandler
 
-    init(open: Binding<NewPostWindow?>) {
-        _open = open
-        _newPost = State(initialValue: NewPost(status: "", sensitive: false, spoiler: "", visibility: .public, language: Locale.current.topLevelIdentifier))
+    @State
+    var newPost: NewPost
+
+    let inReplyTo: Status?
+
+    @Binding
+    var isPresented: Bool
+
+    init(newPost: NewPost = NewPost(), inReplyTo: Status? = nil, isPresented: Binding<Bool>) {
+        self._newPost = State(initialValue: newPost)
+        self.inReplyTo = inReplyTo
+        self._isPresented = isPresented
     }
 
     var body: some View {
@@ -67,12 +100,6 @@ struct NewPostView: View {
                 Rectangle().stroke(Color.accentColor, lineWidth: 8)
             }
         }
-        .task {
-            if case .reply(let id) = open {
-                inReplyTo = await instanceModel.service.status(for: id)
-                newPost.inReplyTo = id
-            }
-        }
         .foregroundColor(isTargeted ? .accentColor : .secondary)
         .onDrop(of: [.image], isTargeted: $isTargeted) { providers, _ in
             guard providers.count == 1 else {
@@ -92,9 +119,14 @@ struct NewPostView: View {
         }
     }
 
+    @State
+    var photosPickerItem: PhotosPickerItem?
+
     @ViewBuilder
     var footer: some View {
-        Button(systemImage: "paperclip", action: {})
+        PhotosPicker(selection: $photosPickerItem, preferredItemEncoding: .compatible) {
+            Image(systemName: "paperclip")
+        }
         Button(systemImage: "eye.trianglebadge.exclamationmark", action: {
             newPost.sensitive.toggle()
         })
@@ -144,9 +176,59 @@ struct NewPostView: View {
                     _ = try await instanceModel.service.perform { baseURL, token in
                         MastodonAPI.Statuses.Publish(baseURL: baseURL, token: token, post: newPost)
                     }
+
+                    await MainActor.run {
+                        isPresented = false
+                    }
                 }
             }
         }
         .disabled(newPost.status.isEmpty || newPost.status.count > 500) // TODO: get limit from instance?
+        .onChange(of: photosPickerItem) { newValue in
+            guard let photosPickerItem else {
+                return
+            }
+
+            print(photosPickerItem.supportedContentTypes)
+            Task {
+                await errorHandler {
+                    let data = try await photosPickerItem.loadTransferable(type: Data.self)
+                    guard let data else {
+                        throw MastodonError.generic("Oops")
+                    }
+                        // TODO: We shouldn't have to do this...
+
+//                    let source = try ImageSource(data: data)
+//                    print(try source.properties(at: 0))
+                    // TODO: Content type.
+
+
+                        //FSPath.temporaryDirectory
+                    let image = try Image(data: data)
+                    let resource = Resource<Image>(source: .data(data), content: image)
+                    await MainActor.run {
+                        images.append(resource)
+                    }
+                }
+            }
+            self.photosPickerItem = nil
+        }
+    }
+}
+
+extension Image {
+    init(data: Data) throws {
+        #if os(macOS)
+        guard let nsImage = NSImage(data: data) else {
+            throw MastodonError.generic("Could not load image")
+        }
+        self = Image(nsImage: nsImage)
+        #else
+        guard let uiImage = UIImage(data: data) else {
+            throw MastodonError.generic("Could not load image")
+        }
+        self = Image(uiImage: uiImage)
+        #endif
+
     }
 }

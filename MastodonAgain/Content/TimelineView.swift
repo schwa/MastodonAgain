@@ -50,7 +50,15 @@ struct TimelineView: View, Sendable {
             utilityActions
 #else
             ValueView(value: false) { isPresented in
-                Button(systemImage: "gear") {
+                Button(systemImage: "tray.and.arrow.down") {
+                    isPresented.wrappedValue = true
+                }
+                .popover(isPresented: isPresented) {
+                    NewPostView(isPresented: isPresented)
+                }
+            }
+            ValueView(value: false) { isPresented in
+                Button(systemImage: "ellipsis") {
                     isPresented.wrappedValue = true
                 }
                 .popover(isPresented: isPresented) {
