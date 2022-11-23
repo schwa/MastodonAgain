@@ -201,7 +201,7 @@ struct PageResponse<Element>: Response where Element: Codable & Identifiable, El
 extension Fetch: Codable {
     public init(from decoder: Decoder) throws {
         // TODO: Only semi codable.
-        let container = try decoder.singleValueContainer()
+//        let container = try decoder.singleValueContainer()
 //        guard let service = decoder.userInfo[CodingUserInfoKey(rawValue: "service")!] as? Service else {
 //            fatalError("No service set on decoder userinfo.")
 //        }

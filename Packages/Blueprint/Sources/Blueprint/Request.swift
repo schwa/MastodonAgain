@@ -98,9 +98,9 @@ extension URLPath: Request {
 
 public struct Body {
     public let contentType: String?
-    public let data: () throws -> Data
+    public let data: @Sendable () throws -> Data
 
-    public init(_ contentType: String? = nil, data: @escaping () throws -> Data) {
+    public init(_ contentType: String? = nil, data: @escaping @Sendable () throws -> Data) {
         self.contentType = contentType
         self.data = data
     }

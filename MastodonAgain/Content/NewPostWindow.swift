@@ -120,14 +120,10 @@ struct NewPostView: View {
             }
             Task {
                 let resource = try await Resource(provider: provider)
-
-                let thumbnail = {
-                    resource.content
-                }
                 guard let filename = resource.filename, let contentType = try resource.contentType else {
                     fatalError("No filename or no contentType.")
                 }
-                let upload = Upload(filename: filename, contentType: contentType, thumbnail: thumbnail) {
+                let upload = Upload(filename: filename, contentType: contentType, thumbnail: { resource.content }) {
                     try resource.data
                 }
                 mediaUploads.append(upload)

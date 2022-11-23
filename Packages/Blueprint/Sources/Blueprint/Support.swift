@@ -127,7 +127,7 @@ public extension Data {
 
 public extension PartialRequest {
     var data: Data {
-        var chunks: [Chunk] = [
+        let chunks: [Chunk] = [
             "\(method.rawValue) \(url?.path ?? "/") HTTP/1.1",
         ]
             + headers.map { header in

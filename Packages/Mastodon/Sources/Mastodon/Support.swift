@@ -403,6 +403,6 @@ public extension Image {
 
 public extension Image {
     init(url: URL) throws {
-        fatalError()
+        unimplemented()
     }
 }

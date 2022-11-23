@@ -21,7 +21,8 @@ public enum BundleSpecifier {
 
 public extension BundleSpecifier {
     init(urlRepresentation: URL) throws {
-        fatalError()
+        // TODO:
+        unimplemented()
     }
 
     var urlRepresentation: URL {
@@ -45,7 +46,8 @@ public enum ResourceSpecifier {
 
 public extension ResourceSpecifier {
     init(urlRepresentation: URL) throws {
-        fatalError()
+        // TODO:
+        unimplemented()
     }
 
     var urlRepresentation: URL {
@@ -94,7 +96,7 @@ public extension ResourceSpecifier {
                 return data
             case .bundleResource(let specifier, let path):
                 guard let bundle = specifier.bundle, let resourceURL = bundle.resourceURL else {
-                    fatalError()
+                    throw MastodonError.generic("Could not get bundle.")
                 }
                 let url = resourceURL.appending(path: path)
                 return try Data(contentsOf: url)

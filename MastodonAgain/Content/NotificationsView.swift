@@ -52,9 +52,6 @@ struct NotificationTypeView: View {
                 Text("FollowRequest")
                 DebugDescriptionView(notification).debuggingInfo()
                     .listRowSeparator(.visible, edges: .bottom)
-            default:
-                Text(verbatim: "\(type)")
-                    .listRowSeparator(.visible, edges: .bottom)
             }
         }
         .task {

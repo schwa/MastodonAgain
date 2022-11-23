@@ -9,7 +9,7 @@ import UniformTypeIdentifiers
 
 func standardResponse<T>(_ type: T.Type) -> some ResultGenerator where T: Decodable {
     IfStatus(200) { data, response in
-        print("X-RateLimit-Remaining: \(response.value(forHTTPHeaderField: "X-RateLimit-Remaining"))")
+        print("X-RateLimit-Remaining: \(String(describing: response.value(forHTTPHeaderField: "X-RateLimit-Remaining")))")
         return try JSONDecoder.mastodonDecoder.decode(T.self, from: data)
     }
 }
