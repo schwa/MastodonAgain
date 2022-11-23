@@ -63,19 +63,22 @@ struct AccountActions: View {
                     try await updateRelationship()
                 }
             }
+            .disabled(relationship == nil)
             .highlighted(value: relationship?.following ?? false)
             .inflight(value: inflight.wrappedValue)
         }
     }
 
+    // TODO: Currently crashing. But updateRelationship is fine? WTF?
     @discardableResult
     func updateAccount() async throws -> Account {
-        let account = try await instanceModel.service.perform { baseURL, token in
-            MastodonAPI.Accounts.Retrieve(baseURL: baseURL, token: token, id: account.id)
-        }
-        await MainActor.run {
-            self.account = account
-        }
+//        let account = try await instanceModel.service.perform { baseURL, token in
+//            MastodonAPI.Accounts.Retrieve(baseURL: baseURL, token: token, id: account.id)
+//        }
+//        await MainActor.run {
+//            self.account = account
+//        }
+//        return account
         return account
     }
 
