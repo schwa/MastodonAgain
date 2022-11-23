@@ -27,13 +27,13 @@ final class HTMLTests: XCTestCase {
         let html = HTML("<p>A link: <a href=\"http://apple.com/\" target=\"_blank\" rel=\"nofollow noopener noreferrer\"><span class=\"invisible\">http://</span><span class=\"\">apple.com/</span><span class=\"invisible\"></span></a><br />A hashtag: <a href=\"https://fosstodon.org/tags/cheese\" class=\"mention hashtag\" rel=\"tag\">#<span>cheese</span></a><br />A user: <span class=\"h-card\"><a href=\"https://fosstodon.org/@schwadev\" class=\"u-url mention\">@<span>schwadev</span></a></span><br />A remote user <span class=\"h-card\"><a href=\"https://mastodon.social/@schwa\" class=\"u-url mention\">@<span>schwa</span></a></span></p>")
 
         let expected = HTML(#"""
-<html>
- <head></head>
- <body>
-  <p>A link: <a href="http://apple.com/" rel="nofollow" class="link">http://apple.com/</a><br>A hashtag: <a href="https://fosstodon.org/tags/cheese" class="hashtag">#cheese</a><br>A user: <a class="user" href="https://fosstodon.org/@schwadev">@schwadev</a><br>A remote user <a class="user" href="https://mastodon.social/@schwa">@schwa</a></p>
- </body>
-</html>
-"""#)
+        <html>
+         <head></head>
+         <body>
+          <p>A link: <a href="http://apple.com/" rel="nofollow" class="link">http://apple.com/</a><br>A hashtag: <a href="https://fosstodon.org/tags/cheese" class="hashtag">#cheese</a><br>A user: <a class="user" href="https://fosstodon.org/@schwadev">@schwadev</a><br>A remote user <a class="user" href="https://mastodon.social/@schwa">@schwa</a></p>
+         </body>
+        </html>
+        """#)
         let result = try html.rewrittenMastodonHTML
         XCTAssertEqual(result, expected)
     }
@@ -58,4 +58,3 @@ final class HTMLTests: XCTestCase {
         // TODO: Compare!
     }
 }
-

@@ -794,7 +794,6 @@ public extension MastodonAPI {
         }
 
         public struct Unfavourite: Request, Response {
-
             public typealias Result = Status
 
             let baseURL: URL
@@ -1336,7 +1335,6 @@ public struct Upload {
         self.thumbnail = thumbnail
         self.content = content
     }
-
 }
 
 extension Upload: Sendable {

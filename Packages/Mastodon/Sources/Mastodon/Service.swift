@@ -61,7 +61,7 @@ public actor Service {
 public extension Service {
     // TODO: Decide what to deprecate here.
 
-    func perform<R1, R2>(request: R1, response: R2) async throws -> R2.Result where R1: Request, R2: Response {
+    func perform<R2>(request: some Request, response: R2) async throws -> R2.Result where R2: Response {
         guard let resultGenerator = response.response as? any ResultGenerator else {
             fatalError("Could not get a result generator from a response.")
         }

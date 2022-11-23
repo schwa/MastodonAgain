@@ -123,7 +123,7 @@ struct IsHighlightedModifier: ViewModifier {
 extension View {
     /// Expresses a desire to highlight this view in someway. Use `@Environment(\.isHighlighted)` to inspect this value
     func highlighted(value: Bool) -> some View {
-        self.modifier(IsHighlightedModifier(value: value))
+        modifier(IsHighlightedModifier(value: value))
     }
 }
 

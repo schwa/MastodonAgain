@@ -18,9 +18,9 @@ struct StatusRow: View {
             MiniStatusRow(status: _status)
         case .large:
             #if os(iOS)
-            NarrowStatusRow(status: _status)
+                NarrowStatusRow(status: _status)
             #else
-            LargeStatusRow(status: _status)
+                LargeStatusRow(status: _status)
             #endif
         }
     }

@@ -97,7 +97,6 @@ extension URLPath: Request {
 // MARK: -
 
 public struct Body {
-
     public let contentType: String?
     public let data: () throws -> Data
 
@@ -117,4 +116,3 @@ extension Body: Request {
         request.body = try data()
     }
 }
-

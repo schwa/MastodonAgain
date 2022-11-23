@@ -104,16 +104,15 @@ extension Timeline {
 
 public extension Service {
     func channel(for timeline: Timeline) -> AsyncChannel<Timeline.Content> {
-        if let channel = self.channels[timeline] as? AsyncChannel<Timeline.Content> {
+        if let channel = channels[timeline] as? AsyncChannel<Timeline.Content> {
             return channel
         }
         else {
             let channel = AsyncChannel<Timeline.Content>()
-            self.channels[timeline] = channel
+            channels[timeline] = channel
             return channel
         }
     }
-
 
     func fetchPageForTimeline(_ timeline: Timeline) async throws {
         Task {
@@ -147,7 +146,7 @@ public extension Service {
 
 // MARK: -
 
-public struct Fetch <Element>: FetchProtocol where Element: Codable & Identifiable & Sendable, Element.ID: Comparable & Sendable {
+public struct Fetch<Element>: FetchProtocol where Element: Codable & Identifiable & Sendable, Element.ID: Comparable & Sendable {
     let service: Service?
     let request: (any Request)?
 
@@ -173,7 +172,7 @@ public struct Fetch <Element>: FetchProtocol where Element: Codable & Identifiab
 
 // MARK: -
 
-struct PageResponse <Element>: Response where Element: Codable & Identifiable, Element.ID: Comparable {
+struct PageResponse<Element>: Response where Element: Codable & Identifiable, Element.ID: Comparable {
     typealias Result = Page<Fetch<Element>>
 
     let fetchForURL: (URL) -> Fetch<Element>?
@@ -206,8 +205,8 @@ extension Fetch: Codable {
 //        guard let service = decoder.userInfo[CodingUserInfoKey(rawValue: "service")!] as? Service else {
 //            fatalError("No service set on decoder userinfo.")
 //        }
-        self.service = nil
-        self.request = nil
+        service = nil
+        request = nil
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -218,17 +217,16 @@ extension Fetch: Codable {
 // MARK: -
 
 public extension Service {
-
     // TODO: String keys.
 
     func relationshipChannel() -> AsyncChannel<[Account.ID: Relationship]> {
-        // TODO
-        if let channel = self.channels["relationships"] as? AsyncChannel<[Account.ID: Relationship]> {
+        // TODO:
+        if let channel = channels["relationships"] as? AsyncChannel<[Account.ID: Relationship]> {
             return channel
         }
         else {
             let channel = AsyncChannel<[Account.ID: Relationship]>()
-            self.channels["relationship"] = channel
+            channels["relationship"] = channel
             return channel
         }
     }

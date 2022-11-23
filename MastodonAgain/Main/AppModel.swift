@@ -48,7 +48,6 @@ class AppModel: ObservableObject {
     var instances: [String: InstanceModel] = [:]
 
     func instance(for signIn: SignIn) -> InstanceModel {
-
         if let instance = instances[signIn.name] {
             return instance
         }
@@ -57,6 +56,5 @@ class AppModel: ObservableObject {
             instances[signIn.name] = instance
             return instance
         }
-
     }
 }

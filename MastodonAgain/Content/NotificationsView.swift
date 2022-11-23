@@ -33,8 +33,8 @@ struct NotificationTypeView: View {
         List(notifications) { notification in
             switch type {
             case .follow:
-                AccountRow(account: .constant(notification.account!)) // TODO
-                .listRowSeparator(.visible, edges: .bottom)
+                AccountRow(account: .constant(notification.account!)) // TODO:
+                    .listRowSeparator(.visible, edges: .bottom)
             case .favourite:
                 MiniStatusRow(status: .constant(notification.status!))
                     .listRowSeparator(.visible, edges: .bottom)
@@ -71,7 +71,6 @@ struct NotificationTypeView: View {
 }
 
 struct AccountRow: View {
-
     @Binding
     var account: Account
 
@@ -130,10 +129,7 @@ struct AccountRow: View {
                 }
             }
 
-            //DebugDescriptionView(account).debuggingInfo()
-
+            // DebugDescriptionView(account).debuggingInfo()
         }
-
     }
-
 }

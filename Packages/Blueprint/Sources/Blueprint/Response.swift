@@ -9,9 +9,9 @@ public protocol Response {
     var response: ResponseContent { get }
 }
 
-//extension Response where ResponseContent: ResultGenerator {
+// extension Response where ResponseContent: ResultGenerator {
 //    //typealias Result = ResultGenerator.Result
-//}
+// }
 
 extension Never: Response {
     public typealias ResponseContent = Never
@@ -31,7 +31,7 @@ public extension Response where ResponseContent == Never {
 
 @resultBuilder
 public enum ResponseBuilder {
-    public static func buildBlock <Component>(_ components: (Component)?...) -> CompositeResponse<Component.Result> where Component: ResultGenerator {
+    public static func buildBlock<Component>(_ components: (Component)?...) -> CompositeResponse<Component.Result> where Component: ResultGenerator {
         CompositeResponse(components: components.compactMap { $0 })
     }
 }
@@ -50,6 +50,7 @@ extension CompositeResponse: ResultGenerator {
     public func canProcess(data: Data, urlResponse: HTTPURLResponse) -> Bool {
         components.contains(where: { $0.canProcess(data: data, urlResponse: urlResponse) == true })
     }
+
     public func process(data: Data, urlResponse: HTTPURLResponse) throws -> Result {
         guard let component = components.first(where: { $0.canProcess(data: data, urlResponse: urlResponse) == true }) else {
             throw BlueprintError.generic("Cannot handle \(urlResponse)")
@@ -87,7 +88,7 @@ extension IfStatus: Response {
 
 extension IfStatus: ResultGenerator {
     public func canProcess(data: Data, urlResponse: HTTPURLResponse) -> Bool {
-        return codes.contains(urlResponse.statusCode)
+        codes.contains(urlResponse.statusCode)
     }
 
     public func process(data: Data, urlResponse: HTTPURLResponse) throws -> Result {
@@ -121,6 +122,6 @@ extension ConstantResponse: ResultGenerator {
 
 // MARK: -
 
-enum Enum1 <C1> {
+enum Enum1<C1> {
     case c1(C1)
 }

@@ -23,7 +23,7 @@ public struct HTML: RawRepresentable, Codable, Hashable, Sendable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        self.rawValue = try container.decode(String.self)
+        rawValue = try container.decode(String.self)
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -103,7 +103,7 @@ public extension HTML {
             // swiftlint:disable:next force_try
             return AttributedString(try! plainText, attributes: .init([
                 .strikethroughStyle: 1,
-                .strikethroughColor: Color.red
+                .strikethroughColor: Color.red,
             ]))
         }
     }
@@ -128,7 +128,7 @@ public extension HTML {
                         if atoms.isEmpty || atoms.last == .linebreak {
                             text = String(text.trimmingPrefix { $0.isWhitespace })
                         }
-                        if case let .text(string) = atoms.last {
+                        if case .text(let string) = atoms.last {
                             atoms.replaceLast(.text(string.appending(text)))
                         }
                         else {
@@ -214,7 +214,7 @@ internal extension Elements {
 
 internal extension MutableCollection {
     mutating func replaceLast(_ element: Element) {
-        self[self.index(self.endIndex, offsetBy: -1)] = element
+        self[index(endIndex, offsetBy: -1)] = element
     }
 
     func replacingLast(_ element: Element) -> Self {

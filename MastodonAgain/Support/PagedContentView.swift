@@ -22,8 +22,8 @@ struct PagedContentView<Row, Fetch>: View where Row: View, Fetch: FetchProtocol 
     var errorHandler
 
     init(content: Binding<Content>, isFetching: Binding<Bool>, filter: @escaping (PageElement) -> Bool = { _ in true }, row: @escaping (Binding<PageElement>) -> Row) {
-        self._content = content
-        self._isFetching = isFetching
+        _content = content
+        _isFetching = isFetching
         self.filter = filter
         self.row = row
     }

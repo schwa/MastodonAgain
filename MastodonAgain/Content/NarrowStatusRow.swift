@@ -48,9 +48,9 @@ struct NarrowStatusRow: View, Sendable {
                         } label: {
                             Text(status.created, style: .relative).foregroundColor(.secondary)
                         }
-#if os(macOS)
+                        #if os(macOS)
                         .buttonStyle(.link)
-#endif
+                        #endif
                     }
                 }
                 .foregroundColor(.secondary)

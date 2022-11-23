@@ -3,8 +3,8 @@ import AsyncAlgorithms
 import Everything
 import Foundation
 import Mastodon
-import SwiftUI
 import PhotosUI
+import SwiftUI
 
 enum NewPostWindow: Codable, Hashable {
     case empty
@@ -68,9 +68,9 @@ struct NewPostView: View {
     var isPresented: Bool
 
     init(newPost: NewPost = NewPost(), inReplyTo: Status? = nil, isPresented: Binding<Bool>) {
-        self._newPost = State(initialValue: newPost)
+        _newPost = State(initialValue: newPost)
         self.inReplyTo = inReplyTo
-        self._isPresented = isPresented
+        _isPresented = isPresented
     }
 
     // TODO: this needs a pretty healthy cleanup
@@ -90,8 +90,8 @@ struct NewPostView: View {
                     // TODO: Gross
                     if let thumbnail = try? upload.thumbnail?() {
                         thumbnail.resizable().scaledToFit()
-                        .frame(maxWidth: 80, maxHeight: 80, alignment: .trailing)
-                        }
+                            .frame(maxWidth: 80, maxHeight: 80, alignment: .trailing)
+                    }
                     else {
                         Image(systemName: "questionmark.square.dashed")
                     }
@@ -186,11 +186,9 @@ struct NewPostView: View {
     func updatePhotosPickerItem(_ photosPickerItem: PhotosPickerItem) {
         Task {
             await errorHandler {
-
                 if let video = try await photosPickerItem.loadTransferable(type: Video.self) {
                     print(video)
                 }
-
 
                 let data = try await photosPickerItem.loadTransferable(type: Data.self)
                 guard let data else {

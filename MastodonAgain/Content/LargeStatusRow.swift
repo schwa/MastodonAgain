@@ -112,7 +112,6 @@ struct LargeStatusRow: View, Sendable {
 
 // MARK: -
 
-
 struct LargeStatusContent<Status>: View where Status: StatusProtocol {
     @EnvironmentObject
     var appModel: AppModel
@@ -161,4 +160,3 @@ struct LargeStatusContent<Status>: View where Status: StatusProtocol {
         }
     }
 }
-

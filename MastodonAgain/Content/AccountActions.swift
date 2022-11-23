@@ -79,6 +79,6 @@ struct AccountActions: View {
 //            self.account = account
 //        }
 //        return account
-        return account
+        account
     }
 }

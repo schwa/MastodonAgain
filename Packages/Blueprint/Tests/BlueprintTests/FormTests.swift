@@ -13,25 +13,24 @@ class FormTests: XCTestCase {
         var request = PartialRequest()
         try form.apply(request: &request)
 
-
         let result = String(data: request.data, encoding: .utf8)!
         let expectedResult = """
-GET / HTTP/1.1
-Content-Type: multipart/form-data; charset=utf-8; boundary=xyzzy
+        GET / HTTP/1.1
+        Content-Type: multipart/form-data; charset=utf-8; boundary=xyzzy
 
---xyzzy
-Content-Disposition: form-data; name="description"
+        --xyzzy
+        Content-Disposition: form-data; name="description"
 
-Guess.
---xyzzy
-Content-Disposition: form-data; name="file"; filename="HelloWorld.txt"
-Content-Type: text/plain
+        Guess.
+        --xyzzy
+        Content-Disposition: form-data; name="file"; filename="HelloWorld.txt"
+        Content-Type: text/plain
 
-Hello world
---xyzzy--
+        Hello world
+        --xyzzy--
 
-"""
-            .replacing("\n", with: "\r\n")
+        """
+        .replacing("\n", with: "\r\n")
 
         print("###########################################")
         print(result)
@@ -42,4 +41,3 @@ Hello world
         XCTAssertEqual(result, expectedResult)
     }
 }
-

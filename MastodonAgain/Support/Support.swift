@@ -1,5 +1,4 @@
 import CachedAsyncImage
-import CachedAsyncImage
 import Everything
 import Foundation
 import Mastodon
@@ -579,7 +578,7 @@ struct ImageToggleStyle: ToggleStyle {
                 else {
                     Image(systemName: "ladybug")
                 }
-        }
+            }
     }
 }
 
@@ -644,7 +643,6 @@ extension Collection<Text> {
 
 extension NSItemProvider: @unchecked Sendable {
 }
-
 
 extension View {
     func logging(_ s: String) -> Self {

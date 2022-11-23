@@ -111,7 +111,7 @@ extension Chunk: ExpressibleByStringInterpolation {
 }
 
 public extension Data {
-    init<C>(_ chunks: C) where C: Collection, C.Element == Chunk {
+    init(_ chunks: some Collection<Chunk>) {
         self = chunks.reduce(into: Data()) { partialResult, chunk in
             switch chunk {
             case .data(let data):
@@ -128,14 +128,13 @@ public extension Data {
 public extension PartialRequest {
     var data: Data {
         var chunks: [Chunk] = [
-            "\(method.rawValue) \(url?.path ?? "/") HTTP/1.1"
+            "\(method.rawValue) \(url?.path ?? "/") HTTP/1.1",
         ]
-        + headers.map { header in
-            .string("\(header.name): \(header.value)")
-        }
-        + [""]
-        + [.data(body ?? Data())]
+            + headers.map { header in
+                .string("\(header.name): \(header.value)")
+            }
+            + [""]
+            + [.data(body ?? Data())]
         return Data(chunks.interspersed(with: "\r\n"))
     }
 }
-

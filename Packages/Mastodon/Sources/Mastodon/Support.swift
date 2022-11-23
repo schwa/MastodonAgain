@@ -387,17 +387,17 @@ public extension Locale {
 
 public extension Image {
     init(data: Data) throws {
-#if os(macOS)
-        guard let nsImage = NSImage(data: data) else {
-            throw MastodonError.generic("Could not load image")
-        }
-        self = Image(nsImage: nsImage)
-#else
-        guard let uiImage = UIImage(data: data) else {
-            throw MastodonError.generic("Could not load image")
-        }
-        self = Image(uiImage: uiImage)
-#endif
+        #if os(macOS)
+            guard let nsImage = NSImage(data: data) else {
+                throw MastodonError.generic("Could not load image")
+            }
+            self = Image(nsImage: nsImage)
+        #else
+            guard let uiImage = UIImage(data: data) else {
+                throw MastodonError.generic("Could not load image")
+            }
+            self = Image(uiImage: uiImage)
+        #endif
     }
 }
 

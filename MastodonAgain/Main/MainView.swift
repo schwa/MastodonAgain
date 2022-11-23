@@ -38,10 +38,10 @@ struct MainView: View {
                 TimelineStack(root: .me)
             case .notifications:
                 NotificationsView()
-#if os(iOS)
-            case .settings:
-                AppSettings()
-#endif
+            #if os(iOS)
+                case .settings:
+                    AppSettings()
+            #endif
             default:
                 EmptyView() // TODO: Why are we getting nil for selection?
             }
@@ -75,9 +75,9 @@ enum MainTabs: String, CaseIterable {
     case local
     case me
     case notifications
-#if os(iOS)
-    case settings
-#endif
+    #if os(iOS)
+        case settings
+    #endif
 
     var timelineType: TimelineType? {
         switch self {
@@ -102,10 +102,10 @@ enum MainTabs: String, CaseIterable {
             return "Me"
         case (.notifications, nil):
             return "Notifications"
-#if os(iOS)
-        case (.settings, nil):
-            return "Settings"
-#endif
+        #if os(iOS)
+            case (.settings, nil):
+                return "Settings"
+        #endif
         default:
             fatalError("Fallthrough")
         }
@@ -117,10 +117,10 @@ enum MainTabs: String, CaseIterable {
             return timeline.image
         case (.me, nil):
             return Image(systemName: "person")
-#if os(iOS)
-        case (.settings, nil):
-            return Image(systemName: "gear")
-#endif
+        #if os(iOS)
+            case (.settings, nil):
+                return Image(systemName: "gear")
+        #endif
         default:
             return Image(systemName: "gear")
         }

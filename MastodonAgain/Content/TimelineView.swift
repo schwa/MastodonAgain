@@ -46,29 +46,29 @@ struct TimelineView: View, Sendable {
         }
         .searchable(text: $search)
         .toolbar {
-#if os(macOS)
-            utilityActions
-#else
-            ValueView(value: false) { isPresented in
-                Button(systemImage: "tray.and.arrow.down") {
-                    isPresented.wrappedValue = true
-                }
-                .popover(isPresented: isPresented) {
-                    NewPostView(isPresented: isPresented)
-                }
-            }
-            ValueView(value: false) { isPresented in
-                Button(systemImage: "ellipsis") {
-                    isPresented.wrappedValue = true
-                }
-                .popover(isPresented: isPresented) {
-                    utilityActions
-                    Button("Done", role: .cancel) {
-                        isPresented.wrappedValue = false
+            #if os(macOS)
+                utilityActions
+            #else
+                ValueView(value: false) { isPresented in
+                    Button(systemImage: "tray.and.arrow.down") {
+                        isPresented.wrappedValue = true
+                    }
+                    .popover(isPresented: isPresented) {
+                        NewPostView(isPresented: isPresented)
                     }
                 }
-            }
-#endif
+                ValueView(value: false) { isPresented in
+                    Button(systemImage: "ellipsis") {
+                        isPresented.wrappedValue = true
+                    }
+                    .popover(isPresented: isPresented) {
+                        utilityActions
+                        Button("Done", role: .cancel) {
+                            isPresented.wrappedValue = false
+                        }
+                    }
+                }
+            #endif
         }
         .task {
             /* TODO: Bug this is getting called multiple times (x2). The guard isn't preventing multiple hits. Also seeing
@@ -94,13 +94,13 @@ struct TimelineView: View, Sendable {
     @ViewBuilder
     var utilityActions: some View {
         #if os(macOS)
-        Button("Refresh") {
-            guard refreshing == false else {
-                return
+            Button("Refresh") {
+                guard refreshing == false else {
+                    return
+                }
+                refreshTask()
             }
-            refreshTask()
-        }
-        .keyboardShortcut(.init("R", modifiers: .command))
+            .keyboardShortcut(.init("R", modifiers: .command))
 //        .disabled(refreshing)
         #endif
 
@@ -117,7 +117,6 @@ struct TimelineView: View, Sendable {
             // swiftlint:disable:next force_try
             .fileExporter(isPresented: value, document: try! JSONDocument(content), contentType: .json) { _ in }
         }
-
     }
 
     func filter(_ status: Status) -> Bool {
@@ -150,9 +149,9 @@ struct TimelineView: View, Sendable {
                     return
                 }
                 try await instanceModel.service.fetchPageForTimeline(timeline)
-                }
             }
         }
+    }
 }
 
 struct SelectedKey: EnvironmentKey {

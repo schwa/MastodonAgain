@@ -22,6 +22,7 @@ public struct FormParameter: Sendable {
         case string(value: String?)
         case file(filename: String, mimetype: String?, content: @Sendable () throws -> Data)
     }
+
     public var value: Value
 
     public init(name: String, value: String? = nil) {
@@ -31,7 +32,7 @@ public struct FormParameter: Sendable {
 
     public init(name: String, filename: String, mimetype: String?, content: @escaping @Sendable () throws -> Data) {
         self.name = name
-        self.value = .file(filename: filename, mimetype: mimetype, content: content)
+        value = .file(filename: filename, mimetype: mimetype, content: content)
     }
 
     public init(name: String, url: URL) {
@@ -41,7 +42,7 @@ public struct FormParameter: Sendable {
         if let contentType = try? url.resourceValues(forKeys: [.contentTypeKey]).contentType {
             mimetype = contentType.preferredMIMEType
         }
-        self.value = .file(filename: filename, mimetype: mimetype) {
+        value = .file(filename: filename, mimetype: mimetype) {
             try Data(contentsOf: url)
         }
     }
@@ -66,7 +67,7 @@ extension Form: Request {
         request.headers.append(Header(name: "Content-Type", value: contentType))
         request.body = Data(parameters.map { parameter in
             let name = parameter.name.formEncoded
-            guard case let .string(value) = parameter.value else {
+            guard case .string(let value) = parameter.value else {
                 fatalError("Cannot encode a file in a simple form")
             }
             return "\(name)=\(value?.formEncoded ?? "")"
@@ -142,8 +143,6 @@ extension String {
 
     var formEncoded: String {
         replacing(" ", with: "+")
-        .addingPercentEncoding(withAllowedCharacters: .alphanumerics + .punctuationCharacters + "+")!
+            .addingPercentEncoding(withAllowedCharacters: .alphanumerics + .punctuationCharacters + "+")!
     }
-
 }
-
