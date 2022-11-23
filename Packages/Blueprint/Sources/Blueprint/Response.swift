@@ -63,6 +63,7 @@ extension CompositeResponse: ResultGenerator {
 
 // MARK: -
 
+// TODO: Rename this. Name is horrible.
 public protocol ResultGenerator {
     associatedtype Result
 

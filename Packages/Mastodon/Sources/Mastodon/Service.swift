@@ -30,6 +30,7 @@ public actor Service {
             let path = (try FSPath.specialDirectory(.cachesDirectory) / host.replacing(".", with: "-")).withPathExtension("v1-storage.data")
             storage = Storage()
             storage.registerJSON(type: Dated<Status>.self)
+            storage.registerJSON(type: Dated<Status>.self)
             try storage.open(path: path.path)
             try storage.compact()
         }

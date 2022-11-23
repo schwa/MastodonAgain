@@ -16,7 +16,7 @@ struct TimelineView: View, Sendable {
     let timeline: Timeline
 
     @State
-    var content = PagedContent<Fetch<Status>>()
+    var content = Timeline.Content()
 
     @State
     var refreshing = false
@@ -144,7 +144,7 @@ struct TimelineView: View, Sendable {
                 guard await instanceModel.signin.authorization.token != nil else {
                     return
                 }
-                let page = try await instanceModel.service.timelime(timeline)
+                let page = try await instanceModel.service.fetchPageForTimeline(timeline)
                 guard !page.elements.isEmpty else {
                     return
                 }
