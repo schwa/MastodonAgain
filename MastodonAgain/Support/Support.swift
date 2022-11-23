@@ -118,7 +118,7 @@ struct Avatar: View {
                                 MastodonAPI.Accounts.Unfollow(baseURL: baseURL, token: token, id: account.id)
                             }
                             appLogger?.info("You have unfollowed \(account.acct)")
-//                            try await updateRelationship()
+                            //                            try await updateRelationship()
                         }
                     }
                     if relationship.showingReblogs {
@@ -571,14 +571,14 @@ struct AccountNoteEditor: View {
 struct ImageToggleStyle: ToggleStyle {
     func makeBody(configuration: Configuration) -> some View {
         Button { configuration.isOn.toggle() }
-    label: {
-                if configuration.isOn {
-                    Image(systemName: "ladybug").foregroundColor(.red).symbolVariant(.circle)
-                }
-                else {
-                    Image(systemName: "ladybug")
-                }
+        label: {
+            if configuration.isOn {
+                Image(systemName: "ladybug").foregroundColor(.red).symbolVariant(.circle)
             }
+            else {
+                Image(systemName: "ladybug")
+            }
+        }
     }
 }
 

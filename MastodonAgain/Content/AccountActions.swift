@@ -47,7 +47,7 @@ struct AccountActions: View {
 //                        relationship = try await updateRelationship()
 //                    }
                     guard let relationship else {
-                        fatalError()
+                        fatalError("TODO")
                     }
                     if !relationship.following {
                         _ = try await instanceModel.service.perform { baseURL, token in

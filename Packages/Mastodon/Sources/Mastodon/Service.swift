@@ -101,7 +101,7 @@ public extension Service {
     }
 }
 
-public class AsyncChannelBroadcaster <Element> where Element: Sendable {
+public class AsyncChannelBroadcaster<Element> where Element: Sendable {
     public var channels: [WeakBox<AsyncChannel<Element>>] = []
 
     public init() {
@@ -123,7 +123,7 @@ public class AsyncChannelBroadcaster <Element> where Element: Sendable {
 public class AnyAsyncChannelBroadcaster {
     public let base: Any
 
-    public init <Element>(_ base: AsyncChannelBroadcaster<Element>) {
+    public init(_ base: AsyncChannelBroadcaster<some Any>) {
         self.base = base
     }
 

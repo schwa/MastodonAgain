@@ -85,11 +85,7 @@ class SignInViewModel: NSObject, ObservableObject {
                         continuation.resume(throwing: SignInError.authenticationSessionError(error))
                     }
                 }
-                else if let url,
-                        let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
-                        let item = components.queryItems?.first(where: { $0.name == "code" }),
-                        let code = item.value
-                {
+                else if let url, let components = URLComponents(url: url, resolvingAgainstBaseURL: true), let item = components.queryItems?.first(where: { $0.name == "code" }), let code = item.value {
                     print("Have access code - \(code)")
                     continuation.resume(returning: code)
                 }

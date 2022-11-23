@@ -103,7 +103,6 @@ extension Timeline {
 }
 
 public extension Service {
-
     func broadcaster<Element>(for key: BroadcasterKey, element: Element.Type) -> AsyncChannelBroadcaster<Element> where Element: Sendable {
         let broadcaster = broadcasters[key, default: AnyAsyncChannelBroadcaster(AsyncChannelBroadcaster<Element>())]
         broadcasters[key] = broadcaster
@@ -217,24 +216,19 @@ public extension Service {
 
     func fetchRelationship() async throws {
         let relationships = storage["relationships"] ?? [Account.ID: Relationship]()
-        logger?.log("XX: Fetched \(relationships.count) relationships from storage")
         await broadcaster(for: .relationships, element: [Account.ID: Relationship].self).broadcast(relationships)
     }
 
     func fetchRelationship(ids: [Account.ID]) async throws {
         let storedRelationships = storage["relationships"] ?? [Account.ID: Relationship]()
-        logger?.log("XX: Fetched \(storedRelationships.count) relationships from storage")
-
         let relationships = storedRelationships.filter({ ids.contains($0.key) })
         if !relationships.isEmpty {
-            logger?.log("XX: Sending \(relationships.count) relationships.")
             await broadcaster(for: .relationships, element: [Account.ID: Relationship].self).broadcast(relationships)
         }
 
         Task {
             // Dedupe.
             let ids = Array(Set(ids))
-            logger?.log("XX: Fetching \(ids.count) relationships")
             let relationships = try await perform { baseURL, token in
                 MastodonAPI.Accounts.Relationships(baseURL: baseURL, token: token, ids: ids)
             }
@@ -242,13 +236,11 @@ public extension Service {
                 rhs
             }
             await MainActor.run {
-                logger?.log("XX: Storing \(allRelationships.count) relationships.")
                 storage["relationships"] = allRelationships
             }
 
             let filteredRelationships = storedRelationships.filter({ ids.contains($0.key) })
             if !filteredRelationships.isEmpty {
-                logger?.log("XX: Sending \(filteredRelationships.count) relationships.")
                 await broadcaster(for: .relationships, element: [Account.ID: Relationship].self).broadcast(filteredRelationships)
             }
         }

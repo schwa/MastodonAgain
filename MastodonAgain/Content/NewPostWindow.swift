@@ -123,9 +123,7 @@ struct NewPostView: View {
                 guard let filename = resource.filename, let contentType = try resource.contentType else {
                     fatalError("No filename or no contentType.")
                 }
-                let upload = Upload(filename: filename, contentType: contentType, thumbnail: { resource.content }) {
-                    try resource.data
-                }
+                let upload = Upload(filename: filename, contentType: contentType, thumbnail: { resource.content }, content: { try resource.data })
                 mediaUploads.append(upload)
             }
             return true
@@ -198,9 +196,7 @@ struct NewPostView: View {
                 let filename = "Untitled.\(filenameExtension)"
 
                 // TODO: get thumbnail from image source
-                let upload = Upload(filename: filename, contentType: type, thumbnail: { try Image(data: data) }) {
-                    data
-                }
+                let upload = Upload(filename: filename, contentType: type, thumbnail: { try Image(data: data) }, content: { data })
                 await MainActor.run {
                     mediaUploads.append(upload)
                 }
