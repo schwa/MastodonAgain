@@ -73,6 +73,9 @@ struct TimelineView: View, Sendable {
             }
             refreshTask()
         }
+        .refreshable {
+            refreshTask()
+        }
     }
 
     @ViewBuilder
