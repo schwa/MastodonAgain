@@ -76,10 +76,15 @@ struct TimelineView: View, Sendable {
              Update NavigationRequestObserver tried to update multiple times per frame.
              https://developer.apple.com/forums/thread/708592
              */
-            guard refreshing == false else {
-                return
-            }
+//            guard refreshing == false else {
+//                return
+//            }
             refreshTask()
+        }
+        .task {
+            for await content in await instanceModel.service.channel(for: timeline) {
+                self.content = content
+            }
         }
         .refreshable {
             refreshTask()
@@ -96,7 +101,7 @@ struct TimelineView: View, Sendable {
             refreshTask()
         }
         .keyboardShortcut(.init("R", modifiers: .command))
-        .disabled(refreshing)
+//        .disabled(refreshing)
         #endif
 
         Picker("Mode", selection: $appModel.statusRowMode) {
@@ -135,32 +140,19 @@ struct TimelineView: View, Sendable {
 
     func refreshTask(direction: PagingDirection? = nil) {
         appLogger?.log("FETCHING PAGE (once per timelime)")
-        guard refreshing == false else {
-            return
-        }
+//        guard refreshing == false else {
+//            return
+//        }
         refreshing = true
         Task {
             await errorHandler { [instanceModel, timeline] in
                 guard await instanceModel.signin.authorization.token != nil else {
                     return
                 }
-                let page = try await instanceModel.service.fetchPageForTimeline(timeline)
-                guard !page.elements.isEmpty else {
-                    return
-                }
-                appLogger?.log("Fetched page: \(page.debugDescription)")
-                await MainActor.run {
-                    guard !content.pages.contains(where: { $0.id == page.id }) else {
-                        appLogger?.log("Paged content already contains page \(FunHash(page.id).description)")
-                        return
-                    }
-                    let page = content.reducePageToFit(page)
-                    content.pages.insert(page, at: 0)
+                try await instanceModel.service.fetchPageForTimeline(timeline)
                 }
             }
-            refreshing = false
         }
-    }
 }
 
 struct SelectedKey: EnvironmentKey {

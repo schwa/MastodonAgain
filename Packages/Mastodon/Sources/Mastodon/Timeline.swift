@@ -1,3 +1,4 @@
+import AsyncAlgorithms
 import Blueprint
 import Everything
 import Foundation
@@ -102,19 +103,45 @@ extension Timeline {
 }
 
 public extension Service {
-    func fetchPageForTimeline(_ timeline: Timeline) async throws -> Timeline.Page {
-        let request = timeline.request(baseURL: baseURL, token: authorization.token!)
-        let fetch = Fetch(Status.self, service: self, request: request)
-        let page = try await fetch()
-        return page
+    func channel(for timeline: Timeline) -> AsyncChannel<Timeline.Content> {
+        if let channel = self.channels[timeline] as? AsyncChannel<Timeline.Content> {
+            return channel
+        }
+        else {
+            let channel = AsyncChannel<Timeline.Content>()
+            self.channels[timeline] = channel
+            return channel
+        }
     }
 
-    func fetchTimeline(_ timeline: Timeline) async throws -> Timeline.Content {
-        fatalError()
-    }
 
-    func updateTimeline(_ timeline: Timeline) async throws -> Timeline.Content {
-        fatalError()
+    func fetchPageForTimeline(_ timeline: Timeline) async throws {
+        Task {
+            var content = storage[timeline] ?? Timeline.Content()
+            await channel(for: timeline).send(content)
+
+            let request = timeline.request(baseURL: baseURL, token: authorization.token!)
+            let fetch = Fetch(Status.self, service: self, request: request)
+            let page = try await fetch()
+            guard !content.pages.contains(where: { $0.id == page.id }) else {
+                logger?.log("Paged content already contains page \(FunHash(page.id).description)")
+                return content
+            }
+
+            try await fetchRelationship(ids: page.elements.map(\.account.id))
+
+            // TODO:
+            // We need to make sure all pages are in the correct order.
+            // We need to make sure all pages are unique
+            // We need to make sure no elements appear twice
+
+            let reducedPage = content.reducePageToFit(page)
+            content.pages.insert(reducedPage, at: 0)
+            storage[timeline] = content
+            await channel(for: timeline).send(content)
+
+            return content
+        }
     }
 }
 
@@ -176,14 +203,59 @@ extension Fetch: Codable {
     public init(from decoder: Decoder) throws {
         // TODO: Only semi codable.
         let container = try decoder.singleValueContainer()
-        guard let service = decoder.userInfo[CodingUserInfoKey(rawValue: "service")!] as? Service else {
-            fatalError("No service set on decoder userinfo.")
-        }
-        self.service = service
+//        guard let service = decoder.userInfo[CodingUserInfoKey(rawValue: "service")!] as? Service else {
+//            fatalError("No service set on decoder userinfo.")
+//        }
+        self.service = nil
         self.request = nil
     }
 
     public func encode(to encoder: Encoder) throws {
         // TODO: Only semi codable.
+    }
+}
+
+// MARK: -
+
+extension Service {
+
+    // TODO: String keys.
+
+    func relationshipChannel() -> AsyncChannel<[Account.ID: Relationship]> {
+        // TODO
+        if let channel = self.channels["relationships"] as? AsyncChannel<[Account.ID: Relationship]> {
+            return channel
+        }
+        else {
+            let channel = AsyncChannel<[Account.ID: Relationship]>()
+            self.channels["relationship"] = channel
+            return channel
+        }
+    }
+
+    func fetchRelationship(ids: [Account.ID]) async throws {
+        let storedRelationships = storage["relationships"] ?? [Account.ID: Relationship]()
+        do {
+            let relationships = storedRelationships.filter({ ids.contains($0.key) })
+            if !relationships.isEmpty {
+                await relationshipChannel().send(relationships)
+            }
+        }
+
+        Task {
+            // Dedupe.
+            let ids = Array(Set(ids))
+            let relationships = try await perform { baseURL, token in
+                MastodonAPI.Accounts.Relationships(baseURL: baseURL, token: token, ids: ids)
+            }
+            let allRelationships = storedRelationships.merging(zip(relationships.map(\.id), relationships)) { _, rhs in
+                rhs
+            }
+            storage["relationships"] = allRelationships
+            let filteredRelationships = storedRelationships.filter({ ids.contains($0.key) })
+            if !filteredRelationships.isEmpty {
+                await relationshipChannel().send(filteredRelationships)
+            }
+        }
     }
 }

@@ -22,6 +22,9 @@ public actor Service {
 
     internal let storage: Storage
 
+    // TODO: There's a whole lot of any going on.
+    internal var channels: [AnyHashable: Any] = [:]
+
     public init(host: String, authorization: Authorization) {
         self.host = host
         self.authorization = authorization
@@ -30,7 +33,8 @@ public actor Service {
             let path = (try FSPath.specialDirectory(.cachesDirectory) / host.replacing(".", with: "-")).withPathExtension("v1-storage.data")
             storage = Storage()
             storage.registerJSON(type: Dated<Status>.self)
-            storage.registerJSON(type: Dated<Status>.self)
+            storage.registerJSON(type: Timeline.Content.self)
+            storage.registerJSON(type: [Account.ID: Relationship].self)
             try storage.open(path: path.path)
             try storage.compact()
         }

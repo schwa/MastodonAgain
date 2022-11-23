@@ -28,7 +28,7 @@ struct AccountActions: View {
         .buttonStyle(ActionButtonStyle())
         .task {
             await errorHandler {
-                _ = try await updateRelationship()
+//                _ = try await updateRelationship()
             }
         }
     }
@@ -43,9 +43,9 @@ struct AccountActions: View {
                         inflight.wrappedValue = false
                     }
                     var relationship = relationship
-                    if relationship == nil {
-                        relationship = try await updateRelationship()
-                    }
+//                    if relationship == nil {
+//                        relationship = try await updateRelationship()
+//                    }
                     guard let relationship else {
                         fatalError()
                     }
@@ -60,7 +60,7 @@ struct AccountActions: View {
                         }
                     }
                     try await updateAccount()
-                    try await updateRelationship()
+//                    try await updateRelationship()
                 }
             }
             .disabled(relationship == nil)
@@ -80,16 +80,5 @@ struct AccountActions: View {
 //        }
 //        return account
         return account
-    }
-
-    @discardableResult
-    func updateRelationship() async throws -> Relationship {
-        let relationship = try await instanceModel.service.perform { baseURL, token in
-            MastodonAPI.Accounts.Relationships(baseURL: baseURL, token: token, ids: [account.id])
-        }
-        await MainActor.run {
-            self.relationship = relationship.first! // TODO
-        }
-        return relationship.first! // TODO
     }
 }

@@ -50,20 +50,13 @@ public struct Page<Fetch>: Identifiable, Sendable where Fetch: FetchProtocol {
 
 public struct PagedContent<Fetch>: Identifiable, Sendable where Fetch: FetchProtocol {
     public typealias Element = Fetch.Element
-    public typealias Page = Mastodon.Page<Fetch> // TODO: Gross.
+    public typealias Page = Mastodon.Page<Fetch>
 
     public var id: [Page.ID] {
         pages.map(\.id)
     }
 
-    public var pages: [Page] {
-        willSet {
-            let a = newValue.map(\.id)
-            let b = a.sorted().reversed()
-            assert(a == Array(b))
-            // TODO: Make sure new content doesn't overlap old content and handle if it does.
-        }
-    }
+    public var pages: [Page]
 
     public init() {
         pages = []

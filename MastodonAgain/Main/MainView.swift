@@ -18,7 +18,7 @@ struct MainView: View {
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
             SignInPicker()
-            .padding()
+
             List(selection: $selection) {
                 ForEach(MainTabs.allCases, id: \.self) { tab in
                     Label {
@@ -29,7 +29,6 @@ struct MainView: View {
                     .tag(tab)
                 }
             }
-            .padding()
         } detail: {
             switch selection {
             case .public, .federated, .home, .local:

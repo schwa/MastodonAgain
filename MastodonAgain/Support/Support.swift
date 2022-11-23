@@ -96,7 +96,7 @@ struct Avatar: View {
         .task {
             // TODO: this hits the server once per view. WE can batch requests into a single relationships fetch
             await errorHandler {
-                try await updateRelationship()
+//                try await updateRelationship()
             }
         }
         .contextMenu {
@@ -112,7 +112,7 @@ struct Avatar: View {
                                 MastodonAPI.Accounts.Unfollow(baseURL: baseURL, token: token, id: account.id)
                             }
                             appLogger?.info("You have unfollowed \(account.acct)")
-                            try await updateRelationship()
+//                            try await updateRelationship()
                         }
                     }
                     if relationship.showingReblogs {
@@ -122,7 +122,7 @@ struct Avatar: View {
                                     MastodonAPI.Accounts.Follow(baseURL: baseURL, token: token, id: account.id, reblogs: false)
                                 }
                                 appLogger?.info("You have disabled reblogs for \(account.acct)")
-                                try await updateRelationship()
+//                                try await updateRelationship()
                             }
                         }
                     }
@@ -140,27 +140,6 @@ struct Avatar: View {
         //        }
         .popover(isPresented: $isNoteEditorPresented) {
             AccountNoteEditor(relationship: relationship!, isPresenting: $isNoteEditorPresented)
-        }
-    }
-
-    func updateRelationship() async throws  {
-        do {
-            let service = instanceModel.service
-            let relationships = try await service.perform { baseURL, token in
-                MastodonAPI.Accounts.Relationships(baseURL: baseURL, token: token, ids: [account.id])
-            }
-            guard let relationship = relationships.first else {
-                throw MastodonError.generic("No relationship found")
-            }
-            await MainActor.run {
-                self.relationship = relationship
-            }
-        }
-        catch {
-            if (error as NSError).domain == NSURLErrorDomain && (error as NSError).code == -999 {
-                return
-            }
-            throw error
         }
     }
 }
