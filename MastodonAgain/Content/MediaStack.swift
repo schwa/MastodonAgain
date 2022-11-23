@@ -51,6 +51,7 @@ struct ContentImage: View {
     var hover = false
 
     init(url: URL, size: CGSize? = nil, blurhash: Blurhash? = nil, sensitive: Bool = false, accessibilityLabel: Text? = nil) {
+        assert(size == nil || size?.width ?? 0 > 0 && size?.height ?? 0 > 0)
         self.url = url
         self.size = size
         self.blurhash = blurhash

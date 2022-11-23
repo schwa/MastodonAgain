@@ -3,7 +3,8 @@ import SwiftUI
 
 extension Card {
     var size: CGSize? {
-        guard let width, let height else {
+        guard let width, let height, width > 0, height > 0 else {
+            appLogger?.warning("Zero width/height card")
             return nil
         }
         return CGSize(width: width, height: height)

@@ -16,7 +16,6 @@ public class DataStorage {
     public subscript(key: String) -> Data? {
         get {
             let data = items[key]
-            logger?.debug("Fetching data for key: \(key), \(data != nil ? "hit" : "miss")")
             return data
         }
         set {

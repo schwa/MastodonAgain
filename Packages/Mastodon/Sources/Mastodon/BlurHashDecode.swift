@@ -19,6 +19,7 @@ public struct Blurhash: Codable, Sendable, Equatable {
     }
 
     public func image(size: CGSize) throws -> Image {
+        assert(size.width > 0 && size.height > 0)
         guard let cgImage = decodedBlurHash(blurHash: string, size: size) else {
             throw MastodonError.generic("Could not decode blurhash \"\(string)\"")
         }
