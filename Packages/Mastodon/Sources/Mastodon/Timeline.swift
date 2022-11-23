@@ -103,21 +103,18 @@ extension Timeline {
 }
 
 public extension Service {
-    func channel(for timeline: Timeline) -> AsyncChannel<Timeline.Content> {
-        if let channel = channels[timeline] as? AsyncChannel<Timeline.Content> {
-            return channel
-        }
-        else {
-            let channel = AsyncChannel<Timeline.Content>()
-            channels[timeline] = channel
-            return channel
-        }
+
+    func broadcaster<Element>(for key: BroadcasterKey, element: Element.Type) -> AsyncChannelBroadcaster<Element> where Element: Sendable {
+        let broadcaster = broadcasters[key, default: AnyAsyncChannelBroadcaster(AsyncChannelBroadcaster<Element>())]
+        broadcasters[key] = broadcaster
+        // swiftlint:disable:next force_cast
+        return broadcaster.base as! AsyncChannelBroadcaster<Element>
     }
 
     func fetchPageForTimeline(_ timeline: Timeline) async throws {
         Task {
             var content = storage[timeline] ?? Timeline.Content()
-            await channel(for: timeline).send(content)
+            await broadcaster(for: .timeline(timeline), element: Timeline.Content.self).broadcast(content)
 
             let request = timeline.request(baseURL: baseURL, token: authorization.token!)
             let fetch = Fetch(Status.self, service: self, request: request)
@@ -137,8 +134,7 @@ public extension Service {
             let reducedPage = content.reducePageToFit(page)
             content.pages.insert(reducedPage, at: 0)
             storage[timeline] = content
-            await channel(for: timeline).send(content)
-
+            await broadcaster(for: .timeline(timeline), element: Timeline.Content.self).broadcast(content)
             return content
         }
     }
@@ -219,22 +215,10 @@ extension Fetch: Codable {
 public extension Service {
     // TODO: String keys.
 
-    func relationshipChannel() -> AsyncChannel<[Account.ID: Relationship]> {
-        // TODO:
-        if let channel = channels["relationships"] as? AsyncChannel<[Account.ID: Relationship]> {
-            return channel
-        }
-        else {
-            let channel = AsyncChannel<[Account.ID: Relationship]>()
-            channels["relationship"] = channel
-            return channel
-        }
-    }
-
     func fetchRelationship() async throws {
         let relationships = storage["relationships"] ?? [Account.ID: Relationship]()
         logger?.log("XX: Fetched \(relationships.count) relationships from storage")
-        await relationshipChannel().send(relationships)
+        await broadcaster(for: .relationships, element: [Account.ID: Relationship].self).broadcast(relationships)
     }
 
     func fetchRelationship(ids: [Account.ID]) async throws {
@@ -244,7 +228,7 @@ public extension Service {
         let relationships = storedRelationships.filter({ ids.contains($0.key) })
         if !relationships.isEmpty {
             logger?.log("XX: Sending \(relationships.count) relationships.")
-            await relationshipChannel().send(relationships)
+            await broadcaster(for: .relationships, element: [Account.ID: Relationship].self).broadcast(relationships)
         }
 
         Task {
@@ -265,7 +249,7 @@ public extension Service {
             let filteredRelationships = storedRelationships.filter({ ids.contains($0.key) })
             if !filteredRelationships.isEmpty {
                 logger?.log("XX: Sending \(filteredRelationships.count) relationships.")
-                await relationshipChannel().send(filteredRelationships)
+                await broadcaster(for: .relationships, element: [Account.ID: Relationship].self).broadcast(filteredRelationships)
             }
         }
     }

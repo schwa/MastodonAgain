@@ -82,7 +82,7 @@ struct TimelineView: View, Sendable {
             refreshTask()
         }
         .task {
-            for await content in await instanceModel.service.channel(for: timeline) {
+            for await content in await instanceModel.service.broadcaster(for: .timeline(timeline), element: Timeline.Content.self).makeChannel() {
                 self.content = content
             }
         }

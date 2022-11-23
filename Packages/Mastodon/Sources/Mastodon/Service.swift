@@ -23,7 +23,13 @@ public actor Service {
     internal let storage: Storage
 
     // TODO: There's a whole lot of any going on.
-    internal var channels: [AnyHashable: Any] = [:]
+
+    public enum BroadcasterKey: Hashable {
+        case timeline(Timeline)
+        case relationships
+    }
+
+    internal var broadcasters: [BroadcasterKey: AnyAsyncChannelBroadcaster] = [:]
 
     public init(host: String, authorization: Authorization) {
         self.host = host
@@ -93,4 +99,43 @@ public extension Service {
     func status(for id: Status.ID) async -> Status? {
         storage[id.rawValue, Dated<Status>.self]?.content
     }
+}
+
+public class AsyncChannelBroadcaster <Element> where Element: Sendable {
+    public var channels: [WeakBox<AsyncChannel<Element>>] = []
+
+    public init() {
+    }
+
+    public func broadcast(_ element: Element) async {
+        for channel in channels {
+            await channel.content?.send(element)
+        }
+    }
+
+    public func makeChannel() -> AsyncChannel<Element> {
+        let channel = AsyncChannel<Element>()
+        channels.append(WeakBox(channel))
+        return channel
+    }
+}
+
+public class AnyAsyncChannelBroadcaster {
+    public let base: Any
+
+    public init <Element>(_ base: AsyncChannelBroadcaster<Element>) {
+        self.base = base
+    }
+
+//    public func broadcast <Element>(_ element: Element) async where Element: Sendable {
+//        // swiftlint:disable:next force_cast
+//        let base = base as! AsyncChannelBroadcaster<Element>
+//        await base.broadcast(element)
+//    }
+//
+//    public func makeChannel <Element>() -> AsyncChannel<Element> where Element: Sendable {
+//        // swiftlint:disable:next force_cast
+//        let base = base as! AsyncChannelBroadcaster<Element>
+//        return base.makeChannel()
+//    }
 }

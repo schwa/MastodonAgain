@@ -95,7 +95,7 @@ struct Avatar: View {
         .task {
             // TODO: this hits the server once per view. WE can batch requests into a single relationships fetch
             await errorHandler {
-                for await relationships in await instanceModel.service.relationshipChannel() {
+                for await relationships in await instanceModel.service.broadcaster(for: .relationships, element: [Account.ID: Relationship].self).makeChannel() {
                     if let relationship = relationships[account.id] {
                         await MainActor.run {
                             self.relationship = relationship
