@@ -49,7 +49,7 @@ struct AccountInfoView: View {
                         Image(systemName: "lock")
                     }
                 }
-                Text(verbatim: account.note)
+                Text(account.note.safeMastodonAttributedString)
                 LabeledContent("Joined") {
                     Text(account.created, style: .date)
                 }
@@ -58,7 +58,7 @@ struct AccountInfoView: View {
                         GridRow {
                             let field = account.fields[index]
                             Text(field.name)
-                            Text(field.value)
+                            Text(field.value.safeMastodonAttributedString)
                         }
                     }
                 }

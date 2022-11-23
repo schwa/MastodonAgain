@@ -39,7 +39,7 @@ public struct Account: Identifiable, Codable, Sendable, Equatable {
     public let discoverable: Bool?
     public let group: Bool
     public let created: Date
-    public let note: String
+    public let note: HTML
     public let url: String?
     public let avatar: URL
     public let avatarStatic: URL
@@ -140,7 +140,7 @@ public struct Field: Codable, Sendable, Equatable {
     }
 
     public let name: String
-    public let value: String
+    public let value: HTML
     public let verifiedAt: String?
 }
 

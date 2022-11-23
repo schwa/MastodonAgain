@@ -31,15 +31,30 @@ struct NotificationTypeView: View {
 
     var body: some View {
         List(notifications) { notification in
-            switch notification.type {
+            switch type {
+            case .follow:
+                AccountRow(account: notification.account!)
+                .listRowSeparator(.visible, edges: .bottom)
             case .favourite:
-
-                Text(verbatim: "\(notification.type)")
-
                 MiniStatusRow(status: .constant(notification.status!))
-
+                    .listRowSeparator(.visible, edges: .bottom)
+            case .reblog:
+                MiniStatusRow(status: .constant(notification.status!))
+                    .listRowSeparator(.visible, edges: .bottom)
+            case .mention:
+                MiniStatusRow(status: .constant(notification.status!))
+                    .listRowSeparator(.visible, edges: .bottom)
+            case .poll:
+                Text("Poll")
+                DebugDescriptionView(notification).debuggingInfo()
+                    .listRowSeparator(.visible, edges: .bottom)
+            case .followRequest:
+                Text("FollowRequest")
+                DebugDescriptionView(notification).debuggingInfo()
+                    .listRowSeparator(.visible, edges: .bottom)
             default:
-                Text(verbatim: "\(notification.type)")
+                Text(verbatim: "\(type)")
+                    .listRowSeparator(.visible, edges: .bottom)
             }
         }
         .task {
@@ -53,4 +68,69 @@ struct NotificationTypeView: View {
             }
         }
     }
+}
+
+struct AccountRow: View {
+
+    let account: Account
+
+    var body: some View {
+        VStack {
+            HStack {
+                Avatar(account: account)
+                    .frame(width: 64, height: 64)
+                VStack {
+                    Text(verbatim: account.displayName)
+                    Text("@") + Text(verbatim: account.acct)
+                }
+                account.locked ? Text("Locked") : nil
+                account.bot ? Text("Bot") : nil
+                account.discoverable ?? false ? Text("Discoverable") : nil
+                account.group ? Text("Group") : nil
+                account.noindex ?? false ? Text("Noindex") : nil
+            }
+            Text(account.note.safeMastodonAttributedString)
+            account.url.map { Text($0) }
+
+            LabeledContent("Last Post") {
+                account.lastStatusAt.map { Text($0, style: .relative) }
+            }
+            LabeledContent("Posts") {
+                Text(account.statusesCount, format: .number)
+            }
+            LabeledContent("Followers") {
+                Text(account.followersCount, format: .number)
+            }
+            LabeledContent("Following") {
+                Text(account.followingCount, format: .number)
+            }
+            Grid {
+                ForEach(account.fields.indices, id: \.self) { index in
+                    GridRow {
+                        let field = account.fields[index]
+                        Text(field.name).border(Color.black).frame(maxWidth: .infinity, maxHeight: .infinity).border(Color.black)
+                        Text(field.value.safeMastodonAttributedString).frame(maxWidth: .infinity, maxHeight: .infinity).border(Color.black)
+                    }
+                }
+            }
+
+            DebugDescriptionView(account.emojis).debuggingInfo()
+
+            HStack {
+                Button("Un/Follow") {
+                }
+                Button("Un/Mute") {
+                }
+                Button("Un/Block") {
+                }
+                Button("Note") {
+                }
+            }
+
+            //DebugDescriptionView(account).debuggingInfo()
+
+        }
+
+    }
+
 }
