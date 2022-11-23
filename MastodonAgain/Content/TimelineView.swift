@@ -46,28 +46,21 @@ struct TimelineView: View, Sendable {
         }
         .searchable(text: $search)
         .toolbar {
-            Button("Refresh") {
-                guard refreshing == false else {
-                    return
+#if os(macOS)
+            utilityActions
+#else
+            ValueView(value: false) { isPresented in
+                Button(systemImage: "gear") {
+                    isPresented.wrappedValue = true
                 }
-                refreshTask()
-            }
-            .keyboardShortcut(.init("R", modifiers: .command))
-            .disabled(refreshing)
-
-            Picker("Mode", selection: $appModel.statusRowMode) {
-                Image(systemName: "tablecells").tag(StatusRow.Mode.large)
-                Image(systemName: "list.dash").tag(StatusRow.Mode.mini)
-            }
-            .pickerStyle(.inline)
-
-            ValueView(value: false) { value in
-                Button("Save") {
-                    value.wrappedValue = true
+                .popover(isPresented: isPresented) {
+                    utilityActions
+                    Button("Done", role: .cancel) {
+                        isPresented.wrappedValue = false
+                    }
                 }
-                // swiftlint:disable:next force_try
-                .fileExporter(isPresented: value, document: try! JSONDocument(content), contentType: .json) { _ in }
             }
+#endif
         }
         .task {
             /* TODO: Bug this is getting called multiple times (x2). The guard isn't preventing multiple hits. Also seeing
@@ -80,6 +73,35 @@ struct TimelineView: View, Sendable {
             }
             refreshTask()
         }
+    }
+
+    @ViewBuilder
+    var utilityActions: some View {
+        #if os(macOS)
+        Button("Refresh") {
+            guard refreshing == false else {
+                return
+            }
+            refreshTask()
+        }
+        .keyboardShortcut(.init("R", modifiers: .command))
+        .disabled(refreshing)
+        #endif
+
+        Picker("Mode", selection: $appModel.statusRowMode) {
+            Image(systemName: "tablecells").tag(StatusRow.Mode.large)
+            Image(systemName: "list.dash").tag(StatusRow.Mode.mini)
+        }
+        .pickerStyle(.inline)
+
+        ValueView(value: false) { value in
+            Button("Save") {
+                value.wrappedValue = true
+            }
+            // swiftlint:disable:next force_try
+            .fileExporter(isPresented: value, document: try! JSONDocument(content), contentType: .json) { _ in }
+        }
+
     }
 
     func filter(_ status: Status) -> Bool {
