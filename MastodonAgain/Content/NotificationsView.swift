@@ -33,7 +33,7 @@ struct NotificationTypeView: View {
         List(notifications) { notification in
             switch type {
             case .follow:
-                AccountRow(account: notification.account!)
+                AccountRow(account: .constant(notification.account!)) // TODO
                 .listRowSeparator(.visible, edges: .bottom)
             case .favourite:
                 MiniStatusRow(status: .constant(notification.status!))
@@ -72,7 +72,11 @@ struct NotificationTypeView: View {
 
 struct AccountRow: View {
 
-    let account: Account
+    @Binding
+    var account: Account
+
+    @State
+    var relationship: Relationship?
 
     var body: some View {
         VStack {
@@ -117,8 +121,7 @@ struct AccountRow: View {
             DebugDescriptionView(account.emojis).debuggingInfo()
 
             HStack {
-                Button("Un/Follow") {
-                }
+                AccountActions(account: $account, relationship: $relationship)
                 Button("Un/Mute") {
                 }
                 Button("Un/Block") {

@@ -65,7 +65,6 @@ struct MainView: View {
             .padding(4)
             .background(Color.orange.opacity(0.75).cornerRadius(8))
             .padding()
-
         }
     }
 }
