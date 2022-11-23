@@ -5,6 +5,7 @@ import SwiftUI
 // TODO: Sendable view?
 struct PagedContentView<Row, Fetch>: View where Row: View, Fetch: FetchProtocol {
     typealias Content = PagedContent<Fetch>
+    typealias PageElement = Content.Element
 
     @Binding
     var content: Content
@@ -12,11 +13,20 @@ struct PagedContentView<Row, Fetch>: View where Row: View, Fetch: FetchProtocol 
     @Binding
     var isFetching: Bool
 
+    let filter: (PageElement) -> Bool
+
+    @ViewBuilder
+    let row: (Binding<PageElement>) -> Row
+
     @Environment(\.errorHandler)
     var errorHandler
 
-    @ViewBuilder
-    let row: (Binding<Content.Element>) -> Row
+    init(content: Binding<Content>, isFetching: Binding<Bool>, filter: @escaping (PageElement) -> Bool = { _ in true }, row: @escaping (Binding<PageElement>) -> Row) {
+        self._content = content
+        self._isFetching = isFetching
+        self.filter = filter
+        self.row = row
+    }
 
     var body: some View {
         if content.pages.isEmpty {
@@ -47,7 +57,7 @@ struct PagedContentView<Row, Fetch>: View where Row: View, Fetch: FetchProtocol 
                     }
                     content.pages[index] = newValue
                 }
-                PageView(page: pageBinding, row: row)
+                PageView(page: pageBinding, filter: filter, row: row)
             }
             HStack {
                 Spacer()
@@ -108,6 +118,7 @@ struct PagedContentView<Row, Fetch>: View where Row: View, Fetch: FetchProtocol 
         @Binding
         var page: Page
 
+        let filter: (Page.Element) -> Bool
         let row: (Binding<Page.Element>) -> Row
 
         var body: some View {
@@ -115,7 +126,7 @@ struct PagedContentView<Row, Fetch>: View where Row: View, Fetch: FetchProtocol 
                 DebugDescriptionView(page)
             }
             .debuggingInfo()
-            ForEach(page.elements) { element in
+            ForEach(filteredElements) { element in
                 let id = element.id
                 let binding = Binding {
                     element
@@ -127,6 +138,10 @@ struct PagedContentView<Row, Fetch>: View where Row: View, Fetch: FetchProtocol 
                 }
                 row(binding)
             }
+        }
+
+        var filteredElements: [Page.Element] {
+            page.elements.filter({ filter($0) })
         }
     }
 }

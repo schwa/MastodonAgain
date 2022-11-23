@@ -31,16 +31,20 @@ struct TimelineView: View, Sendable {
     @StateObject
     var stackModel = StackModel()
 
+    @State
+    var search: String = ""
+
     @ViewBuilder
     var body: some View {
         List(selection: $selection) {
             DebugDescriptionView(timeline).debuggingInfo()
-            PagedContentView(content: $content, isFetching: $refreshing) { status in
+            PagedContentView(content: $content, isFetching: $refreshing, filter: self.filter) { status in
                 StatusRow(status: status, mode: appModel.statusRowMode)
                     .isSelected(selection.contains(status.id))
             }
             .listSectionSeparator(.visible, edges: .bottom)
         }
+        .searchable(text: $search)
         .toolbar {
             Button("Refresh") {
                 guard refreshing == false else {
@@ -76,6 +80,24 @@ struct TimelineView: View, Sendable {
             }
             refreshTask()
         }
+    }
+
+    func filter(_ status: Status) -> Bool {
+        let search = search.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !search.isEmpty else {
+            return true
+        }
+
+        // TODO: use better string searching than 'contains'
+        // TODO: this is painfully slow when there are a lot of statuses. Use FTS algorithms.
+        // swiftlint:disable:next force_try
+        if try! status.content.plainText.contains(search) {
+            return true
+        }
+        if status.account.acct.contains(search) || status.account.username?.contains(search) ?? false || status.account.displayName.contains(search) {
+            return true
+        }
+        return false
     }
 
     func refreshTask(direction: PagingDirection? = nil) {

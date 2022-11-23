@@ -38,8 +38,8 @@ extension HTML: CustomStringConvertible {
     }
 }
 
-extension HTML {
-    var text: String {
+public extension HTML {
+    var plainText: String {
         get throws {
             try SwiftSoup.parseBodyFragment(rawValue).text()
         }
@@ -101,7 +101,7 @@ public extension HTML {
             print("ERROR PARSING HTML: \(error)")
             print(rawValue)
             // swiftlint:disable:next force_try
-            return AttributedString(try! text, attributes: .init([
+            return AttributedString(try! plainText, attributes: .init([
                 .strikethroughStyle: 1,
                 .strikethroughColor: Color.red
             ]))
