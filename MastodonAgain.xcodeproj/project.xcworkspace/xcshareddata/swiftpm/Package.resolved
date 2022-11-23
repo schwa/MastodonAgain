@@ -12,7 +12,7 @@
     {
       "identity" : "everything",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/schwa/Everything.git",
+      "location" : "https://github.com/schwa/Everything",
       "state" : {
         "branch" : "main",
         "revision" : "5d89bd2ef90bbe9bc56f830bae66d40fbdde4220"
