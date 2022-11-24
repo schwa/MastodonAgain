@@ -21,7 +21,7 @@ struct TimelineView: View, Sendable {
     @State
     var refreshing = false
 
-    init(timeline: Timeline) {
+    init(_ timeline: Timeline) {
         self.timeline = timeline
     }
 

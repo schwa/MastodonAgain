@@ -1,5 +1,5 @@
-import SwiftUI
 import AsyncAlgorithms
+import SwiftUI
 
 actor Announcer {
     var announcements = AsyncChannel<Announcement>()
@@ -89,7 +89,6 @@ struct AnnouncementView: View {
         style.makeBody(configuration: .init(announcement: announcement))
             .overlay(alignment: .topLeading) {
                 Button(title: "Close", systemImage: "xmark") {
-                    
                 }
                 .buttonStyle(CircleButtonStyle())
             }
@@ -154,5 +153,4 @@ struct CircleButtonStyle: ButtonStyle {
             configuration.icon
         }
     }
-
 }

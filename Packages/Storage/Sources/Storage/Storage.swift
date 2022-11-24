@@ -44,6 +44,8 @@ public class Storage {
         }
     }
 
+
+
     public func register<T>(type: T.Type, encoder: @escaping (T) throws -> Data, decoder: @escaping (Data) throws -> T) {
         let type = TypeID(T.self)
         encoders[type] = {

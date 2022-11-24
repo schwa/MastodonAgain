@@ -3,7 +3,8 @@ import Mastodon
 import SwiftUI
 
 struct AccountInfoView: View {
-    let id: Account.ID
+    @State
+    var id: Account.ID?
 
     @State
     var account: Account?
@@ -17,13 +18,8 @@ struct AccountInfoView: View {
     @EnvironmentObject
     var instanceModel: InstanceModel
 
-    init(id: Account.ID) {
+    init(_ id: Account.ID?) {
         self.id = id
-    }
-
-    init(account: Account) {
-        id = account.id
-        self.account = account
     }
 
     @State
@@ -31,8 +27,13 @@ struct AccountInfoView: View {
 
     var body: some View {
         FetchableValueView(value: account, canRefresh: false) { [instanceModel, id] in
-            try await instanceModel.service.perform { baseURL, token in
-                MastodonAPI.Accounts.Retrieve(baseURL: baseURL, token: token, id: id)
+            if let id {
+                return try await instanceModel.service.perform { baseURL, token in
+                    MastodonAPI.Accounts.Retrieve(baseURL: baseURL, token: token, id: id)
+                }
+            }
+            else {
+                return await instanceModel.signin.account
             }
         } content: { account in
             VStack {
@@ -105,25 +106,5 @@ struct AccountInfoView: View {
     @ViewBuilder
     var followers: some View {
         PlaceholderShape().stroke()
-    }
-}
-
-// MARK: -
-
-struct MeAccountInfoView: View {
-    @EnvironmentObject
-    var appModel: AppModel
-
-    @EnvironmentObject
-    var instanceModel: InstanceModel
-
-    var body: some View {
-        FetchableValueView { [instanceModel] in
-            try await instanceModel.service.perform { baseURL, token in
-                MastodonAPI.Accounts.Verify(baseURL: baseURL, token: token)
-            }
-        } content: { account in
-            AccountInfoView(account: account)
-        }
     }
 }

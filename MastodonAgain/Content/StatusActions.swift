@@ -50,7 +50,7 @@ struct StatusActions: View {
     @ViewBuilder
     var infoButton: some View {
         Button(systemImage: "info", action: {
-            stackModel.path.append(.status(status.id))
+            stackModel.path.append(Page(id: .status, content: status.id))
         })
     }
 

@@ -6,7 +6,11 @@ import SwiftUI
 
 // TODO: Refactor this code. Move things else.
 
-public enum TimelineType: Codable, Hashable, Sendable {
+public enum Timeline: Codable, Hashable, Sendable {
+    public typealias Content = PagedContent<Fetch<Element>>
+    public typealias Page = Content.Page
+    public typealias Element = Status
+
     case `public`
     case federated
     case local
@@ -49,45 +53,31 @@ public enum TimelineType: Codable, Hashable, Sendable {
         }
     }
 
-    public var image: Image {
+    public var systemImageName: String {
         // TODO: This icon names are almost random.
         switch self {
         case .public:
-            return Image(systemName: "globe.europe.africa")
+            return "globe.europe.africa"
         case .federated:
-            return Image(systemName: "person.3")
+            return "person.3"
         case .local:
-            return Image(systemName: "map")
+            return "map"
         case .hashtag:
-            return Image(systemName: "number.circle")
+            return "number.circle"
         case .home:
-            return Image(systemName: "house")
+            return "house"
         case .list:
-            return Image(systemName: "list.bullet.clipboard")
+            return "list.bullet.clipboard"
         }
     }
-}
 
-// MARK: -
-
-public struct Timeline: Codable, Hashable, Sendable {
-    public let host: String
-    public let timelineType: TimelineType
-
-    public init(host: String, timelineType: TimelineType) {
-        self.host = host
-        self.timelineType = timelineType
+    public var image: Image {
+        Image(systemName: systemImageName)
     }
 
-    public typealias Content = PagedContent<Fetch<Element>>
-    public typealias Page = Content.Page
-    public typealias Element = Status
-}
-
-extension Timeline {
     @RequestBuilder
     func request(baseURL: URL, token: Token) -> some Request {
-        switch timelineType {
+        switch self {
         case .public:
             MastodonAPI.Timelimes.Public(baseURL: baseURL, token: token)
         case .federated:
