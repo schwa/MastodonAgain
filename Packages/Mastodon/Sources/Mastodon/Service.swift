@@ -71,7 +71,7 @@ public extension Service {
         guard let resultGenerator = response.response as? any ResultGenerator else {
             fatalError("Could not get a result generator from a response.")
         }
-        let result = try await session.perform(request: request, response: resultGenerator)
+        let result = try await session.perform(request: request, resultGenerator: resultGenerator)
         guard let result = result as? R2.Result else {
             fatalError("Could not get a result of the correct type.")
         }
