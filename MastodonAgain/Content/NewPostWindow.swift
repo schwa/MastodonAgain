@@ -196,6 +196,7 @@ struct NewPostView: View {
                 let filename = "Untitled.\(filenameExtension)"
 
                 // TODO: get thumbnail from image source
+                // swiftlint:disable:next accessibility_label_for_image
                 let upload = Upload(filename: filename, contentType: type, thumbnail: { try Image(data: data) }, content: { data })
                 await MainActor.run {
                     mediaUploads.append(upload)

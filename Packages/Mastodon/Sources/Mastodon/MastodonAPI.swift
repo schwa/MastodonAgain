@@ -139,37 +139,38 @@ public extension MastodonAPI {
             }
         }
 
-        public struct Update: Request, Response {
-            public typealias Result = Account
-
-            let baseURL: URL
-            let token: Token
-            let discoverable: String?
-            let bot: Bool?
-            let displayName: String?
-            let note: String?
-            let avatar: String? // TODO: Avatar image encoded using multipart/form-data
-            let header: String? // TODO: Avatar image encoded using multipart/form-data
-            let locked: Bool?
-            let sourcePrivacy: String?
-            let sourceSensitive: Bool?
-            let sourceLanguage: String?
-            let fields: [String: String]?
-
-            public var request: some Request {
-                Method.post
-                baseURL
-                URLPath("/api/v1/accounts/update_credentials")
-                Header(name: "Authorization", value: "Bearer \(token.accessToken)")
-//                Form {
-//                }
-                unimplemented() // TODO: TODO
-            }
-
-            public var response: some Response {
-                standardResponse(Application.self)
-            }
-        }
+        // TODO:
+//        public struct Update: Request, Response {
+//            public typealias Result = Account
+//
+//            let baseURL: URL
+//            let token: Token
+//            let discoverable: String?
+//            let bot: Bool?
+//            let displayName: String?
+//            let note: String?
+//            let avatar: String? // TODO: Avatar image encoded using multipart/form-data
+//            let header: String? // TODO: Avatar image encoded using multipart/form-data
+//            let locked: Bool?
+//            let sourcePrivacy: String?
+//            let sourceSensitive: Bool?
+//            let sourceLanguage: String?
+//            let fields: [String: String]?
+//
+//            public var request: some Request {
+//                Method.post
+//                baseURL
+//                URLPath("/api/v1/accounts/update_credentials")
+//                Header(name: "Authorization", value: "Bearer \(token.accessToken)")
+////                Form {
+////                }
+//                unimplemented() // TODO: TODO
+//            }
+//
+//            public var response: some Response {
+//                standardResponse(Application.self)
+//            }
+//        }
 
         public struct Retrieve: Request, Response {
             public typealias Result = Account

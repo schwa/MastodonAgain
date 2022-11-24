@@ -159,8 +159,7 @@ public struct Video {
 extension Video: Transferable {
     public static var transferRepresentation: some TransferRepresentation {
         DataRepresentation(importedContentType: .video) { data in
-            print(data)
-            fatalError()
+            unimplemented()
         }
         FileRepresentation(importedContentType: .video) { file in
             print(file)

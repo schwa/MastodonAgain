@@ -6,7 +6,8 @@
 //
 
 // TODO: Temporarily disable
-SWIFT_STRICT_CONCURRENCY = complete
+// minimal, targeted, complete
+SWIFT_STRICT_CONCURRENCY = minimal
 
 ALWAYS_SEARCH_USER_PATHS = NO
 CLANG_ANALYZER_NONNULL = YES

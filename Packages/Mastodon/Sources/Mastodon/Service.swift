@@ -101,7 +101,7 @@ public extension Service {
     }
 }
 
-public final class AsyncChannelBroadcaster<Element>: Sendable where Element: Sendable {
+public final class AsyncChannelBroadcaster<Element> where Element: Sendable {
     @MainActor
     public var channels: [WeakBox<AsyncChannel<Element>>] = []
 

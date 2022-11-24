@@ -17,7 +17,7 @@ public extension URLRequest {
 public extension URLSession {
     // TODO: Rename
     @available(*, deprecated, message: "Rename")
-    func perform<Resp>(request: some Request, response: Resp) async throws -> Resp.Result where Resp: ResultGenerator {
+    func perform<R2>(request: some Request, response: R2) async throws -> R2.Result where R2: ResultGenerator {
         var partialRequest = PartialRequest()
         try request.apply(request: &partialRequest)
         let urlRequest = try URLRequest(partialRequest)
