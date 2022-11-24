@@ -15,6 +15,9 @@ struct MainView: View {
     @State
     var selection: MainTabs? = MainTabs.home
 
+    @Environment(\.announcer)
+    var announcer
+
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
             SignInPicker()
@@ -30,29 +33,37 @@ struct MainView: View {
                 }
             }
         } detail: {
-            switch selection {
-            case .public, .federated, .home, .local:
-                let timeline = Timeline(host: instanceModel.signin.host, timelineType: selection!.timelineType!)
-                TimelineStack(root: .timeline(timeline))
-            case .me:
-                TimelineStack(root: .me)
-            case .notifications:
-                NotificationsView()
-            #if os(iOS)
+            Group {
+                switch selection {
+                case .public, .federated, .home, .local:
+                    let timeline = Timeline(host: instanceModel.signin.host, timelineType: selection!.timelineType!)
+                    TimelineStack(root: .timeline(timeline))
+                case .me:
+                    TimelineStack(root: .me)
+                case .notifications:
+                    NotificationsView()
+#if os(iOS)
                 case .settings:
                     AppSettings()
-            #endif
-            case .relationships:
-                RelationshipsView()
-            case .none:
-                EmptyView() // TODO: Why are we getting nil for selection?
+#endif
+                default:
+                    EmptyView() // TODO: Why are we getting nil for selection?
+                }
             }
+            .toolbar {
+                Button("!!") {
+                    Task {
+                        await announcer.send(Announcement(heading: "TODO", description: "TODO", callback: {}))
+                    }
+                }
+            }
+            .announcer()
         }
         .toolbar {
             Toggle("Debug", isOn: $appModel.showDebuggingInfo)
                 .toggleStyle(ImageToggleStyle())
         }
-        .overlay(alignment: .bottomLeading) {
+        .overlay(alignment: .bottomTrailing) {
             VStack(spacing: 2) {
                 // swiftlint:disable force_cast
 
