@@ -1,4 +1,6 @@
+import Everything
 import Mastodon
+import Storage
 import SwiftUI
 
 @MainActor
@@ -21,8 +23,17 @@ class AppModel: ObservableObject {
     @AppStorage("statusRowMode")
     var statusRowMode = StatusRow.Mode.large
 
-    @Stored("Signins")
-    var signins: [SignIn] = []
+    @Published
+    var signins: [SignIn] = [] {
+        didSet {
+            // TODO: Hardcoded key
+            Task {
+                try await storage.set(key: "signins", value: signins)
+            }
+        }
+    }
+
+    let storage: Storage
 
     @AppStorage("currentSigninID")
     private var currentSigninID: SignIn.ID?
@@ -55,6 +66,17 @@ class AppModel: ObservableObject {
             let instance = InstanceModel(signin: signIn)
             instances[signIn.name] = instance
             return instance
+        }
+    }
+
+    init() {
+        storage = Storage { registration in
+            registration.registerJSON(type: [SignIn].self)
+        }        // TODO: this can contain sensitive info ("tokens")
+        Task {
+            let path = try FSPath.specialDirectory(.applicationSupportDirectory).withPathExtension("v1-storage.data")
+            try await storage.open(path: path.path)
+            self.signins = try await storage.get(key: "signins") ?? []
         }
     }
 }

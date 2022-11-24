@@ -35,20 +35,20 @@ public actor Service {
         self.host = host
         self.authorization = authorization
 
-        do {
-            let path = (try FSPath.specialDirectory(.cachesDirectory) / host.replacing(".", with: "-")).withPathExtension("v1-storage.data")
-            storage = Storage { registration in
-                registration.registerJSON(type: Dated<Status>.self)
-                registration.registerJSON(type: Timeline.Content.self)
-                registration.registerJSON(type: [Account.ID: Relationship].self)
-            }
-            Task {
+        storage = Storage { registration in
+            registration.registerJSON(type: Dated<Status>.self)
+            registration.registerJSON(type: Timeline.Content.self)
+            registration.registerJSON(type: [Account.ID: Relationship].self)
+        }
+        Task {
+            do {
+                let path = (try FSPath.specialDirectory(.cachesDirectory) / host.replacing(".", with: "-")).withPathExtension("v1-storage.data")
                 try await storage.open(path: path.path)
                 try await storage.compact()
             }
-        }
-        catch {
-            fatal(error: error)
+            catch {
+                fatal(error: error)
+            }
         }
     }
 
