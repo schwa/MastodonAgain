@@ -24,7 +24,7 @@ public actor Service {
 
     // TODO: There's a whole lot of any going on.
 
-    public enum BroadcasterKey: Hashable {
+    public enum BroadcasterKey: Hashable, Sendable {
         case timeline(Timeline)
         case relationships
     }
@@ -86,7 +86,7 @@ public extension Service {
         try await perform(request: requestResponse, response: requestResponse)
     }
 
-    func perform<R>(_ requestResponse: (URL, Token) -> R) async throws -> R.Result where R: Request & Response {
+    func perform<R>(_ requestResponse: @Sendable (URL, Token) -> R) async throws -> R.Result where R: Request & Response {
         let requestResponse = requestResponse(baseURL, authorization.token!)
         return try await perform(requestResponse: requestResponse)
     }
@@ -101,7 +101,7 @@ public extension Service {
     }
 }
 
-public class AsyncChannelBroadcaster<Element> where Element: Sendable {
+public final class AsyncChannelBroadcaster<Element>: Sendable where Element: Sendable {
     @MainActor
     public var channels: [WeakBox<AsyncChannel<Element>>] = []
 
@@ -123,7 +123,7 @@ public class AsyncChannelBroadcaster<Element> where Element: Sendable {
     }
 }
 
-public class AnyAsyncChannelBroadcaster {
+public final class AnyAsyncChannelBroadcaster {
     public let base: Any
 
     public init(_ base: AsyncChannelBroadcaster<some Any>) {

@@ -220,7 +220,7 @@ struct NewPostView: View {
                     return try await Array(group)
                 }
                 newPost.mediaIds = mediaAttachments.map(\.id)
-                _ = try await instanceModel.service.perform { baseURL, token in
+                _ = try await instanceModel.service.perform { [newPost] baseURL, token in
                     MastodonAPI.Statuses.Publish(baseURL: baseURL, token: token, post: newPost)
                 }
                 await MainActor.run {

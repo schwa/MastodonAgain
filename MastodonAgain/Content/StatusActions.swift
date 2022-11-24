@@ -179,7 +179,7 @@ struct StatusActions: View {
     // MARK: -
 
     func updateStatus() async throws {
-        let newStatus = try await instanceModel.service.perform { baseURL, token in
+        let newStatus = try await instanceModel.service.perform { [status] baseURL, token in
             MastodonAPI.Statuses.View(baseURL: baseURL, token: token, id: status.id)
         }
         await MainActor.run {

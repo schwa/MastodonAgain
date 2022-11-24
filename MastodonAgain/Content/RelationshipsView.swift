@@ -23,9 +23,10 @@ struct RelationshipsView: View {
                 .listRowSeparator(.visible, edges: .bottom)
         }
         .task {
+            let channel = await instanceModel.service.broadcaster(for: .relationships, element: [Account.ID: Relationship].self).makeChannel()
             await errorHandler {
                 Task {
-                    for try await relationships in await instanceModel.service.broadcaster(for: .relationships, element: [Account.ID: Relationship].self).makeChannel() {
+                    for try await relationships in channel {
                         appLogger?.log("XXX: Got \(relationships.count) relationships from storage")
                         await MainActor.run {
                             self.relationships.merge(relationships) { _, rhs in

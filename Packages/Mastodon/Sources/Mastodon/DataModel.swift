@@ -417,7 +417,7 @@ public extension NewPost {
     }
 }
 
-public struct Relationship: Codable, Identifiable {
+public struct Relationship: Codable, Identifiable, Sendable {
     public let id: Account.ID
     public let following, showingReblogs, notifying, followedBy: Bool
     public let blocking, blockedBy, muting, mutingNotifications: Bool
@@ -475,7 +475,7 @@ public struct List: Codable {
     public var title: String
 }
 
-public struct SignIn: Codable, Identifiable {
+public struct SignIn: Codable, Identifiable, Sendable {
     public var id: String {
         name
     }
