@@ -4,6 +4,8 @@ import Everything
 import Foundation
 import SwiftUI
 
+// TODO: Refactor this code. Move things else.
+
 public enum TimelineType: Codable, Hashable, Sendable {
     case `public`
     case federated
@@ -127,6 +129,7 @@ public extension Service {
             try await fetchRelationships(ids: page.elements.map(\.account.id))
 
             // TODO:
+            // https://github.com/schwa/MastodonAgain/issues/46
             // We need to make sure all pages are in the correct order.
             // We need to make sure all pages are unique
             // We need to make sure no elements appear twice
