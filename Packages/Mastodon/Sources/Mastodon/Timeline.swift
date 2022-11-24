@@ -71,8 +71,8 @@ public enum Timeline: Codable, Hashable, Sendable {
         }
     }
 
-    public var image: Image {
-        Image(systemName: systemImageName)
+    public var label: some View {
+        Label(title, systemImage: systemImageName)
     }
 
     @RequestBuilder

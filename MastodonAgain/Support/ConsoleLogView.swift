@@ -18,8 +18,8 @@
             }
 
             func start() async {
-                let oneHourAgo = logStore.position(date: Date().addingTimeInterval(-1 * 5))
-                let newEntries = try! logStore.getEntries(at: oneHourAgo).compactMap { $0 as? OSLogEntryLog }
+                let before = logStore.position(date: Date().addingTimeInterval(-1 * 5))
+                let newEntries = try! logStore.getEntries(at: before).compactMap { $0 as? OSLogEntryLog }
 
                 await MainActor.run {
                     self.entries.append(contentsOf: newEntries)

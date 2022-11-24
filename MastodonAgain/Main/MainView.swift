@@ -53,8 +53,6 @@ struct MainView: View {
             ForEach(router.root, id: \.self) { id in
                 router.label(for: id)
             }
-            Spacer()
-//            router.label(for: )
         }
     }
 
@@ -106,6 +104,11 @@ struct Page <Subject>: PageProtocol {
     let id: PageID
     let subject: Subject
 
+    init(id: PageID, subject: Subject) {
+        self.id = id
+        self.subject = subject
+    }
+
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.id == rhs.id
     }
@@ -139,21 +142,15 @@ enum PageID: CaseIterable {
     case relationships
     case account
     case status
-}
-
-protocol PageView: View {
-    associatedtype Subject
-    associatedtype Label_: View
-
-    var label: Label_ { get }
-
-    init(_ subject: Subject)
+    #if os(macOS)
+    case log
+    #endif
 }
 
 // MARK: -
 
 struct Router {
-    let root: [AnyPage] = [
+    var root: [AnyPage] = [
         Page(id: .homeTimeline, subject: Timeline.home),
         Page(id: .localTimeline, subject: Timeline.local),
         Page(id: .publicTimeline, subject: Timeline.public),
@@ -163,67 +160,53 @@ struct Router {
         Page(id: .account, subject: Account.ID?.none as Any),
     ]
 
+    init() {
+//        #if os(macOS)
+//        root.append(Page(id: .log, subject: ()))
+//        #endif
+    }
+
+    @ViewBuilder
     func label(for page: AnyPage) -> some View {
-        pageView(for: page).label.eraseToAnyView()
+        switch page.id {
+        case .homeTimeline, .localTimeline, .publicTimeline, .federatedTimeline:
+            (page.subject as! Timeline).label
+        case .notifications:
+            Label("Notifications", systemImage: "gear")
+        case .relationships:
+            Label("relationships", systemImage: "gear")
+        case .account:
+            // Name varies depending on subject
+            Label("Account", systemImage: "gear")
+        case .status:
+            Label("Status", systemImage: "gear")
+#if os(macOS)
+        case .log:
+            Label("Log", systemImage: "gear")
+#endif
+        }
     }
 
+    @ViewBuilder
     func view(for page: AnyPage) -> some View {
-        pageView(for: page).eraseToAnyView()
-    }
-
-    func pageView(for page: AnyPage) -> any PageView {
         switch page.id {
         case .homeTimeline, .localTimeline, .publicTimeline, .federatedTimeline:
             let subject = page.subject as! Timeline
-            return TimelineView(subject)
+            TimelineView(subject).eraseToAnyView()
         case .notifications:
-            return NotificationsView()
+            NotificationsView()
         case .relationships:
-            return RelationshipsView()
+            RelationshipsView()
         case .account:
             let id = page.subject as? Account.ID
-            return AccountInfoView(id)
+            AccountInfoView(id)
         case .status:
             let id = page.subject as? Status.ID
-            return StatusInfoView(id)
+            StatusInfoView(id)
+#if os(macOS)
+        case .log:
+            ConsoleLogView()
+#endif
         }
-    }
-}
-
-extension TimelineView: PageView {
-    var label: some View {
-        Label(timeline.title, systemImage: timeline.systemImageName)
-    }
-}
-
-extension NotificationsView: PageView {
-    var label: some View {
-        Label("Notifications", systemImage: "gear")
-    }
-    init(_ subject: ()) {
-        self.init()
-    }
-}
-
-extension RelationshipsView: PageView {
-    var label: some View {
-        Label("Relationships", systemImage: "gear")
-    }
-    init(_ subject: ()) {
-        self.init()
-    }
-}
-
-extension AccountInfoView: PageView {
-    typealias subject = Account.ID?
-    var label: some View {
-        Label("Account", systemImage: "gear")
-    }
-}
-
-extension StatusInfoView: PageView {
-    typealias subject = Status.ID?
-    var label: some View {
-        Label("Status", systemImage: "gear")
     }
 }
