@@ -21,7 +21,7 @@ public enum StorageError: Error {
 
 // MARK: -
 
-public class Storage {
+public actor Storage {
     @_spi(SPI)
     public private(set) var cache: [Key: Record] = [:]
 
@@ -53,15 +53,6 @@ public class Storage {
         closure(&registration)
         encoders = registration.encoders
         decoders = registration.decoders
-    }
-
-    deinit {
-        do {
-            try close()
-        }
-        catch {
-            logger?.error("Caught error while closing storage: \(error)")
-        }
     }
 
     public func open(path: String) throws {
@@ -124,6 +115,21 @@ public class Storage {
         self.log = try StorageLog(path: newPath)
     }
 
+    public func get<K, V>(key: K, type: V.Type) throws -> V? where K: Codable, V: Codable {
+        let key = try Key(key)
+        return try get(key: key, type: type)
+    }
+
+    public func get<K, V>(key: K) throws -> V? where K: Codable, V: Codable {
+        let key = try Key(key)
+        return try get(key: key, type: V.self)
+    }
+
+    public func set<K, V>(key: K, value: V) throws where K: Codable, V: Codable {
+        let key = try Key(key)
+        try update(key: key, newValue: value)
+    }
+
     @_spi(SPI)
     public func get<V>(key: Key, type: V.Type) throws -> V? where V: Codable {
         guard let record = cache[key] else {
@@ -178,6 +184,7 @@ public class Storage {
 
 // MARK: -
 
+@available(*, deprecated, message: "Not safe in actor")
 public extension Storage {
     subscript<V>(key: some Codable) -> V? where V: Codable {
         get {

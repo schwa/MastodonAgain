@@ -105,7 +105,7 @@ public extension Service {
 
     func fetchPageForTimeline(_ timeline: Timeline) async throws {
         Task {
-            var content = storage[timeline] ?? Timeline.Content()
+            var content = try await storage.get(key: timeline) ?? Timeline.Content()
             await broadcaster(for: .timeline(timeline), element: Timeline.Content.self).broadcast(content)
 
             let request = timeline.request(baseURL: baseURL, token: authorization.token!)
@@ -126,7 +126,7 @@ public extension Service {
 
             let reducedPage = content.reducePageToFit(page)
             content.pages.insert(reducedPage, at: 0)
-            storage[timeline] = content
+            try await storage.set(key: timeline, value: content)
             await broadcaster(for: .timeline(timeline), element: Timeline.Content.self).broadcast(content)
             return content
         }
@@ -209,7 +209,7 @@ public extension Service {
     // TODO: String keys.
 
     func fetchAllKnownRelationships() async throws {
-        let relationships = storage["relationships"] ?? [Account.ID: Relationship]()
+        let relationships = try await storage.get(key: "relationships") ?? [Account.ID: Relationship]()
         await broadcaster(for: .relationships, element: [Account.ID: Relationship].self).broadcast(relationships)
     }
 
@@ -218,7 +218,7 @@ public extension Service {
         let ids = Array(Set(ids))
         // We're gonna be broadcasting the shit out of these relationships.
         let broadcaster = broadcaster(for: .relationships, element: [Account.ID: Relationship].self)
-        let storedRelationships = storage["relationships"] ?? [Account.ID: Relationship]()
+        let storedRelationships = try await storage.get(key: "relationships") ?? [Account.ID: Relationship]()
         if !remoteOnly {
             // Get relationships we already know about that match input and broadcast them.
             let relationships = storedRelationships.filter({ ids.contains($0.key) })
@@ -241,9 +241,7 @@ public extension Service {
                 await broadcaster.broadcast(filteredRelationships)
             }
             // Save all relationships to disk
-            await MainActor.run {
-                storage["relationships"] = allRelationships
-            }
+            try await storage.set(key: "relationships", value: allRelationships)
         }
     }
 }

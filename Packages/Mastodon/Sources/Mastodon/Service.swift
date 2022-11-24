@@ -42,23 +42,25 @@ public actor Service {
                 registration.registerJSON(type: Timeline.Content.self)
                 registration.registerJSON(type: [Account.ID: Relationship].self)
             }
-            try storage.open(path: path.path)
-            try storage.compact()
+            Task {
+                try await storage.open(path: path.path)
+                try await storage.compact()
+            }
         }
         catch {
             fatal(error: error)
         }
     }
 
-    public func update(_ value: Status) {
+    public func update(_ value: Status) async throws {
         // TODO: Insert by date
-        storage[value.id.rawValue] = Dated<Status>(value)
+        try await storage.set(key: value.id.rawValue, value: Dated<Status>(value))
     }
 
-    public func update(_ other: some Collection<Status>) {
+    public func update(_ other: some Collection<Status>) async throws {
         let now = Date.now
         for value in other {
-            storage[value.id.rawValue] = Dated(value, date: now)
+            try await storage.set(key: [value.id.rawValue], value: Dated(value, date: now))
         }
     }
 }
