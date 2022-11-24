@@ -27,12 +27,32 @@ public class Storage {
 
     @_spi(SPI)
     public private(set) var log: StorageLog?
-    internal var encoders: [TypeID: (Any) throws -> Data] = [:]
-    internal var decoders: [TypeID: (Data) throws -> Any] = [:]
+    internal let encoders: [TypeID: (Any) throws -> Data]
+    internal let decoders: [TypeID: (Data) throws -> Any]
+
+    public struct Registration {
+        internal var encoders: [TypeID: (Any) throws -> Data] = [:]
+        internal var decoders: [TypeID: (Data) throws -> Any] = [:]
+
+        public mutating func register<T>(type: T.Type, encoder: @escaping (T) throws -> Data, decoder: @escaping (Data) throws -> T) {
+            let type = TypeID(T.self)
+            encoders[type] = {
+                // swiftlint:disable:next force_cast
+                try encoder($0 as! T) // TODO: FIx this
+            }
+            decoders[type] = {
+                try decoder($0)
+            }
+        }
+    }
 
     var channels: [Key: WeakBox<AsyncChannel<Storage.Event>>] = [:]
 
-    public init() {
+    public init(_ closure: (inout Registration) -> Void) {
+        var registration = Registration()
+        closure(&registration)
+        encoders = registration.encoders
+        decoders = registration.decoders
     }
 
     deinit {
@@ -41,19 +61,6 @@ public class Storage {
         }
         catch {
             logger?.error("Caught error while closing storage: \(error)")
-        }
-    }
-
-
-
-    public func register<T>(type: T.Type, encoder: @escaping (T) throws -> Data, decoder: @escaping (Data) throws -> T) {
-        let type = TypeID(T.self)
-        encoders[type] = {
-            // swiftlint:disable:next force_cast
-            try encoder($0 as! T) // TODO: FIx this
-        }
-        decoders[type] = {
-            try decoder($0)
         }
     }
 

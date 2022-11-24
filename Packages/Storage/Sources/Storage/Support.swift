@@ -28,8 +28,8 @@ public struct WeakBox<Content> where Content: AnyObject {
     }
 }
 
-public extension Storage {
-    func registerJSON(type: (some Codable).Type, encoder: JSONEncoder = JSONEncoder(), decoder: JSONDecoder = JSONDecoder()) {
+public extension Storage.Registration {
+    mutating func registerJSON(type: (some Codable).Type, encoder: JSONEncoder = JSONEncoder(), decoder: JSONDecoder = JSONDecoder()) {
         register(type: type) {
             try encoder.encode($0)
         } decoder: {
