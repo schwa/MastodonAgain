@@ -2,8 +2,6 @@
 
 I did a bad thing.
 
-![](Documentation/Screenshot%202022-10-30%20at%2022.38.35.png)
-
 ## Requirements
 
 This project is aimed at macOS 13 Ventura and higher. Back-porting to macOS 12 may be possible but would be a lot of work. Pull requests would be welcome but macOS 12 and older support is not and likely won't be a priority.
