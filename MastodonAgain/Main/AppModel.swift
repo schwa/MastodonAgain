@@ -70,13 +70,17 @@ class AppModel: ObservableObject {
     }
 
     init() {
-        storage = Storage { registration in
-            registration.registerJSON(type: [SignIn].self)
-        }        // TODO: this can contain sensitive info ("tokens")
-        Task {
-            let path = try FSPath.specialDirectory(.applicationSupportDirectory).withPathExtension("v1-storage.data")
-            try await storage.open(path: path.path)
-            self.signins = try await storage.get(key: "signins") ?? []
+        do {
+            let path = try FSPath.specialDirectory(.applicationSupportDirectory) / "AppData.v1-storage.data"
+            storage = try Storage(path: path.path) { registration in
+                registration.registerJSON(type: [SignIn].self)
+            }        // TODO: this can contain sensitive info ("tokens")
+            Task {
+                self.signins = try await storage.get(key: "signins") ?? []
+            }
+        }
+        catch {
+            fatal(error: error)
         }
     }
 }

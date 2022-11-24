@@ -31,24 +31,15 @@ public actor Service {
 
     internal var broadcasters: [BroadcasterKey: AnyAsyncChannelBroadcaster] = [:]
 
-    public init(host: String, authorization: Authorization) {
+    public init(host: String, authorization: Authorization) throws {
         self.host = host
         self.authorization = authorization
 
-        storage = Storage { registration in
+        let path = (try FSPath.specialDirectory(.cachesDirectory) / host.replacing(".", with: "-")).withPathExtension("v1-storage.data")
+        storage = try Storage(path: path.path) { registration in
             registration.registerJSON(type: Dated<Status>.self)
             registration.registerJSON(type: Timeline.Content.self)
             registration.registerJSON(type: [Account.ID: Relationship].self)
-        }
-        Task {
-            do {
-                let path = (try FSPath.specialDirectory(.cachesDirectory) / host.replacing(".", with: "-")).withPathExtension("v1-storage.data")
-                try await storage.open(path: path.path)
-                try await storage.compact()
-            }
-            catch {
-                fatal(error: error)
-            }
         }
     }
 

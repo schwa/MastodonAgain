@@ -120,7 +120,7 @@ class SignInViewModel: NSObject, ObservableObject {
     func getAccountDetails() async throws -> SignIn {
         guard let host else { throw SignInError.noHost }
 
-        let service = Service(host: host, authorization: authorization)
+        let service = try Service(host: host, authorization: authorization)
         let account = try await service.perform { baseURL, token in
             MastodonAPI.Accounts.Verify(baseURL: baseURL, token: token)
         }

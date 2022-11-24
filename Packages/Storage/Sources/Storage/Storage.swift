@@ -22,17 +22,15 @@ public enum StorageError: Error {
 // MARK: -
 
 public actor Storage {
-    @_spi(SPI)
-    public private(set) var cache: [Key: Record] = [:]
-
-    @_spi(SPI)
-    public private(set) var log: StorageLog?
-    internal let encoders: [TypeID: (Any) throws -> Data]
-    internal let decoders: [TypeID: (Data) throws -> Any]
+    let encoders: [TypeID: (Any) throws -> Data]
+    let decoders: [TypeID: (Data) throws -> Any]
+    let log: StorageLog?
+    var channels: [Key: WeakBox<AsyncChannel<Storage.Event>>] = [:]
+    var cache: [Key: Record]
 
     public struct Registration {
-        internal var encoders: [TypeID: (Any) throws -> Data] = [:]
-        internal var decoders: [TypeID: (Data) throws -> Any] = [:]
+        var encoders: [TypeID: (Any) throws -> Data] = [:]
+        var decoders: [TypeID: (Data) throws -> Any] = [:]
 
         public mutating func register<T>(type: T.Type, encoder: @escaping (T) throws -> Data, decoder: @escaping (Data) throws -> T) {
             let type = TypeID(T.self)
@@ -46,30 +44,35 @@ public actor Storage {
         }
     }
 
-    var channels: [Key: WeakBox<AsyncChannel<Storage.Event>>] = [:]
-
-    public init(_ closure: (inout Registration) -> Void) {
+    public init(path: String, compact: Bool = true, _ closure: (inout Registration) -> Void) throws {
+        logger?.log("Opening \(path)")
         var registration = Registration()
         closure(&registration)
         encoders = registration.encoders
         decoders = registration.decoders
-    }
 
-    public func open(path: String) throws {
         if FileManager().fileExists(atPath: path) {
+            var cache: [Key: Record] = [:]
             let data = try StorageLog.read(path: path)
             try data.forEach { key, value in
                 let (type, data) = value
-                let decoder = try decoders[type].safelyUnwrap(StorageError.noDecoderFound(type))
+                let decoder = try registration.decoders[type].safelyUnwrap(StorageError.noDecoderFound(type))
                 let value = try decoder(data)
                 cache[key] = Record(type: type, value: .raw(value))
             }
-        }
-        log = try .init(path: path)
-    }
 
-    public func close() throws {
-        log = nil
+            if compact {
+                log = try Self.compact(path: path, cache: cache, encoders: registration.encoders)
+            }
+            else {
+                log = try .init(path: path)
+            }
+            self.cache = cache
+        }
+        else {
+            self.cache = [:]
+            log = try .init(path: path)
+        }
     }
 
     /// Note this causes the log to flush so we get an accurate reading.
@@ -82,37 +85,32 @@ public actor Storage {
         return try FileManager().attributesOfItem(atPath: log.path)[.size] as! Int
     }
 
-    public func compact() throws {
-        guard let log else {
-            fatalError()
-        }
-
+    internal static func compact(path: String, cache: [Key: Record], encoders: [TypeID: (Any) throws -> Data])  throws -> StorageLog {
         let tempPath = try FSPath.makeTemporaryDirectory() / "compacted.data"
 
         // TODO: This is all rather ugly and likely error prone.
-        do {
-            let newLog = try StorageLog(path: tempPath.path)
-            for (key, record) in cache {
-                let encoder = try encoders[record.type].safelyUnwrap(StorageError.noEncoderFound(record.type))
-                newLog.post {
-                    switch record.value {
-                    case .raw(let value):
-                        let data = try encoder(value)
-                        return .set(record.type, key, data)
-                    case .encoded(let data):
-                        return .set(record.type, key, data)
-                    }
+        let newLog = try StorageLog(path: tempPath.path, newSession: false)
+        for (key, record) in cache {
+            let encoder = try encoders[record.type].safelyUnwrap(StorageError.noEncoderFound(record.type))
+            newLog.post {
+                switch record.value {
+                case .raw(let value):
+                    let data = try encoder(value)
+                    return .set(record.type, key, data)
+                case .encoded(let data):
+                    return .set(record.type, key, data)
                 }
             }
         }
+        try newLog.close()
 
-        let oldPath = log.path
+        let oldPath = path
         let newUrl = try FileManager().replaceItemAt(URL(filePath: oldPath), withItemAt: tempPath.url, options: [.withoutDeletingBackupItem, .usingNewMetadataOnly])
         guard let newPath = newUrl?.path else {
             fatalError()
         }
 
-        self.log = try StorageLog(path: newPath)
+        return try StorageLog(path: newPath)
     }
 
     public func get<K, V>(key: K, type: V.Type) throws -> V? where K: Codable, V: Codable {
@@ -287,27 +285,40 @@ public class StorageLog {
     let encoder = JSONEncoder()
     let queue = DispatchQueue(label: "StorageLog", qos: .default, attributes: [], autoreleaseFrequency: .never, target: nil)
     let group = DispatchGroup()
+    var open = false
+    // TODO: readOnly = false
 
-    init(path: String) throws {
+    init(path: String, newSession: Bool = true) throws {
         self.path = path
         let fd = Darwin.open(path, O_WRONLY | O_CREAT | O_APPEND, 0o755)
         if fd < 0 {
             throw StorageError.fileError(POSIXError(errno)!)
         }
         self.fd = fd
-        post {
-            .session(UUID(), .now)
+        open = true
+        if newSession {
+            post {
+                .session(UUID(), .now)
+            }
         }
     }
 
     deinit {
         do {
-            try flush()
-            Darwin.close(fd)
+            try close()
         }
         catch {
             logger?.error("Caught error in deinit: \(error)")
         }
+    }
+
+    func close() throws {
+        guard open == false else {
+            return
+        }
+        try flush()
+        Darwin.close(fd)
+        open = false
     }
 
     static func read(path: String) throws -> [Key: (TypeID, Data)] {
