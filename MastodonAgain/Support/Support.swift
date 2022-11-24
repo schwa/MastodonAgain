@@ -460,6 +460,7 @@ private let storedStorage = DataStorage()
 
 @propertyWrapper
 // TODO: This doesn't work as well as it should. The inner ObservableObject allows it to work "magically" inside SwiftUI Views but causes failure runtime warnings ourside of views.
+@available(*, deprecated, message: "")
 struct Stored<Value>: DynamicProperty where Value: Codable {
     let key: String
     let defaultValue: Value

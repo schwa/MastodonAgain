@@ -4,6 +4,7 @@ import os
 
 private let logger: Logger? = Logger()
 
+@available(*, deprecated, message: "MESSAGE")
 public class DataStorage {
     public var items: [String: Data] = [:]
 
