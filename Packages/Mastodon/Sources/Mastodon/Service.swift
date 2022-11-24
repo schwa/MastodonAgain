@@ -129,16 +129,4 @@ public final class AnyAsyncChannelBroadcaster {
     public init(_ base: AsyncChannelBroadcaster<some Any>) {
         self.base = base
     }
-
-//    public func broadcast <Element>(_ element: Element) async where Element: Sendable {
-//        // swiftlint:disable:next force_cast
-//        let base = base as! AsyncChannelBroadcaster<Element>
-//        await base.broadcast(element)
-//    }
-//
-//    public func makeChannel <Element>() -> AsyncChannel<Element> where Element: Sendable {
-//        // swiftlint:disable:next force_cast
-//        let base = base as! AsyncChannelBroadcaster<Element>
-//        return base.makeChannel()
-//    }
 }

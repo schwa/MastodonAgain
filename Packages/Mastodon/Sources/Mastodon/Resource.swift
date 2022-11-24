@@ -101,7 +101,6 @@ extension Resource: Encodable where Content == Image {
 // MARK: -
 
 public extension Resource where Content == Image {
-    // swiftlint:disable:next unavailable_function
     init(provider: NSItemProvider) async throws {
         guard let url = try await provider.loadItem(forTypeIdentifier: UTType.image.identifier) as? URL else {
             fatalError("No url")

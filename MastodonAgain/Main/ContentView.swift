@@ -13,7 +13,7 @@ struct ContentView: View {
                     .environmentObject(appModel.instance(for: signin))
             }
             else {
-                SignInView() { signin in
+                SignInView { signin in
                     guard let signin else {
                         return
                     }

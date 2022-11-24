@@ -378,16 +378,6 @@ public struct Tag: Codable, Sendable, Equatable {
 
 // https://docs.joinmastodon.org/methods/statuses/
 public struct NewPost: Codable, Sendable, Equatable {
-    public var status: String
-    public var inReplyTo: Status.ID?
-    public var mediaIds: [MediaAttachment.ID]?
-    // poll
-    public var sensitive: Bool
-    public var spoiler: String?
-    public var visibility: Status.Visibility
-    public var scheduled: Date?
-    public var language: String
-
     public enum CodingKeys: String, CodingKey {
         case status
         case inReplyTo = "in_reply_to_id"
@@ -398,6 +388,16 @@ public struct NewPost: Codable, Sendable, Equatable {
         case scheduled = "scheduled_at"
         case language
     }
+
+    public var status: String
+    public var inReplyTo: Status.ID?
+    public var mediaIds: [MediaAttachment.ID]?
+    // poll
+    public var sensitive: Bool
+    public var spoiler: String?
+    public var visibility: Status.Visibility
+    public var scheduled: Date?
+    public var language: String
 
     public init(status: String, inReplyTo: Status.ID? = nil, mediaIds: [MediaAttachment.ID]? = nil, sensitive: Bool, spoiler: String?, visibility: Status.Visibility, scheduled: Date? = nil, language: String) {
         self.status = status

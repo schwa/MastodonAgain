@@ -10,7 +10,7 @@ struct SigninsView: View {
     var selection: SignIn.ID?
 
     var body: some View {
-        HStack() {
+        HStack {
             VStack(spacing: 0) {
                 List(appModel.signins, selection: $selection) { signin in
                     HStack(alignment: .top) {
@@ -34,7 +34,7 @@ struct SigninsView: View {
                             isPresendingSigninSheet.wrappedValue = true
                         }
                         .sheet(isPresented: isPresendingSigninSheet) {
-                            SignInView() { signin in
+                            SignInView { signin in
                                 if let signin {
                                     appModel.signins.append(signin)
                                 }

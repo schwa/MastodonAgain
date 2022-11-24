@@ -132,7 +132,7 @@ struct LargeStatusContent<Status>: View where Status: StatusProtocol {
     var body: some View {
         VStack(alignment: .leading) {
             if sensitive && appModel.hideSensitiveContent == true {
-                HStack() {
+                HStack {
                     status.spoilerText.nilify().map(Text.init)
                     Toggle("Show Sensitive Content", isOn: $allowSensitive)
                 }
