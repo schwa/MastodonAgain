@@ -53,6 +53,8 @@ struct MainView: View {
             ForEach(router.root, id: \.self) { id in
                 router.label(for: id)
             }
+            Spacer()
+//            router.label(for: )
         }
     }
 
@@ -95,14 +97,14 @@ struct NavStack: View {
 }
 
 protocol PageProtocol: Identifiable, Hashable {
-    associatedtype Content
+    associatedtype Subject
     var id: PageID { get}
-    var content: Content { get}
+    var subject: Subject { get}
 }
 
-struct Page <Content>: PageProtocol {
+struct Page <Subject>: PageProtocol {
     let id: PageID
-    let content: Content
+    let subject: Subject
 
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.id == rhs.id
@@ -115,10 +117,10 @@ struct Page <Content>: PageProtocol {
 
 typealias AnyPage = Page<Any>
 
-extension Page where Content == Any {
+extension Page where Subject == Any {
     init<Base>(_ base: Base) where Base: PageProtocol {
         self.id = base.id
-        self.content = base.content
+        self.subject = base.subject
     }
 }
 
@@ -140,25 +142,25 @@ enum PageID: CaseIterable {
 }
 
 protocol PageView: View {
-    associatedtype Content
+    associatedtype Subject
     associatedtype Label_: View
 
     var label: Label_ { get }
 
-    init(_ content: Content)
+    init(_ subject: Subject)
 }
 
 // MARK: -
 
 struct Router {
     let root: [AnyPage] = [
-        Page(id: .homeTimeline, content: Timeline.home).eraseToAnyPage(),
-        Page(id: .localTimeline, content: Timeline.local).eraseToAnyPage(),
-        Page(id: .publicTimeline, content: Timeline.public).eraseToAnyPage(),
-        Page(id: .federatedTimeline, content: Timeline.federated).eraseToAnyPage(),
-        Page(id: .notifications, content: ()).eraseToAnyPage(),
-        Page(id: .relationships, content: ()).eraseToAnyPage(),
-        Page(id: .account, content: Account.ID?.none).eraseToAnyPage(),
+        Page(id: .homeTimeline, subject: Timeline.home),
+        Page(id: .localTimeline, subject: Timeline.local),
+        Page(id: .publicTimeline, subject: Timeline.public),
+        Page(id: .federatedTimeline, subject: Timeline.federated),
+        Page(id: .notifications, subject: ()),
+        Page(id: .relationships, subject: ()),
+        Page(id: .account, subject: Account.ID?.none as Any),
     ]
 
     func label(for page: AnyPage) -> some View {
@@ -172,17 +174,17 @@ struct Router {
     func pageView(for page: AnyPage) -> any PageView {
         switch page.id {
         case .homeTimeline, .localTimeline, .publicTimeline, .federatedTimeline:
-            let content = page.content as! Timeline
-            return TimelineView(content)
+            let subject = page.subject as! Timeline
+            return TimelineView(subject)
         case .notifications:
             return NotificationsView()
         case .relationships:
             return RelationshipsView()
         case .account:
-            let id = page.content as? Account.ID
+            let id = page.subject as? Account.ID
             return AccountInfoView(id)
         case .status:
-            let id = page.content as? Status.ID
+            let id = page.subject as? Status.ID
             return StatusInfoView(id)
         }
     }
@@ -198,7 +200,7 @@ extension NotificationsView: PageView {
     var label: some View {
         Label("Notifications", systemImage: "gear")
     }
-    init(_ content: ()) {
+    init(_ subject: ()) {
         self.init()
     }
 }
@@ -207,20 +209,20 @@ extension RelationshipsView: PageView {
     var label: some View {
         Label("Relationships", systemImage: "gear")
     }
-    init(_ content: ()) {
+    init(_ subject: ()) {
         self.init()
     }
 }
 
 extension AccountInfoView: PageView {
-    typealias content = Account.ID?
+    typealias subject = Account.ID?
     var label: some View {
         Label("Account", systemImage: "gear")
     }
 }
 
 extension StatusInfoView: PageView {
-    typealias content = Status.ID?
+    typealias subject = Status.ID?
     var label: some View {
         Label("Status", systemImage: "gear")
     }

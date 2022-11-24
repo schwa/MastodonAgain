@@ -110,7 +110,7 @@ struct Avatar: View {
         .contextMenu {
             Text(account)
             Button("Info") {
-                stackModel.path.append(Page(id: .account, content: account.id))
+                stackModel.path.append(Page(id: .account, subject: account.id))
             }
             if let relationship {
                 if relationship.following {
