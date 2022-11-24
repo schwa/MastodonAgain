@@ -26,11 +26,12 @@ struct AccountActions: View {
             followButton
         }
         .buttonStyle(ActionButtonStyle())
-        .task {
-            await errorHandler {
-//                _ = try await updateRelationship()
-            }
-        }
+// TODO
+        //        .task {
+//            await errorHandler {
+////                _ = try await updateRelationship()
+//            }
+//        }
     }
 
     @ViewBuilder
@@ -42,7 +43,7 @@ struct AccountActions: View {
                     defer {
                         inflight.wrappedValue = false
                     }
-                    var relationship = relationship
+//                    let relationship = relationship
 //                    if relationship == nil {
 //                        relationship = try await updateRelationship()
 //                    }

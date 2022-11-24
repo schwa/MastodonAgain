@@ -1,6 +1,6 @@
 import Everything
 import Foundation
-@preconcurrency import SwiftUI
+import SwiftUI
 
 // swiftlint:disable file_length
 

@@ -406,3 +406,7 @@ public extension Image {
         unimplemented()
     }
 }
+
+// TODO: Use a ImageSpecifier instead.
+extension Image: @unchecked Sendable {
+}
