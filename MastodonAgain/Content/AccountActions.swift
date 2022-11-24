@@ -26,12 +26,28 @@ struct AccountActions: View {
             followButton
         }
         .buttonStyle(ActionButtonStyle())
-// TODO
-        //        .task {
-//            await errorHandler {
-////                _ = try await updateRelationship()
-//            }
-//        }
+        .task { [account] in
+            let channel = await instanceModel.service.broadcaster(for: .relationships, element: [Account.ID: Relationship].self).makeChannel()
+            await errorHandler {
+                Task {
+                    for try await relationships in channel {
+                        await MainActor.run {
+                            guard let relationship = relationships[account.id] else {
+                                return
+                            }
+                            appLogger?.log("Got relationship update for \(account.id)")
+
+                            self.relationship = relationship
+                        }
+                    }
+                }
+                appLogger?.log("Fetching relationship for: \(account.id)")
+                try await instanceModel.service.fetchRelationships(ids: [account.id])
+            }
+        }
+        .onChange(of: relationship) { _ in
+            appLogger?.log("\(relationship.debugDescription)")
+        }
     }
 
     @ViewBuilder
@@ -43,25 +59,34 @@ struct AccountActions: View {
                     defer {
                         inflight.wrappedValue = false
                     }
-//                    let relationship = relationship
-//                    if relationship == nil {
-//                        relationship = try await updateRelationship()
-//                    }
                     guard let relationship else {
                         fatalError("TODO")
                     }
                     if !relationship.following {
-                        _ = try await instanceModel.service.perform { baseURL, token in
+                        appLogger?.log("SENDING FOLLOW REQUEST")
+                        let relationship = try await instanceModel.service.perform { baseURL, token in
                             MastodonAPI.Accounts.Follow(baseURL: baseURL, token: token, id: account.id)
+                        }
+                        await MainActor.run {
+                            self.relationship = relationship
                         }
                     }
                     else {
-                        _ = try await instanceModel.service.perform { baseURL, token in
+                        appLogger?.log("SENDING UNFOLLOW REQUEST")
+                        let relationship = try await instanceModel.service.perform { baseURL, token in
                             MastodonAPI.Accounts.Unfollow(baseURL: baseURL, token: token, id: account.id)
                         }
+                        await MainActor.run {
+                            self.relationship = relationship
+                        }
                     }
-                    try await updateAccount()
-//                    try await updateRelationship()
+                }
+            }
+            .contextMenu {
+                Button("Refresh") {
+                    await errorHandler {
+                        try await instanceModel.service.fetchRelationships(ids: [account.id], remoteOnly: true)
+                    }
                 }
             }
             .disabled(relationship == nil)

@@ -103,6 +103,7 @@ extension Timeline {
 }
 
 public extension Service {
+    // TODO: Would love to 'Element' go away here.
     func broadcaster<Element>(for key: BroadcasterKey, element: Element.Type) -> AsyncChannelBroadcaster<Element> where Element: Sendable {
         let broadcaster = broadcasters[key, default: AnyAsyncChannelBroadcaster(AsyncChannelBroadcaster<Element>())]
         broadcasters[key] = broadcaster
@@ -123,7 +124,7 @@ public extension Service {
                 return content
             }
 
-            try await fetchRelationship(ids: page.elements.map(\.account.id))
+            try await fetchRelationships(ids: page.elements.map(\.account.id))
 
             // TODO:
             // We need to make sure all pages are in the correct order.
@@ -214,34 +215,41 @@ extension Fetch: Codable {
 public extension Service {
     // TODO: String keys.
 
-    func fetchRelationship() async throws {
+    func fetchAllKnownRelationships() async throws {
         let relationships = storage["relationships"] ?? [Account.ID: Relationship]()
         await broadcaster(for: .relationships, element: [Account.ID: Relationship].self).broadcast(relationships)
     }
 
-    func fetchRelationship(ids: [Account.ID]) async throws {
+    func fetchRelationships(ids: [Account.ID], remoteOnly: Bool = false) async throws {
+        // De-dupe input.
+        let ids = Array(Set(ids))
+        // We're gonna be broadcasting the shit out of these relationships.
+        let broadcaster = broadcaster(for: .relationships, element: [Account.ID: Relationship].self)
         let storedRelationships = storage["relationships"] ?? [Account.ID: Relationship]()
-        let relationships = storedRelationships.filter({ ids.contains($0.key) })
-        if !relationships.isEmpty {
-            await broadcaster(for: .relationships, element: [Account.ID: Relationship].self).broadcast(relationships)
+        if !remoteOnly {
+            // Get relationships we already know about that match input and broadcast them.
+            let relationships = storedRelationships.filter({ ids.contains($0.key) })
+            if !relationships.isEmpty {
+                await broadcaster.broadcast(relationships)
+            }
         }
-
         Task {
-            // Dedupe.
-            let ids = Array(Set(ids))
-            let relationships = try await perform { baseURL, token in
+            // Fetch relationships from server.
+            let newRelationships = try await perform { baseURL, token in
                 MastodonAPI.Accounts.Relationships(baseURL: baseURL, token: token, ids: ids)
             }
-            let allRelationships = storedRelationships.merging(zip(relationships.map(\.id), relationships)) { _, rhs in
+            // Merge all new relationships with all stored relationships
+            let allRelationships = storedRelationships.merging(zip(newRelationships.map(\.id), newRelationships)) { _, rhs in
                 rhs
             }
+            // Broadcast all relationships that match input
+            let filteredRelationships = allRelationships.filter({ ids.contains($0.key) })
+            if !filteredRelationships.isEmpty {
+                await broadcaster.broadcast(filteredRelationships)
+            }
+            // Save all relationships to disk
             await MainActor.run {
                 storage["relationships"] = allRelationships
-            }
-
-            let filteredRelationships = storedRelationships.filter({ ids.contains($0.key) })
-            if !filteredRelationships.isEmpty {
-                await broadcaster(for: .relationships, element: [Account.ID: Relationship].self).broadcast(filteredRelationships)
             }
         }
     }

@@ -15,7 +15,7 @@ struct RelationshipsView: View {
         Text("\(relationships.count) relationships")
         Button("Reload") {
             Task {
-                try await instanceModel.service.fetchRelationship()
+                try await instanceModel.service.fetchAllKnownRelationships()
             }
         }
         List(Array(relationships.values)) { relationship in
@@ -27,7 +27,6 @@ struct RelationshipsView: View {
             await errorHandler {
                 Task {
                     for try await relationships in channel {
-                        appLogger?.log("XXX: Got \(relationships.count) relationships from storage")
                         await MainActor.run {
                             self.relationships.merge(relationships) { _, rhs in
                                 rhs
@@ -35,7 +34,7 @@ struct RelationshipsView: View {
                         }
                     }
                 }
-                try await instanceModel.service.fetchRelationship()
+                try await instanceModel.service.fetchAllKnownRelationships()
             }
         }
     }

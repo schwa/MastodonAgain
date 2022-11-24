@@ -93,16 +93,18 @@ struct Avatar: View {
             Image(systemName: "person.circle.fill")
         }
         .task {
-            // TODO: this hits the server once per view. WE can batch requests into a single relationships fetch
             await errorHandler { [instanceModel, account] in
-                for await relationships in await instanceModel.service.broadcaster(for: .relationships, element: [Account.ID: Relationship].self).makeChannel() {
-                    if let relationship = relationships[account.id] {
-                        await MainActor.run {
-                            self.relationship = relationship
+                let channel = await instanceModel.service.broadcaster(for: .relationships, element: [Account.ID: Relationship].self).makeChannel()
+                Task {
+                    for await relationships in channel {
+                        if let relationship = relationships[account.id] {
+                            await MainActor.run {
+                                self.relationship = relationship
+                            }
                         }
-                        break
                     }
                 }
+                try await instanceModel.service.fetchRelationships(ids: [account.id])
             }
         }
         .contextMenu {
@@ -112,25 +114,9 @@ struct Avatar: View {
             }
             if let relationship {
                 if relationship.following {
-                    Button("Unfollow") {
-                        await errorHandler {
-                            _ = try await instanceModel.service.perform { baseURL, token in
-                                MastodonAPI.Accounts.Unfollow(baseURL: baseURL, token: token, id: account.id)
-                            }
-                            appLogger?.info("You have unfollowed \(account.acct)")
-                            //                            try await updateRelationship()
-                        }
-                    }
+                    unfollow
                     if relationship.showingReblogs {
-                        Button("Disable Reposts") {
-                            await errorHandler {
-                                _ = try await instanceModel.service.perform { baseURL, token in
-                                    MastodonAPI.Accounts.Follow(baseURL: baseURL, token: token, id: account.id, reblogs: false)
-                                }
-                                appLogger?.info("You have disabled reblogs for \(account.acct)")
-                                try await instanceModel.service.fetchRelationship(ids: [account.id])
-                            }
-                        }
+                        disableReposts
                     }
                 }
                 Button("Edit Note…") {
@@ -141,11 +127,38 @@ struct Avatar: View {
                 Text("Fetching relationship...")
             }
         }
-        //        .alert(isPresented: $isNoteEditorPresented) {
-        //                        TextField("Hello world", text: .constant("Note"))
-        //        }
         .popover(isPresented: $isNoteEditorPresented) {
             AccountNoteEditor(relationship: relationship!, isPresenting: $isNoteEditorPresented)
+        }
+    }
+
+    @ViewBuilder
+    var unfollow: some View {
+        Button("Unfollow") {
+            await errorHandler {
+                let relationship = try await instanceModel.service.perform { baseURL, token in
+                    MastodonAPI.Accounts.Unfollow(baseURL: baseURL, token: token, id: account.id)
+                }
+                appLogger?.info("You have unfollowed \(account.acct)")
+                MainActor.runTask {
+                    self.relationship = relationship
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    var disableReposts: some View {
+        Button("Disable Reposts") {
+            await errorHandler {
+                let relationship = try await instanceModel.service.perform { baseURL, token in
+                    MastodonAPI.Accounts.Follow(baseURL: baseURL, token: token, id: account.id, reblogs: false)
+                }
+                appLogger?.info("You have disabled reblogs for \(account.acct)")
+                MainActor.runTask {
+                    self.relationship = relationship
+                }
+            }
         }
     }
 }

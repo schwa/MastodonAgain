@@ -34,7 +34,7 @@ struct NewPostHost: View {
         NewPostView(newPost: newPost, isPresented: .constant(true))
             .task {
                 if case .reply(let id) = open {
-                    inReplyTo = await instanceModel.service.status(for: id)
+//                    inReplyTo = await instanceModel.service.status(for: id)
                     newPost.inReplyTo = id
                 }
             }

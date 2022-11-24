@@ -403,7 +403,17 @@ public extension Image {
 
 public extension Image {
     init(url: URL) throws {
-        unimplemented()
+#if os(macOS)
+        guard let nsImage = NSImage(contentsOf: url) else {
+            throw MastodonError.generic("Could not load image")
+        }
+        self = Image(nsImage: nsImage)
+#else
+        guard let uiImage = UIImage(contentsOfFile: url.path) else {
+            throw MastodonError.generic("Could not load image")
+        }
+        self = Image(uiImage: uiImage)
+#endif
     }
 }
 

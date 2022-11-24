@@ -94,13 +94,6 @@ public extension Service {
 
 // MARK: -
 
-public extension Service {
-    @available(*, deprecated, message: "Use MastodonAPI directly")
-    func status(for id: Status.ID) async -> Status? {
-        storage[id.rawValue, Dated<Status>.self]?.content
-    }
-}
-
 public final class AsyncChannelBroadcaster<Element> where Element: Sendable {
     @MainActor
     public var channels: [WeakBox<AsyncChannel<Element>>] = []
