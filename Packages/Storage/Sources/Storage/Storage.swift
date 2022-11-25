@@ -91,7 +91,10 @@ public actor Storage {
         // TODO: This is all rather ugly and likely error prone.
         let newLog = try StorageLog(path: tempPath.path, newSession: false)
         for (key, record) in cache {
-            let encoder = try encoders[record.type].safelyUnwrap(StorageError.noEncoderFound(record.type))
+            guard let encoder = encoders[record.type] else {
+                fatalError("No encoder found")
+            }
+
             newLog.post {
                 switch record.value {
                 case .raw(let value):
@@ -152,7 +155,9 @@ public actor Storage {
         let typeID = TypeID(V.self)
         if let newValue {
             cache[key] = Record(type: typeID, value: .raw(newValue))
-            let encoder = try encoders[typeID].safelyUnwrap(StorageError.noEncoderFound(typeID))
+            guard let encoder = encoders[typeID] else {
+                fatalError("No encoder found")
+            }
             let data = try encoder(newValue)
             log.post(event: { .set(typeID, key, data) })
             send(key: key, event: .update)

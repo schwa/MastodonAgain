@@ -27,6 +27,7 @@ public actor Service {
     public enum BroadcasterKey: Hashable, Sendable {
         case timeline(Timeline)
         case relationships
+        case status(Status.ID)
     }
 
     internal var broadcasters: [BroadcasterKey: AnyAsyncChannelBroadcaster] = [:]
@@ -39,6 +40,7 @@ public actor Service {
         storage = try Storage(path: path.path) { registration in
             registration.registerJSON(type: Dated<Status>.self)
             registration.registerJSON(type: Timeline.Content.self)
+            registration.registerJSON(type: Status.self)
             registration.registerJSON(type: [Account.ID: Relationship].self)
         }
     }
@@ -115,5 +117,43 @@ public final class AnyAsyncChannelBroadcaster {
 
     public init(_ base: AsyncChannelBroadcaster<some Any>) {
         self.base = base
+    }
+}
+
+public extension Service {
+    func fetchStatus(id: Status.ID) async throws -> Status? {
+        let broadcaster = broadcaster(for: .status(id), element: Status.self)
+        let status = try await storage.get(key: id, type: Status.self)
+        if let status {
+            return status
+        }
+        else {
+            Task {
+                await tryElseLog {
+                    let status = try await perform { baseURL, token in
+                        MastodonAPI.Statuses.View(baseURL: baseURL, token: token, id: id)
+                    }
+                    try await storage.set(key: id, value: status)
+                    await broadcaster.broadcast(status)
+                }
+            }
+            return nil
+        }
+    }
+}
+
+public func tryElseLog<R>(_ type: OSLogType = .error, _ message: @autoclosure () -> String = String(), _ block: () async throws -> R) async -> R? {
+    do {
+        return try await block()
+    }
+    catch {
+        let message = message()
+        if message.isEmpty {
+            os_log(type, "%s", String(describing: error))
+        }
+        else {
+            os_log(type, "%s: %s", message, String(describing: error))
+        }
+        return nil
     }
 }

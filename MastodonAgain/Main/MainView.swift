@@ -201,7 +201,7 @@ struct Router {
             let id = page.subject as? Account.ID
             AccountInfoView(id)
         case .status:
-            let id = page.subject as? Status.ID
+            let id = page.subject as! Status.ID
             StatusInfoView(id)
 #if os(macOS)
         case .log:
