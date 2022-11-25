@@ -665,3 +665,9 @@ extension Account {
         username
     }
 }
+
+public extension ValueView {
+    init(_ value: Value, @ViewBuilder content: @escaping (Binding<Value>) -> Content) {
+        self.init(value: value, content: content)
+    }
+}

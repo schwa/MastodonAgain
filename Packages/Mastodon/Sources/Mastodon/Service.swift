@@ -36,7 +36,9 @@ public actor Service {
         self.host = host
         self.authorization = authorization
 
-        let path = (try FSPath.specialDirectory(.cachesDirectory) / host.replacing(".", with: "-")).withPathExtension("v1-storage.data")
+        let version = 2 // TODO: Move into constants
+        let filename = "\(host.replacing(".", with: "-")).v\(version)-storage.data"
+        let path = try FSPath.specialDirectory(.cachesDirectory) / filename
         storage = try Storage(path: path.path) { registration in
             registration.registerJSON(type: Dated<Status>.self)
             registration.registerJSON(type: Timeline.Content.self)

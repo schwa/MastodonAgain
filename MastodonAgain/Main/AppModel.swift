@@ -71,7 +71,9 @@ class AppModel: ObservableObject {
 
     init() {
         do {
-            let path = try FSPath.specialDirectory(.applicationSupportDirectory) / "AppData.v1-storage.data"
+            let version = 2 // TODO: Move into constants
+            let filename = "AppData.v\(version)-storage.data"
+            let path = try FSPath.specialDirectory(.applicationSupportDirectory) / filename
             storage = try Storage(path: path.path) { registration in
                 registration.registerJSON(type: [SignIn].self)
             }        // TODO: this can contain sensitive info ("tokens")
