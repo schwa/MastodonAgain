@@ -80,8 +80,8 @@ struct AccountRow: View {
                 Avatar(account: account)
                     .frame(width: 64, height: 64)
                 VStack {
-                    Text(verbatim: account.displayName)
-                    Text("@") + Text(verbatim: account.acct)
+                    Text(verbatim: account.name)
+                    Text(verbatim: "@\(account.username)")
                 }
                 account.locked ? Text("Locked") : nil
                 account.bot ? Text("Bot") : nil

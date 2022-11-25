@@ -32,9 +32,11 @@ struct MediaStack: View {
         }
         .quickLookPreview($quicklookSelection, in: urls)
         .onTapGesture {
+            // TODO: What if user taps on another image
             quicklookSelection = urls.first
         }
-        .frame(maxHeight: 180)
+        .accessibilityAddTraits(.isButton)
+        .frame(maxHeight: 160)
     }
 }
 
@@ -43,8 +45,42 @@ struct ImageAttachmentView: View {
 
     var body: some View {
         if let url = attachment.previewURL, let smallSize = attachment.meta?.small?.cgSize {
-            ContentImage(url: url, size: smallSize, blurhash: attachment.blurHash, accessibilityLabel: Text("TODO"))
+            ContentImage(url: url, size: smallSize, blurhash: attachment.blurHash)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
+                .accessibilityLabel(attachment.description ?? "User provided image with no description.")
+                .accessibilityHint("Shows info about the image.")
+                .overlay(alignment: .topTrailing) {
+                    ValueView(value: false) { isPresented in
+                        Group {
+                            if attachment.description != nil {
+                                Button(systemImage: "info.bubble.fill") {
+                                    isPresented.wrappedValue = true
+                                }
+                                .foregroundColor(.accentColor)
+                            }
+                            else {
+                                Button(systemImage: "exclamationmark.triangle.fill") {
+                                    isPresented.wrappedValue = true
+                                }
+                                .foregroundColor(.yellow)
+                            }
+                        }
+                        .padding(4)
+                        .buttonStyle(CircleButtonStyle())
+                        .accessibilityLabel("Image info")
+                        .popover(isPresented: isPresented) {
+                            Group {
+                                if let description = attachment.description {
+                                    Text(description)
+                                }
+                                else {
+                                    Text("User provided image with no description.")
+                                }
+                            }
+                            .padding()
+                        }
+                    }
+                }
         }
         else {
             Text("NO PREVIEW OR NO SIZE").debuggingInfo()
@@ -57,18 +93,16 @@ struct ContentImage: View {
     let size: CGSize?
     let blurhash: Blurhash?
     let sensitive: Bool
-    let accessibilityLabel: Text?
 
     @State
     var hover = false
 
-    init(url: URL, size: CGSize? = nil, blurhash: Blurhash? = nil, sensitive: Bool = false, accessibilityLabel: Text? = nil) {
+    init(url: URL, size: CGSize? = nil, blurhash: Blurhash? = nil, sensitive: Bool = false) {
         assert(size == nil || size?.width ?? 0 > 0 && size?.height ?? 0 > 0)
         self.url = url
         self.size = size
         self.blurhash = blurhash
         self.sensitive = sensitive
-        self.accessibilityLabel = accessibilityLabel
     }
 
     var body: some View {

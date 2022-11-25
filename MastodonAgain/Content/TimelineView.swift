@@ -131,7 +131,7 @@ struct TimelineView: View, Sendable {
         if try! status.content.plainText.contains(search) {
             return true
         }
-        if status.account.acct.contains(search) || status.account.username?.contains(search) ?? false || status.account.displayName.contains(search) {
+        if status.account.name.contains(search) || status.account.username.contains(search) {
             return true
         }
         return false

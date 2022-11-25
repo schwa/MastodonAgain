@@ -43,9 +43,9 @@ struct AccountInfoView: View {
                 }.debuggingInfo()
                 Avatar(account: account)
                     .frame(maxWidth: 128, maxHeight: 128, alignment: .center)
-                Text(verbatim: account.displayName).bold()
+                Text(verbatim: account.name).bold()
                 HStack {
-                    Text(verbatim: "@\(account.acct)@\(instanceModel.signin.host)")
+                    Text(verbatim: "@\(account.username)")
                     if account.locked {
                         Image(systemName: "lock")
                     }

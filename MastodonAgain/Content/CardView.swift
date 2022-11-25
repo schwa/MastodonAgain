@@ -20,7 +20,7 @@ struct CardView: View {
             Link(destination: card.url) {
                 HStack {
                     if let image = card.image {
-                        ContentImage(url: image, size: card.size, blurhash: card.blurhash, accessibilityLabel: Text("TODO"))
+                        ContentImage(url: image, size: card.size, blurhash: card.blurhash)
                             .frame(maxHeight: 80)
                             .border(Color.purple)
                     }

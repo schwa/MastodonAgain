@@ -45,6 +45,7 @@ struct StatusActions: View {
         Button(systemImage: "arrowshape.turn.up.backward", action: {
             openWindow(value: NewPostWindow.reply(status.id))
         })
+        .accessibilityLabel("Reply")
     }
 
     @ViewBuilder
@@ -52,6 +53,7 @@ struct StatusActions: View {
         Button(systemImage: "info", action: {
             stackModel.path.append(Page(id: .status, subject: status.id))
         })
+        .accessibilityLabel("Info")
     }
 
     @ViewBuilder
@@ -82,6 +84,7 @@ struct StatusActions: View {
             .altBadge(resolvedStatus.reblogsCount)
             .highlighted(value: reblogged)
             .inflight(value: inflight.wrappedValue)
+            .accessibilityLabel("Repost")
         }
     }
 
@@ -113,6 +116,7 @@ struct StatusActions: View {
             .altBadge(resolvedStatus.favouritesCount)
             .highlighted(value: favourited)
             .inflight(value: inflight.wrappedValue)
+            .accessibilityLabel("Favourite")
         }
     }
 
@@ -142,12 +146,14 @@ struct StatusActions: View {
             }
             .highlighted(value: bookmarked)
             .inflight(value: inflight.wrappedValue)
+            .accessibilityLabel("Bookmark")
         }
     }
 
     @ViewBuilder
     var moreButton: some View {
         Button(systemImage: "ellipsis", action: {})
+        .accessibilityLabel("More")
     }
 
     @ViewBuilder
@@ -155,6 +161,7 @@ struct StatusActions: View {
         let status: any StatusProtocol = status.reblog ?? status
         if let url = status.url {
             ShareLink(item: url, label: { Image(systemName: "square.and.arrow.up") })
+            .accessibilityLabel("Share")
         }
     }
 
@@ -166,6 +173,7 @@ struct StatusActions: View {
         .popover(isPresented: $isDebugPopoverPresented) {
             debugView
         }
+        .accessibilityLabel("Debug")
     }
 
     @ViewBuilder

@@ -89,8 +89,10 @@ struct Avatar: View {
                 .overlay {
                     RoundedRectangle(cornerRadius: 4).strokeBorder(lineWidth: 2).foregroundColor(Color.gray)
                 }
+                .accessibilityLabel("Avatar icon for \(account.name)")
         } placeholder: {
             Image(systemName: "person.circle.fill")
+                .accessibilityLabel("Placeholder icon for \(account.name)")
         }
         .task {
             await errorHandler { [instanceModel, account] in
@@ -646,5 +648,20 @@ extension View {
         else {
             self
         }
+    }
+}
+
+extension Account {
+    var name: String {
+        (displayName.isEmpty ? username : displayName)
+    }
+
+    var username: String {
+        acct
+    }
+
+    var fullUsername: String {
+        // TODO:
+        username
     }
 }
