@@ -2,10 +2,18 @@ import AVKit
 import CachedAsyncImage
 import Everything
 import Mastodon
+import QuickLook
 import SwiftUI
 
 struct MediaStack: View {
     let attachments: [MediaAttachment]
+
+    @State
+    var quicklookSelection: URL?
+
+    var urls: [URL] {
+        attachments.map { $0.url }
+    }
 
     var body: some View {
         HStack {
@@ -21,6 +29,10 @@ struct MediaStack: View {
                     Text("Unknown attachment")
                 }
             }
+        }
+        .quickLookPreview($quicklookSelection, in: urls)
+        .onTapGesture {
+            quicklookSelection = urls.first
         }
         .frame(maxHeight: 180)
     }
