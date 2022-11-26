@@ -57,8 +57,14 @@ public actor Storage {
             try data.forEach { key, value in
                 let (type, data) = value
                 let decoder = try registration.decoders[type].safelyUnwrap(StorageError.noDecoderFound(type))
-                let value = try decoder(data)
-                cache[key] = Record(type: type, value: .raw(value))
+                do {
+                    let value = try decoder(data)
+                    cache[key] = Record(type: type, value: .raw(value))
+                }
+                catch {
+                    logger?.error("Failed to decode: \(error)")
+                    fatalError()
+                }
             }
 
             if compact {
@@ -330,6 +336,7 @@ public class StorageLog {
         let decoder = JSONDecoder()
         var cache: [Key: (TypeID, Data)] = [:]
         let data = try Data(contentsOf: URL(filePath: path))
+        var recordCount = 0
         try data.withUnsafeBytes { buffer in
             var offset = buffer.startIndex
             while offset < buffer.endIndex {
@@ -351,8 +358,10 @@ public class StorageLog {
                 case .session(let uuid, let date):
                     logger?.info("Session: \(uuid) \(date)")
                 }
+                recordCount += 1
             }
         }
+        logger?.log("Read \(recordCount) records, got \(cache.count) keys.")
         return cache
     }
 

@@ -40,10 +40,11 @@ class AppModel: ObservableObject {
 
     var currentSignin: SignIn? {
         get {
-            appLogger?.log("\(self.signins)")
             guard let currentSigninID else {
                 return nil
             }
+            let s = "SIGNIN: \(currentSigninID), \(signins.map(\.id))"
+            appLogger?.log("\(s)")
             return signins.first(identifiedBy: currentSigninID)
         }
         set {
