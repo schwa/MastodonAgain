@@ -1357,10 +1357,10 @@ public struct TODOMediaUpload: Request, Response {
 public struct Upload {
     public var filename: String
     public var contentType: UTType
-    public var thumbnail: (@Sendable () throws -> Image)?
-    public var content: @Sendable () throws -> Data
+    public var thumbnail: Image
+    public var content: Data
 
-    public init(filename: String, contentType: UTType, thumbnail: (@Sendable () throws -> Image)? = nil, content: @escaping @Sendable () throws -> Data) {
+    public init(filename: String, contentType: UTType, thumbnail: Image, content: Data) {
         self.filename = filename
         self.contentType = contentType
         self.thumbnail = thumbnail
@@ -1374,7 +1374,7 @@ extension Upload: Sendable {
 extension FormParameter {
     init(name: String, upload: Upload) {
         self = .init(name: name, filename: upload.filename, mimetype: upload.contentType.preferredMIMEType, content: {
-            try upload.content()
+            upload.content
         })
     }
 }

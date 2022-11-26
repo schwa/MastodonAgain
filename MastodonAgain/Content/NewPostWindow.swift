@@ -11,6 +11,8 @@ enum NewPostWindow: Codable, Hashable {
     case reply(Status.ID) // Cant use Status as Status is not hashable.
 }
 
+// MARK: -
+
 struct NewPostHost: View {
     @EnvironmentObject
     var instanceModel: InstanceModel
@@ -85,18 +87,12 @@ struct NewPostView: View {
                 Text("Replying to \(inReplyTo.account.name)")
             }
             TextEditor(text: $newPost.status)
-            HStack {
-                ForEach(mediaUploads.indexed(), id: \.0) { _, upload in
-                    // TODO: Gross (all those ?)
-                    if let thumbnail = try? upload.thumbnail?() {
-                        thumbnail.resizable().scaledToFit()
-                            .frame(maxWidth: 80, maxHeight: 80, alignment: .trailing)
-                    }
-                    else {
-                        Image(systemName: "questionmark.square.dashed")
-                    }
-                }
-            }
+                .font(.body)
+                .foregroundColor(.primary)
+
+            MediaPicker(mediaUploads: $mediaUploads)
+                .frame(maxHeight: 80)
+
             if newPost.sensitive {
                 TextField("Content Warning", text: $newPost.spoiler.unwrappingRebound(default: { "" }))
             }
@@ -123,28 +119,15 @@ struct NewPostView: View {
                 guard let filename = resource.filename, let contentType = try resource.contentType else {
                     fatalError("No filename or no contentType.")
                 }
-                let upload = Upload(filename: filename, contentType: contentType, thumbnail: { resource.content }, content: { try resource.data })
+                let upload = Upload(filename: filename, contentType: contentType, thumbnail: resource.content, content: try resource.data)
                 mediaUploads.append(upload)
             }
             return true
         }
-        .onChange(of: photosPickerItem) { photosPickerItem in
-            guard let photosPickerItem else {
-                return
-            }
-            updatePhotosPickerItem(photosPickerItem)
-        }
     }
-
-    @State
-    var photosPickerItem: PhotosPickerItem?
 
     @ViewBuilder
     var footer: some View {
-        PhotosPicker(selection: $photosPickerItem, preferredItemEncoding: .compatible) {
-            Image(systemName: "paperclip")
-        }
-
         Button(systemImage: "eye.trianglebadge.exclamationmark", action: {
             newPost.sensitive.toggle()
         })
@@ -177,35 +160,6 @@ struct NewPostView: View {
         .disabled(newPost.status.isEmpty || newPost.status.count > 500) // TODO: get limit from instance?
     }
 
-    func updatePhotosPickerItem(_ photosPickerItem: PhotosPickerItem) {
-        Task {
-            await errorHandler {
-                if let video = try await photosPickerItem.loadTransferable(type: Video.self) {
-                    print(video)
-                }
-
-                let data = try await photosPickerItem.loadTransferable(type: Data.self)
-                guard let data else {
-                    throw MastodonError.generic("loadTransferable returned nil.")
-                }
-                // TODO: this may not even be an image?!?!?!?!?!?
-                let source = try ImageSource(data: data)
-                guard let type = source.contentType, let filenameExtension = type.preferredFilenameExtension else {
-                    throw MastodonError.generic("No idea of the content type for that upload")
-                }
-                let filename = "Untitled.\(filenameExtension)"
-
-                // TODO: get thumbnail from image source
-                // swiftlint:disable:next accessibility_label_for_image
-                let upload = Upload(filename: filename, contentType: type, thumbnail: { try Image(data: data) }, content: { data })
-                await MainActor.run {
-                    mediaUploads.append(upload)
-                }
-            }
-        }
-        self.photosPickerItem = nil
-    }
-
     func post() {
         Task {
             await errorHandler { [instanceModel, newPost] in
@@ -229,5 +183,86 @@ struct NewPostView: View {
                 }
             }
         }
+    }
+}
+
+// MARK: -
+
+struct MediaPicker: View {
+    @Binding
+    var mediaUploads: [Upload]
+
+    @Environment(\.errorHandler)
+    var errorHandler
+
+    @State
+    var photosPickerItem: PhotosPickerItem?
+
+    @State
+    var nextID = 1
+
+//    @State
+//    var selection: String? = nil
+
+    var body: some View {
+        HStack {
+            ForEach(mediaUploads, id: \.filename) { upload in
+                // TODO: Gross (all those ?)
+                if let thumbnail = upload.thumbnail {
+                    thumbnail.resizable().scaledToFit()
+                        .aspectRatio(1.0, contentMode: .fit)
+                }
+                else {
+                    Image(systemName: "questionmark.square.dashed")
+                }
+            }
+
+            PhotosPicker(selection: $photosPickerItem, preferredItemEncoding: .compatible) {
+                Image(systemName: "paperclip")
+            }
+
+            Spacer()
+        }
+        .onChange(of: photosPickerItem) { photosPickerItem in
+            guard let photosPickerItem else {
+                return
+            }
+            updatePhotosPickerItem(photosPickerItem)
+        }
+    }
+
+    func updatePhotosPickerItem(_ photosPickerItem: PhotosPickerItem) {
+        Task {
+            await errorHandler {
+//                if let video = try await photosPickerItem.loadTransferable(type: Video.self) {
+//                    print(video)
+//                }
+
+                print(photosPickerItem.itemIdentifier)
+
+                let data = try await photosPickerItem.loadTransferable(type: Data.self)
+                guard let data else {
+                    throw MastodonError.generic("loadTransferable returned nil.")
+                }
+                // TODO: this may not even be an image?!?!?!?!?!?
+                let source = try ImageSource(data: data)
+
+
+
+                guard let type = source.contentType, let filenameExtension = type.preferredFilenameExtension else {
+                    throw MastodonError.generic("No idea of the content type for that upload")
+                }
+                let filename = "Untitled \(nextID).\(filenameExtension)"
+                nextID += 1
+
+                // TODO: get thumbnail from image source
+                // swiftlint:disable:next accessibility_label_for_image
+                let upload = Upload(filename: filename, contentType: type, thumbnail: try Image(data: data), content: data)
+                await MainActor.run {
+                    mediaUploads.append(upload)
+                }
+            }
+        }
+        self.photosPickerItem = nil
     }
 }
