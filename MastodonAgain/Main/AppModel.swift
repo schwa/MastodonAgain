@@ -40,6 +40,7 @@ class AppModel: ObservableObject {
 
     var currentSignin: SignIn? {
         get {
+            appLogger?.log("\(self.signins)")
             guard let currentSigninID else {
                 return nil
             }

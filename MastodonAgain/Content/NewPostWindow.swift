@@ -201,20 +201,21 @@ struct MediaPicker: View {
     @State
     var nextID = 1
 
-//    @State
-//    var selection: String? = nil
+    @State
+    var selection: String?
 
     var body: some View {
         HStack {
             ForEach(mediaUploads, id: \.filename) { upload in
-                // TODO: Gross (all those ?)
-                if let thumbnail = upload.thumbnail {
-                    thumbnail.resizable().scaledToFit()
-                        .aspectRatio(1.0, contentMode: .fit)
-                }
-                else {
-                    Image(systemName: "questionmark.square.dashed")
-                }
+                upload.thumbnail.resizable().scaledToFit().aspectRatio(1.0, contentMode: .fit)
+                    .onTapGesture {
+                        selection = upload.filename
+                    }
+                    .overlay {
+                        if selection == upload.filename {
+                            Rectangle().stroke(Color.accentColor, lineWidth: 2)
+                        }
+                    }
             }
 
             PhotosPicker(selection: $photosPickerItem, preferredItemEncoding: .compatible) {
@@ -246,18 +247,17 @@ struct MediaPicker: View {
                 }
                 // TODO: this may not even be an image?!?!?!?!?!?
                 let source = try ImageSource(data: data)
-
-
-
                 guard let type = source.contentType, let filenameExtension = type.preferredFilenameExtension else {
                     throw MastodonError.generic("No idea of the content type for that upload")
                 }
+
+                let thumbnail = Image(cgImage: try source.thumbnail(at: 0)!)
                 let filename = "Untitled \(nextID).\(filenameExtension)"
                 nextID += 1
 
                 // TODO: get thumbnail from image source
                 // swiftlint:disable:next accessibility_label_for_image
-                let upload = Upload(filename: filename, contentType: type, thumbnail: try Image(data: data), content: data)
+                let upload = Upload(filename: filename, contentType: type, thumbnail: thumbnail, content: data)
                 await MainActor.run {
                     mediaUploads.append(upload)
                 }
