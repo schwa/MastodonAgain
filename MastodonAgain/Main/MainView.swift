@@ -145,6 +145,7 @@ enum PageID: CaseIterable {
     #if os(macOS)
     case log
     #endif
+    case bookmarks
 }
 
 // MARK: -
@@ -158,6 +159,7 @@ struct Router {
         Page(id: .notifications, subject: ()),
         Page(id: .relationships, subject: ()),
         Page(id: .account, subject: Account.ID?.none as Any),
+        Page(id: .bookmarks, subject: ())
     ]
 
     init() {
@@ -184,6 +186,8 @@ struct Router {
         case .log:
             Label("Log", systemImage: "gear")
 #endif
+        case .bookmarks:
+            Label("Bookmarks", systemImage: "gear")
         }
     }
 
@@ -207,6 +211,8 @@ struct Router {
         case .log:
             ConsoleLogView()
 #endif
+        case .bookmarks:
+            BookmarksView()
         }
     }
 }
