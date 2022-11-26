@@ -425,3 +425,14 @@ func standardResponse<T>(_ type: T.Type) -> some ResultGenerator where T: Decoda
         return try JSONDecoder.mastodonDecoder.decode(T.self, from: data)
     }
 }
+
+public extension Account {
+    var name: String {
+        (displayName.isEmpty ? username ?? acct : displayName)
+    }
+
+    var fullUsername: String {
+        // TODO:
+        acct
+    }
+}

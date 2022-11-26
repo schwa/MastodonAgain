@@ -35,7 +35,7 @@ public struct Account: Identifiable, Codable, Sendable, Equatable {
 
     public let id: Tagged<Account, String>
     /// The username of the account, not including domain.
-    public let username: String?
+    public let username: String? // TODO: Fix name
     /// The Webfinger account URI. Equal to username for local users, or username@domain for remote users.
     public let acct: String
     /// The profile’s display name.

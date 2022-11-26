@@ -82,7 +82,7 @@ struct NewPostView: View {
             }
             .debuggingInfo()
             if let inReplyTo {
-                Text("Replying to \(inReplyTo.name)")
+                Text("Replying to \(inReplyTo.account.name)")
             }
             TextEditor(text: $newPost.status)
             HStack {

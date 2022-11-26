@@ -605,21 +605,6 @@ extension View {
     }
 }
 
-extension Account {
-    var name: String {
-        (displayName.isEmpty ? username : displayName)
-    }
-
-    var username: String {
-        acct
-    }
-
-    var fullUsername: String {
-        // TODO:
-        username
-    }
-}
-
 public extension ValueView {
     init(_ value: Value, @ViewBuilder content: @escaping (Binding<Value>) -> Content) {
         self.init(value: value, content: content)
