@@ -49,7 +49,7 @@ struct MainView: View {
 
     @ViewBuilder
     var sidebar: some View {
-        SignInPicker()
+        SignInPicker().padding([.leading, .trailing])
 
         List(selection: $selection) {
             ForEach(router.root, id: \.self) { id in

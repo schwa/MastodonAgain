@@ -166,6 +166,7 @@ struct NewPostView: View {
             Button("Post") {
                 post()
             }
+            .keyboardShortcut(.return, modifiers: .command)
             .disabled(newPost.status.isEmpty || newPost.status.count > 500) // TODO: get limit from instance?
         }
     }
