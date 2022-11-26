@@ -261,7 +261,9 @@ struct MediaPicker: View {
                     ForEach(mediaUploads) { upload in
                         view(for: upload)
                     }
+                    #if os(macOS)
                     .focusable(true)
+                    #endif
                     .quickLookPreview($quicklookURL, in: mediaUploads.map {
                         $0.url
                     })
@@ -295,7 +297,9 @@ struct MediaPicker: View {
     func view(for upload: MediaUpload) -> some View {
         upload.thumbnail
         .resizable().scaledToFit().aspectRatio(1.0, contentMode: .fit)
+#if os(macOS)
         .focusable(true)
+#endif
         .focused($selection, equals: upload.id)
 
         .onTapGesture {
@@ -308,15 +312,12 @@ struct MediaPicker: View {
         .accessibilityAddTraits(.isButton)
         .accessibilityLabel("Thumbnail for media upload")
 
-        .onKeyboardEvent{ event in
-            if event.characters == " " {
-                quicklookURL = upload.url
-            }
-        }
-
+#if os(macOS)
         .onDeleteCommand(perform: {
             mediaUploads.removeAll(where: { $0.id == upload.id })
         })
+#endif
+        // TODO: overlay an X button to delete media.
         .contextMenu {
             Button("Remove") {
                 mediaUploads.removeAll(where: { $0.id == upload.id })
