@@ -1,9 +1,10 @@
 import Algorithms
 import AsyncAlgorithms
-import Everything
+@_spi(SPI) import Everything
 import Foundation
 import Mastodon
 import PhotosUI
+import QuickLook
 import SwiftUI
 
 enum NewPostWindow: Codable, Hashable {
@@ -53,7 +54,7 @@ struct NewPostView: View {
     var instanceModel: InstanceModel
 
     @State
-    var mediaUploads: [Upload] = []
+    var mediaUploads: [MediaUpload] = []
 
     @State
     var isTargeted = false
@@ -63,6 +64,9 @@ struct NewPostView: View {
 
     @State
     var newPost: NewPost
+
+    @State
+    var photosPickerItem: PhotosPickerItem?
 
     let inReplyTo: Status?
 
@@ -79,9 +83,7 @@ struct NewPostView: View {
 
     var body: some View {
         VStack {
-            VStack {
-                DebugDescriptionView(newPost)
-            }
+            DebugDescriptionView(newPost)
             .debuggingInfo()
             if let inReplyTo {
                 Text("Replying to \(inReplyTo.account.name)")
@@ -90,15 +92,14 @@ struct NewPostView: View {
                 .font(.body)
                 .foregroundColor(.primary)
 
-            MediaPicker(mediaUploads: $mediaUploads)
-                .frame(maxHeight: 80)
+            MediaPicker(mediaUploads: $mediaUploads, photosPickerItem: $photosPickerItem)
 
             if newPost.sensitive {
-                TextField("Content Warning", text: $newPost.spoiler.unwrappingRebound(default: { "" }))
+                LabeledContent("Content Warning") {
+                    TextField("Content Warning", text: $newPost.spoiler.unwrappingRebound(default: { "" }))
+                }
             }
-            HStack {
-                footer
-            }
+            footer
         }
         .padding()
         .overlay {
@@ -106,7 +107,7 @@ struct NewPostView: View {
                 Rectangle().stroke(Color.accentColor, lineWidth: 8)
             }
         }
-        .foregroundColor(isTargeted ? .accentColor : .secondary)
+//        .foregroundColor(isTargeted ? .accentColor : .secondary)
         .onDrop(of: [.image], isTargeted: $isTargeted) { providers, _ in
             guard providers.count == 1 else {
                 return false
@@ -119,8 +120,9 @@ struct NewPostView: View {
                 guard let filename = resource.filename, let contentType = try resource.contentType else {
                     fatalError("No filename or no contentType.")
                 }
-                let upload = Upload(filename: filename, contentType: contentType, thumbnail: resource.content, content: try resource.data)
-                mediaUploads.append(upload)
+                // TODO
+//                let upload = Upload(filename: filename, contentType: contentType, thumbnail: resource.content, content: try resource.data)
+//                mediaUploads.append(upload)
             }
             return true
         }
@@ -128,36 +130,42 @@ struct NewPostView: View {
 
     @ViewBuilder
     var footer: some View {
-        Button(systemImage: "eye.trianglebadge.exclamationmark", action: {
-            newPost.sensitive.toggle()
-        })
-
-        Picker("Language", selection: $newPost.language) {
-            Text("\(Locale.current.localizedString(forIdentifier: Locale.current.topLevelIdentifier)!) (current)").tag(String?.none)
-            Divider()
-            ForEach(Locale.availableTopLevelIdentifiers.sorted(), id: \.self) { identifier in
-                Text(Locale.current.localizedString(forIdentifier: identifier) ?? identifier).tag(Optional(identifier))
+        HStack {
+            PhotosPicker(selection: $photosPickerItem, preferredItemEncoding: .compatible) {
+                Image(systemName: "photo")
             }
-        }
-        .pickerStyle(.menu)
-        .fixedSize()
-
-        Picker("Visibility", selection: $newPost.visibility) {
-            ForEach(Status.Visibility.allCases, id: \.self) { visibility in
-                Text(visibility.rawValue).tag(visibility)
+            
+            Button(systemImage: "eye.trianglebadge.exclamationmark", action: {
+                newPost.sensitive.toggle()
+            })
+            
+            Picker("Language", selection: $newPost.language) {
+                Text("\(Locale.current.localizedString(forIdentifier: Locale.current.topLevelIdentifier)!) (current)").tag(String?.none)
+                Divider()
+                ForEach(Locale.availableTopLevelIdentifiers.sorted(), id: \.self) { identifier in
+                    Text(Locale.current.localizedString(forIdentifier: identifier) ?? identifier).tag(Optional(identifier))
+                }
             }
+            .pickerStyle(.menu)
+            .fixedSize()
+            
+            Picker("Visibility", selection: $newPost.visibility) {
+                ForEach(Status.Visibility.allCases, id: \.self) { visibility in
+                    Text(visibility.rawValue).tag(visibility)
+                }
+            }
+            .pickerStyle(.menu)
+            .fixedSize()
+            
+            Spacer()
+            
+            Text(newPost.status.count, format: .number).monospacedDigit()
+            
+            Button("Post") {
+                post()
+            }
+            .disabled(newPost.status.isEmpty || newPost.status.count > 500) // TODO: get limit from instance?
         }
-        .pickerStyle(.menu)
-        .fixedSize()
-
-        Spacer()
-
-        Text(newPost.status.count, format: .number).monospacedDigit()
-
-        Button("Post") {
-            post()
-        }
-        .disabled(newPost.status.isEmpty || newPost.status.count > 500) // TODO: get limit from instance?
     }
 
     func post() {
@@ -165,10 +173,11 @@ struct NewPostView: View {
             await errorHandler { [instanceModel, newPost] in
                 var newPost = newPost
                 let mediaAttachments = try await withThrowingTaskGroup(of: MediaAttachment.self) { group in
-                    await mediaUploads.forEach { upload in
+                    try await mediaUploads.forEach { mediaUpload in
+                        let upload = try mediaUpload.upload
                         group.addTask {
                             try await instanceModel.service.perform { baseURL, token in
-                                TODOMediaUpload(baseURL: baseURL, token: token, description: "<description forthcoming>", upload: upload)
+                                TODOMediaUpload(baseURL: baseURL, token: token, description: mediaUpload.descriptiveText, upload: upload)
                             }
                         }
                     }
@@ -188,47 +197,130 @@ struct NewPostView: View {
 
 // MARK: -
 
+struct MediaUpload: Identifiable {
+    var id = UUID()
+    var url: URL
+    var contentType: UTType
+    var thumbnail: Image
+    var descriptiveText: String
+}
+
+extension MediaUpload {
+    init(name: String, data: Data) throws {
+        let source = try ImageSource(data: data)
+        guard let contentType = source.contentType, let filenameExtension = contentType.preferredFilenameExtension else {
+            throw MastodonError.generic("No idea of the content type for that upload")
+        }
+        self.contentType = contentType
+
+        // TODO: at this point can use image for thumbnail
+        let cgImage = try source.image(at: 0)
+        thumbnail = Image(cgImage: try source.thumbnail2(at: 0))
+
+        descriptiveText = ImageDescription(image: cgImage).descriptiveText
+
+        let path = FSPath.temporaryDirectory / "\(name).\(filenameExtension)"
+        try data.write(to: path.url)
+        self.url = path.url
+    }
+
+    var upload: Upload {
+        get throws {
+            let data = try Data(contentsOf: url)
+            return Upload(filename: url.lastPathComponent, contentType: contentType, thumbnail: thumbnail, content: data)
+        }
+    }
+}
+
+// MARK: -
+
 struct MediaPicker: View {
     @Binding
-    var mediaUploads: [Upload]
+    var mediaUploads: [MediaUpload]
+
+    @Binding
+    var photosPickerItem: PhotosPickerItem?
 
     @Environment(\.errorHandler)
     var errorHandler
 
     @State
-    var photosPickerItem: PhotosPickerItem?
-
-    @State
     var nextID = 1
 
+    // ISSUE: https://github.com/schwa/MastodonAgain/issues/78 -- selecting text unselects the thumbnail which unselects the text
+    @FocusState
+    var selection: MediaUpload.ID?
+
     @State
-    var selection: String?
+    var quicklookURL: URL?
 
     var body: some View {
-        HStack {
-            ForEach(mediaUploads, id: \.filename) { upload in
-                upload.thumbnail.resizable().scaledToFit().aspectRatio(1.0, contentMode: .fit)
-                    .onTapGesture {
-                        selection = upload.filename
+        Group {
+            if !mediaUploads.isEmpty {
+                HStack {
+                    ForEach(mediaUploads) { upload in
+                        view(for: upload)
                     }
-                    .overlay {
-                        if selection == upload.filename {
-                            Rectangle().stroke(Color.accentColor, lineWidth: 2)
+                    .focusable(true)
+                    .quickLookPreview($quicklookURL, in: mediaUploads.map {
+                        $0.url
+                    })
+                }
+                .frame(maxHeight: 80)
+                LabeledContent("Media Description") {
+                    TextField("Media Description", text: Binding(get: {
+                        guard let index = mediaUploads.firstIndex(where: { $0.id == selection }) else {
+                            return ""
                         }
-                    }
+                        return mediaUploads[index].descriptiveText
+                    }, set: { newValue in
+                        guard let index = mediaUploads.firstIndex(where: { $0.id == selection }) else {
+                            return
+                        }
+                        mediaUploads[index].descriptiveText = newValue
+                    }))
+                    .disabled(selection == nil)
+                }
             }
-
-            PhotosPicker(selection: $photosPickerItem, preferredItemEncoding: .compatible) {
-                Image(systemName: "paperclip")
-            }
-
-            Spacer()
         }
         .onChange(of: photosPickerItem) { photosPickerItem in
             guard let photosPickerItem else {
                 return
             }
             updatePhotosPickerItem(photosPickerItem)
+        }
+    }
+
+    @ViewBuilder
+    func view(for upload: MediaUpload) -> some View {
+        upload.thumbnail
+        .resizable().scaledToFit().aspectRatio(1.0, contentMode: .fit)
+        .focusable(true)
+        .focused($selection, equals: upload.id)
+
+        .onTapGesture {
+            selection = upload.id
+        }
+        .onLongPressGesture {
+            quicklookURL = upload.url
+        }
+
+        .accessibilityAddTraits(.isButton)
+        .accessibilityLabel("Thumbnail for media upload")
+
+        .onKeyboardEvent{ event in
+            if event.characters == " " {
+                quicklookURL = upload.url
+            }
+        }
+
+        .onDeleteCommand(perform: {
+            mediaUploads.removeAll(where: { $0.id == upload.id })
+        })
+        .contextMenu {
+            Button("Remove") {
+                mediaUploads.removeAll(where: { $0.id == upload.id })
+            }
         }
     }
 
@@ -239,30 +331,45 @@ struct MediaPicker: View {
 //                    print(video)
 //                }
 
-                print(photosPickerItem.itemIdentifier)
-
-                let data = try await photosPickerItem.loadTransferable(type: Data.self)
-                guard let data else {
-                    throw MastodonError.generic("loadTransferable returned nil.")
+                guard let data = try await photosPickerItem.loadTransferable(type: Data.self) else {
+                    throw MastodonError.generic("Could not load data")
                 }
-                // TODO: this may not even be an image?!?!?!?!?!?
-                let source = try ImageSource(data: data)
-                guard let type = source.contentType, let filenameExtension = type.preferredFilenameExtension else {
-                    throw MastodonError.generic("No idea of the content type for that upload")
-                }
-
-                let thumbnail = Image(cgImage: try source.thumbnail(at: 0)!)
-                let filename = "Untitled \(nextID).\(filenameExtension)"
+                let upload = try MediaUpload(name: "Untitled \(nextID)", data: data)
                 nextID += 1
-
-                // TODO: get thumbnail from image source
-                // swiftlint:disable:next accessibility_label_for_image
-                let upload = Upload(filename: filename, contentType: type, thumbnail: thumbnail, content: data)
                 await MainActor.run {
                     mediaUploads.append(upload)
+                    selection = upload.id
                 }
             }
         }
         self.photosPickerItem = nil
+    }
+}
+
+extension Binding where Value: Identifiable {
+    init<C>(_ collection: Binding<C>, id: Value.ID) where C: MutableCollection, C.Element == Value {
+        self = .init(get: {
+            collection.wrappedValue[collection.wrappedValue.firstIndex(where: { $0.id == id })!]
+        }, set: { newValue in
+            collection.wrappedValue[collection.wrappedValue.firstIndex(where: { $0.id == id })!] = newValue
+        })
+    }
+}
+
+//struct Carousel: View {
+//
+//
+//}
+
+extension ImageSource {
+    public func thumbnail2(at index: Int) throws -> CGImage {
+        let options = [
+            kCGImageSourceCreateThumbnailFromImageIfAbsent: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+        ]
+        guard let image = CGImageSourceCreateThumbnailAtIndex(imageSource, index, options as CFDictionary) else {
+            throw ImageSourceError.thumbnailCreationFailure
+        }
+        return image
     }
 }
