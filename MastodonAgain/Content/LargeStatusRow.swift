@@ -1,5 +1,4 @@
 import AVKit
-import CachedAsyncImage
 import Mastodon
 import SwiftUI
 
@@ -30,7 +29,7 @@ struct LargeStatusRow: View, Sendable {
 
     @ViewBuilder
     var avatar: some View {
-        Avatar(account: status.account)
+        Avatar(account: status.account, quicklook: false)
             .frame(width: 40, height: 40)
     }
 

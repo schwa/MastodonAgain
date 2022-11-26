@@ -95,7 +95,7 @@ class SignInViewModel: NSObject, ObservableObject {
             }
 
             authSession.presentationContextProvider = self
-            authSession.prefersEphemeralWebBrowserSession = true
+            authSession.prefersEphemeralWebBrowserSession = false
             authSession.start()
         })
     }

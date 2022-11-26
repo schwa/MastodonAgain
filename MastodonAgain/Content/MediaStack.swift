@@ -110,7 +110,7 @@ struct ContentImage: View {
     }
 
     var image: some View {
-        CachedAsyncImage(url: url) { image in
+        CachedAsyncImage(url: url, urlCache: .imageCache) { image in
             image.resizable().scaledToFit()
         }
         placeholder: {

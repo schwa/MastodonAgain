@@ -71,14 +71,16 @@ class AppModel: ObservableObject {
 
     init() {
         do {
-            let version = 2 // TODO: Move into constants
+            let version = 3 // TODO: Move into constants
             let filename = "AppData.v\(version)-storage.data"
             let path = try FSPath.specialDirectory(.applicationSupportDirectory) / filename
             storage = try Storage(path: path.path) { registration in
                 registration.registerJSON(type: [SignIn].self)
             }        // TODO: this can contain sensitive info ("tokens")
             Task {
-                self.signins = try await storage.get(key: "signins") ?? []
+                // TODO: Force try
+                // swiftlint:disable:next force_try
+                self.signins = try! await storage.get(key: "signins") ?? []
             }
         }
         catch {

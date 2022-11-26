@@ -3,6 +3,7 @@ import Everything
 import Foundation
 import Mastodon
 import RegexBuilder
+import QuickLook
 import SwiftUI
 import UniformTypeIdentifiers
 import WebKit
@@ -72,28 +73,46 @@ struct Avatar: View {
     @Environment(\.errorHandler)
     var errorHandler
 
-    let account: Account
-
     @State
     var relationship: Relationship?
 
     @State
     var isNoteEditorPresented = false
 
+    let account: Account
+    let quicklook: Bool
+
+    init(account: Account, quicklook: Bool = true) {
+        self.account = account
+        self.quicklook = quicklook
+    }
+
     var body: some View {
-        CachedAsyncImage(url: account.avatar) { image in
-            image
-                .resizable()
-                .background(.ultraThinMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: 4))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 4).strokeBorder(lineWidth: 2).foregroundColor(Color.gray)
-                }
-                .accessibilityLabel("Avatar icon for \(account.name)")
+        CachedAsyncImage(url: account.avatar, urlCache: .imageCache) { image in
+            ValueView(Optional<URL>.none) { quicklookPreviewURL in
+                image
+                    .resizable()
+                    .background(.ultraThinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 4))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 4).strokeBorder(lineWidth: 2).foregroundColor(Color.gray)
+                    }
+                    .accessibilityLabel("Avatar icon for \(account.name)")
+                    .conditional(quicklook) { view in
+                        view.accessibilityAddTraits(.isButton)
+                        .onTapGesture {
+                            if quicklook {
+                                quicklookPreviewURL.wrappedValue = account.avatar
+                            }
+                        }
+                        .quickLookPreview(quicklookPreviewURL)
+                    }
+            }
         } placeholder: {
             Image(systemName: "person.circle.fill")
                 .accessibilityLabel("Placeholder icon for \(account.name)")
         }
+        .aspectRatio(1.0, contentMode: .fit)
         .task {
             await errorHandler { [instanceModel, account] in
                 let channel = await instanceModel.service.broadcaster(for: .relationships, element: [Account.ID: Relationship].self).makeChannel()
@@ -377,72 +396,6 @@ struct SelectedView: Layout {
     }
 }
 
-struct FetchableValueView<Value, Content>: View where Value: Sendable, Content: View {
-    @State
-    var value: Value?
-
-    let fetch: @Sendable () async throws -> Value?
-    let content: (Value) -> Content
-    let canRefresh: Bool
-
-    @State
-    var refreshing = false
-
-    let start = Date()
-
-    @Environment(\.errorHandler)
-    var errorHandler
-
-    init(value: Value? = nil, canRefresh: Bool = false, fetch: @escaping @Sendable () async throws -> Value?, content: @escaping (Value) -> Content) {
-        _value = State(initialValue: value)
-        self.canRefresh = canRefresh
-        self.fetch = fetch
-        self.content = content
-    }
-
-    var body: some View {
-        Group {
-            if let value {
-                content(value)
-            }
-            else {
-                VStack {
-                    ProgressView()
-                    Text("Fetching (") + Text(start, style: .relative) + Text(")")
-                }
-                .task {
-                    value = await errorHandler { [fetch] in
-                        try await fetch()
-                    }
-                }
-            }
-        }
-        .toolbar {
-            if canRefresh {
-                if refreshing {
-                    ProgressView()
-                }
-                else {
-                    Button("Refresh") {
-                        refreshing = true
-                        Task {
-                            value = await errorHandler { [fetch] in
-                                let value = try await fetch()
-                                print("DONE")
-                                MainActor.runTask {
-                                    refreshing = false
-                                }
-                                return value
-                            }
-                        }
-                    }
-                    .disabled(value == nil)
-                }
-            }
-        }
-    }
-}
-
 struct WebView: View {
     let request: URLRequest
 
@@ -669,5 +622,17 @@ extension Account {
 public extension ValueView {
     init(_ value: Value, @ViewBuilder content: @escaping (Binding<Value>) -> Content) {
         self.init(value: value, content: content)
+    }
+}
+
+extension View {
+    @ViewBuilder
+    func conditional(_ condition: Bool, @ViewBuilder transform: (Self) -> some View) -> some View {
+        if condition {
+            transform(self)
+        }
+        else {
+            self
+        }
     }
 }

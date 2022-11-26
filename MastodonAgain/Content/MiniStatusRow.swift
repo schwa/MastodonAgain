@@ -27,9 +27,9 @@ struct MiniStatusRow: View, Sendable {
             HStack {
                 if let reblog = status.reblog {
                     HStack(spacing: 2) {
-                        Avatar(account: status.account).frame(width: 20, height: 20)
+                        Avatar(account: status.account, quicklook: false).frame(width: 20, height: 20)
                         Image(systemName: "arrow.counterclockwise.circle").controlSize(.small)
-                        Avatar(account: reblog.account).frame(width: 20, height: 20)
+                        Avatar(account: reblog.account, quicklook: false).frame(width: 20, height: 20)
                     }
                     Text(reblog.account.name)
                         .bold()
@@ -37,7 +37,7 @@ struct MiniStatusRow: View, Sendable {
                         .padding(2).background(Color.blue.opacity(0.1)).lineLimit(1)
                 }
                 else {
-                    Avatar(account: status.account).frame(width: 20, height: 20)
+                    Avatar(account: status.account, quicklook: false).frame(width: 20, height: 20)
                     Text(status.account.name).bold()
                     Text(status.content.safeMastodonAttributedString).lineLimit(1)
                 }

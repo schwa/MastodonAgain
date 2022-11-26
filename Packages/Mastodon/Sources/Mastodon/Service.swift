@@ -36,7 +36,7 @@ public actor Service {
         self.host = host
         self.authorization = authorization
 
-        let version = 2 // TODO: Move into constants
+        let version = 3 // TODO: Move into constants
         let filename = "\(host.replacing(".", with: "-")).v\(version)-storage.data"
         let path = try FSPath.specialDirectory(.cachesDirectory) / filename
         storage = try Storage(path: path.path) { registration in

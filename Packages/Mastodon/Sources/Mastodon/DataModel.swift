@@ -52,7 +52,7 @@ public struct Account: Identifiable, Codable, Sendable, Equatable {
     public let created: Date
     /// The profile’s bio or description.
     public let note: HTML
-    public let url: String?
+    public let url: URL?
     /// An image icon that is shown next to statuses and in the profile.
     public let avatar: URL
     /// A static version of the avatar. Equal to avatar if its value is a static image; different if avatar is an animated GIF.

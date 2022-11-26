@@ -420,3 +420,7 @@ public extension Image {
 // TODO: Use a ImageSpecifier instead.
 extension Image: @unchecked Sendable {
 }
+
+public extension URLCache {
+    static let imageCache = URLCache(memoryCapacity: 512*1000*1000, diskCapacity: 10*1000*1000*1000)
+}

@@ -90,7 +90,7 @@ struct AccountRow: View {
                 account.noindex ?? false ? Text("Noindex") : nil
             }
             Text(account.note.safeMastodonAttributedString)
-            account.url.map { Text($0) }
+            account.url.map { Text($0, format: .url) }
 
             LabeledContent("Last Post") {
                 account.lastStatusAt.map { Text($0, style: .relative) }
