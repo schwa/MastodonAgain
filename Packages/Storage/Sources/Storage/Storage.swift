@@ -3,6 +3,8 @@ import Everything
 import Foundation
 @_implementationOnly import os
 
+// swiftlint:disable file_length
+
 // TODO: Temporary
 // swiftlint:disable fatal_error_message
 

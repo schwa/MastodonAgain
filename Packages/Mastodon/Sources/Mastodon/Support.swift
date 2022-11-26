@@ -377,8 +377,16 @@ public extension Account {
         (displayName.isEmpty ? username ?? acct : displayName)
     }
 
+    var shortUsername: String {
+        acct
+    }
+
     var fullUsername: String {
         // TODO:
         acct
+    }
+
+    var instanceHost: String? {
+        url?.host
     }
 }

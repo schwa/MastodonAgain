@@ -76,7 +76,8 @@ struct Avatar: View {
             }
         }
         .contextMenu {
-            Text(account)
+            Text(account.name).bold() + Text("@\(account.shortUsername)").foregroundColor(.secondary)
+
             Button("Info") {
                 stackModel.path.append(Page(id: .account, subject: account.id))
             }
@@ -304,13 +305,13 @@ struct ImageToggleStyle: ToggleStyle {
     func makeBody(configuration: Configuration) -> some View {
         Button { configuration.isOn.toggle() }
         label: {
-                if configuration.isOn {
-                    Image(systemName: "ladybug").foregroundColor(.red).symbolVariant(.circle)
-                }
-                else {
-                    Image(systemName: "ladybug")
-                }
+            if configuration.isOn {
+                Image(systemName: "ladybug").foregroundColor(.red).symbolVariant(.circle)
             }
+            else {
+                Image(systemName: "ladybug")
+            }
+        }
     }
 }
 
@@ -349,18 +350,6 @@ extension Collection {
         else {
             return self
         }
-    }
-}
-
-extension Text {
-    init(_ account: Account) {
-        var text = Text("")
-        if !account.displayName.isEmpty {
-            // swiftlint:disable shorthand_operator
-            text = text + Text("\(account.displayName)").bold()
-        }
-        self = text + Text(" ") + Text("@\(account.acct)")
-            .foregroundColor(.secondary)
     }
 }
 

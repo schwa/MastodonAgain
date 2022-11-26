@@ -137,7 +137,7 @@ struct ConcreteAccountInfoView: View {
         Text(verbatim: account.name).bold()
 
         HStack {
-            Text(verbatim: "@\(account.username)")
+            Text(verbatim: "@\(account.shortUsername)")
             if account.locked {
                 Image(systemName: "lock")
             }

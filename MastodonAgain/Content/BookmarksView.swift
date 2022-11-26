@@ -22,7 +22,7 @@ struct BookmarksView: View {
         }
         .task {
             await errorHandler {
-                let page = await try fetch()
+                let page = try await fetch()
                 await MainActor.run {
                     self.content.pages = [page]
                 }

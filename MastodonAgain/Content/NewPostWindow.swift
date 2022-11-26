@@ -107,7 +107,7 @@ struct NewPostView: View {
                 Rectangle().stroke(Color.accentColor, lineWidth: 8)
             }
         }
-//        .foregroundColor(isTargeted ? .accentColor : .secondary)
+        .foregroundColor(isTargeted ? .accentColor : .secondary)
         .onDrop(of: [.image], isTargeted: $isTargeted) { providers, _ in
             guard providers.count == 1 else {
                 return false
@@ -117,12 +117,14 @@ struct NewPostView: View {
             }
             Task {
                 let resource = try await Resource(provider: provider)
-                guard let filename = resource.filename, let contentType = try resource.contentType else {
+                guard let filename = resource.filename else {
                     fatalError("No filename or no contentType.")
                 }
+
+                let upload = try MediaUpload(name: filename, data: try resource.data)
+                mediaUploads.append(upload)
                 // TODO:
-//                let upload = Upload(filename: filename, contentType: contentType, thumbnail: resource.content, content: try resource.data)
-//                mediaUploads.append(upload)
+//                selection = upload.id
             }
             return true
         }
@@ -219,7 +221,8 @@ extension MediaUpload {
 
         descriptiveText = ImageDescription(image: cgImage).descriptiveText
 
-        let path = FSPath.temporaryDirectory / "\(name).\(filenameExtension)"
+        let filename = name.contains(".") ? name : "\(name).\(filenameExtension)"
+        let path = FSPath.temporaryDirectory / filename
         try data.write(to: path.url)
         url = path.url
     }

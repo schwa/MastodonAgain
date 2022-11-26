@@ -36,7 +36,7 @@ struct LargeStatusRow: View, Sendable {
     @ViewBuilder
     var header: some View {
         HStack {
-            Text(status.account)
+            Text(status.account.name).bold() + Text("@\(status.account.shortUsername)").foregroundColor(.secondary)
             if status.reblog != nil {
                 Text("reblogged")
             }
@@ -59,7 +59,7 @@ struct LargeStatusRow: View, Sendable {
     var content: some View {
         if let reblog = status.reblog {
             VStack(alignment: .leading) {
-                Text(reblog.account)
+                Text(reblog.account.name).bold() + Text("@\(reblog.account.shortUsername)").foregroundColor(.secondary)
                 LargeStatusContent(status: reblog)
             }
             .padding(4)
