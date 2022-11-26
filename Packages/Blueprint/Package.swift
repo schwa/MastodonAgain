@@ -14,7 +14,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-algorithms", from: "1.0.0"),
-        .package(url: "https://github.com/schwa/Everything.git", branch: "main"),
+        .package(url: "https://github.com/schwa/Everything", branch: "main"),
     ],
     targets: [
         .target(name: "Blueprint", dependencies: [
