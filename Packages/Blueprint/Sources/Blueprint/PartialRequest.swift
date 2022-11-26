@@ -4,7 +4,7 @@ public struct PartialRequest: Hashable, Sendable {
     public var url: URL?
     public var method: Method
     public var headers: [Header]
-    public var body: Data? // TODO: Some DataProtocol or ()
+    public var body: Data?
 
     public init(url: URL? = nil, method: Method = .get, headers: [Header] = [], body: Data? = nil) {
         self.url = url

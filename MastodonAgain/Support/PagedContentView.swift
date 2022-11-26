@@ -2,7 +2,6 @@ import Everything
 import Mastodon
 import SwiftUI
 
-// TODO: Sendable view?
 struct PagedContentView<Row, Fetch>: View where Row: View, Fetch: FetchProtocol {
     typealias Content = PagedContent<Fetch>
     typealias PageElement = Content.Element

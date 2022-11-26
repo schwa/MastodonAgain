@@ -264,7 +264,7 @@ public protocol StatusProtocol: Sendable, Equatable {
     var bookmarked: Bool? { get }
 }
 
-public struct Status: StatusProtocol, Identifiable, Codable, Sendable, Equatable {
+public struct Status: StatusProtocol, Identifiable, Codable, Sendable, Hashable {
     public enum CodingKeys: String, CodingKey {
         case id
         case created = "created_at"

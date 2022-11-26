@@ -351,7 +351,6 @@ struct DebugDescriptionView<Value>: View {
 }
 
 extension ErrorHandler {
-    // TODO: should block be @Sendable
     func callAsFunction<R>(_ block: @Sendable () async throws -> R?) async -> R? where R: Sendable {
         do {
             return try await block()
@@ -363,6 +362,8 @@ extension ErrorHandler {
     }
 }
 
+// MARK: -
+
 struct SelectionLayoutKey: LayoutValueKey {
     static var defaultValue: AnyHashable?
 }
@@ -373,7 +374,6 @@ extension View {
     }
 }
 
-// TODO: Rename
 struct SelectedView: Layout {
     let selection: AnyHashable
 
@@ -409,6 +409,8 @@ struct WebView: View {
         }
     }
 }
+
+// MARK: -
 
 extension Bundle {
     var displayName: String? {
@@ -502,7 +504,6 @@ struct ImageToggleStyle: ToggleStyle {
     }
 }
 
-// TODO: Hack
 extension UUID: RawRepresentable {
     public init?(rawValue: String) {
         self = UUID(uuidString: rawValue)!

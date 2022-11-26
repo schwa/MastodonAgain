@@ -1,3 +1,4 @@
+import Blueprint
 import Everything
 import Foundation
 import RegexBuilder
@@ -94,13 +95,6 @@ public extension [String: String] {
         return bodyString.data(using: .utf8)!
     }
 }
-
-// TODO: Already exposed by Blueprint
-// extension CharacterSet: ExpressibleByStringLiteral {
-//    public init(stringLiteral value: String) {
-//        self = CharacterSet(charactersIn: value)
-//    }
-// }
 
 public extension CharacterSet {
     static func + (lhs: CharacterSet, rhs: CharacterSet) -> CharacterSet {
@@ -423,4 +417,11 @@ extension Image: @unchecked Sendable {
 
 public extension URLCache {
     static let imageCache = URLCache(memoryCapacity: 512*1000*1000, diskCapacity: 10*1000*1000*1000)
+}
+
+func standardResponse<T>(_ type: T.Type) -> some ResultGenerator where T: Decodable {
+    IfStatus(200) { data, response in
+        print("X-RateLimit-Remaining: \(String(describing: response.value(forHTTPHeaderField: "X-RateLimit-Remaining")))")
+        return try JSONDecoder.mastodonDecoder.decode(T.self, from: data)
+    }
 }

@@ -1,7 +1,5 @@
 import Foundation
 
-// TODO: Make more of Blueprint Sendable
-
 public protocol Request: Sendable {
     associatedtype RequestContent: Request
 
@@ -24,7 +22,7 @@ public extension Request where RequestContent == Never {
 }
 
 @resultBuilder
-public enum RequestBuilder {
+public enum RequestBuilder: Sendable {
     public static func buildBlock(_ components: (any Request)?...) -> CompositeRequest {
         CompositeRequest(children: components.compactMap({ $0 }))
     }

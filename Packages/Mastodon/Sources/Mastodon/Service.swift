@@ -48,7 +48,6 @@ public actor Service {
     }
 
     public func update(_ value: Status) async throws {
-        // TODO: Insert by date
         try await storage.set(key: value.id.rawValue, value: Dated<Status>(value))
     }
 
@@ -63,7 +62,8 @@ public actor Service {
 // MARK: -
 
 public extension Service {
-    // TODO: Decide what to deprecate here.
+    // ISSUE: https://github.com/schwa/MastodonAgain/issues/21
+    // We dont need all these methods. Cleanup.
 
     func perform<R2>(request: some Request, response: R2) async throws -> R2.Result where R2: Response {
         guard let resultGenerator = response.response as? any ResultGenerator else {

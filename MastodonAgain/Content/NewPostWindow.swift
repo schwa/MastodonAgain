@@ -8,7 +8,7 @@ import SwiftUI
 
 enum NewPostWindow: Codable, Hashable {
     case empty
-    case reply(Status.ID) // TODO: Make full status?
+    case reply(Status.ID) // Cant use Status as Status is not hashable.
 }
 
 struct NewPostHost: View {
@@ -82,12 +82,12 @@ struct NewPostView: View {
             }
             .debuggingInfo()
             if let inReplyTo {
-                Text("Replying to \(inReplyTo.account.acct)") // TODO: use full name
+                Text("Replying to \(inReplyTo.name)")
             }
             TextEditor(text: $newPost.status)
             HStack {
                 ForEach(mediaUploads.indexed(), id: \.0) { _, upload in
-                    // TODO: Gross
+                    // TODO: Gross (all those ?)
                     if let thumbnail = try? upload.thumbnail?() {
                         thumbnail.resizable().scaledToFit()
                             .frame(maxWidth: 80, maxHeight: 80, alignment: .trailing)

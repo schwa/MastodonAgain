@@ -7,16 +7,6 @@ import UniformTypeIdentifiers
 // swiftlint:disable file_length
 // swiftlint:disable type_body_length
 
-// TODO: Move
-func standardResponse<T>(_ type: T.Type) -> some ResultGenerator where T: Decodable {
-    IfStatus(200) { data, response in
-        print("X-RateLimit-Remaining: \(String(describing: response.value(forHTTPHeaderField: "X-RateLimit-Remaining")))")
-        return try JSONDecoder.mastodonDecoder.decode(T.self, from: data)
-    }
-}
-
-// MARK: -
-
 public enum MastodonAPI {
 }
 

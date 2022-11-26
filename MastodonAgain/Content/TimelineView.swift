@@ -2,7 +2,6 @@ import Everything
 import Mastodon
 import SwiftUI
 
-// TODO: Sendable view?
 struct TimelineView: View, Sendable {
     @Environment(\.errorHandler)
     var errorHandler
@@ -71,10 +70,12 @@ struct TimelineView: View, Sendable {
             #endif
         }
         .task {
-            /* TODO: Bug this is getting called multiple times (x2). The guard isn't preventing multiple hits. Also seeing
+            /* ISSUE: https://github.com/schwa/MastodonAgain/issues/77
+             Bug this is getting called multiple times (x2). The guard isn't preventing multiple hits. Also seeing
              Update NavigationAuthority bound path tried to update multiple times per frame.
              Update NavigationRequestObserver tried to update multiple times per frame.
              https://developer.apple.com/forums/thread/708592
+
              */
 //            guard refreshing == false else {
 //                return
@@ -125,8 +126,9 @@ struct TimelineView: View, Sendable {
             return true
         }
 
-        // TODO: use better string searching than 'contains'
-        // TODO: this is painfully slow when there are a lot of statuses. Use FTS algorithms.
+        // ISSUE: https://github.com/schwa/MastodonAgain/issues/63
+        // use better string searching than 'contains'
+        // this is painfully slow when there are a lot of statuses. Use FTS algorithms.
         // swiftlint:disable:next force_try
         if try! status.content.plainText.contains(search) {
             return true

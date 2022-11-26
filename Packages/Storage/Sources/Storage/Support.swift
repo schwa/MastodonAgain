@@ -1,5 +1,5 @@
 import Foundation
-import os
+@_implementationOnly import os
 
 internal let moduleLogger: Logger? = Logger()
 

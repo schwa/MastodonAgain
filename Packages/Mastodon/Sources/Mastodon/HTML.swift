@@ -115,7 +115,8 @@ public extension HTML {
     }
 
     internal var mastodonAtoms: [Atom] {
-        /// Break HTML into links, texts and linebreak. Use rules from https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Whitespace to clean up whitespace. (TODO: Not fully implemented).
+        // ISSUE: https://github.com/schwa/MastodonAgain/issues/28
+        /// Break HTML into links, texts and linebreak. Use rules from https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Whitespace to clean up whitespace.
         get throws {
             let html = try SwiftSoup.parseBodyFragment(rewrittenMastodonHTML.rawValue)
             let root = try html.select("html body").only()
