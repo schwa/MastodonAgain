@@ -44,7 +44,6 @@
 		45FDAF84291714F40073E8E0 /* StatusInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FDAF83291714F40073E8E0 /* StatusInfoView.swift */; };
 		45FDAF86291715130073E8E0 /* AccountInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FDAF85291715130073E8E0 /* AccountInfoView.swift */; };
 		45FDAF8929177EF50073E8E0 /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 45FDAF8829177EF50073E8E0 /* AsyncAlgorithms */; };
-		74EF088D29318C5C002F24DC /* ImageDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74EF088C29318C5C002F24DC /* ImageDescription.swift */; };
 		A19FD1FB29295CAF00F6BE86 /* SignInViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19FD1FA29295CAF00F6BE86 /* SignInViewModel.swift */; };
 /* End PBXBuildFile section */
 
@@ -100,7 +99,6 @@
 		45FDAF83291714F40073E8E0 /* StatusInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusInfoView.swift; sourceTree = "<group>"; };
 		45FDAF85291715130073E8E0 /* AccountInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoView.swift; sourceTree = "<group>"; };
 		45FDAF8A29178A970073E8E0 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		74EF088C29318C5C002F24DC /* ImageDescription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDescription.swift; sourceTree = "<group>"; };
 		A19FD1FA29295CAF00F6BE86 /* SignInViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -176,7 +174,6 @@
 				455E6D7D292D27E300ACACF8 /* NavigationSplitViewVisibility+RawRepresentable.swift */,
 				45E6F3CB292E07C40021205F /* Announcements.swift */,
 				4592A5552930199300B4C7BF /* ConsoleLogView.swift */,
-				74EF088C29318C5C002F24DC /* ImageDescription.swift */,
 			);
 			path = Support;
 			sourceTree = "<group>";
@@ -406,7 +403,6 @@
 				45FDAF86291715130073E8E0 /* AccountInfoView.swift in Sources */,
 				453BB94A292720A800FAA259 /* SigninPicker.swift in Sources */,
 				45F1A2B9290E1FB60093A8AC /* TimelineView.swift in Sources */,
-				74EF088D29318C5C002F24DC /* ImageDescription.swift in Sources */,
 				45F1A2C3290E4FF60093A8AC /* AppSettings.swift in Sources */,
 				4514349D29184E05004A9208 /* SigninsView.swift in Sources */,
 				455E6D7E292D27E300ACACF8 /* NavigationSplitViewVisibility+RawRepresentable.swift in Sources */,
