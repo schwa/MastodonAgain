@@ -7,6 +7,7 @@ import UniformTypeIdentifiers
 // swiftlint:disable file_length
 // swiftlint:disable type_body_length
 
+// TODO: Move
 func standardResponse<T>(_ type: T.Type) -> some ResultGenerator where T: Decodable {
     IfStatus(200) { data, response in
         print("X-RateLimit-Remaining: \(String(describing: response.value(forHTTPHeaderField: "X-RateLimit-Remaining")))")
@@ -998,6 +999,45 @@ public extension MastodonAPI {
 }
 
 // https://docs.joinmastodon.org/methods/timelines/
+
+public extension MastodonAPI {
+    enum Bookmarks {
+        public struct View: Request, Response {
+            public typealias Result = [Status] // TODO: Make Page<Status>
+            
+            let baseURL: URL
+            let token: Token
+            let maxID: Status.ID?
+            let sinceID: Status.ID?
+            let minID: Status.ID?
+            let limit: Int?
+            
+            public init(baseURL: URL, token: Token, local: Bool? = nil, remote: Bool? = nil, onlyMedia: Bool? = nil, maxID: Status.ID? = nil, sinceID: Status.ID? = nil, minID: Status.ID? = nil, limit: Int? = nil) {
+                self.baseURL = baseURL
+                self.token = token
+                self.maxID = maxID
+                self.sinceID = sinceID
+                self.minID = minID
+                self.limit = limit
+            }
+            
+            public var request: some Request {
+                Method.get
+                baseURL
+                URLPath("/api/v1/bookmarks")
+                maxID.map { URLQueryItem(name: "max_id", value: $0.rawValue) }
+                sinceID.map { URLQueryItem(name: "since_id", value: $0.rawValue) }
+                minID.map { URLQueryItem(name: "min_id", value: $0.rawValue) }
+                limit.map { URLQueryItem(name: "limit", value: String($0)) }
+                Header(name: "Authorization", value: "Bearer \(token.accessToken)")
+            }
+            
+            public var response: some Response {
+                standardResponse(Status.self)
+            }
+        }
+    }
+}
 
 public extension MastodonAPI {
     enum Timelimes {

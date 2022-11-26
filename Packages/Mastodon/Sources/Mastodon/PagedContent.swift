@@ -42,7 +42,8 @@ public struct Page<Fetch>: Identifiable, Sendable where Fetch: FetchProtocol {
         self.previous = previous
         self.next = next
         self.elements = elements
-        assert(elements.map(\.id) == elements.map(\.id).sorted().reversed())
+        // TODO: only true for timelines
+        //assert(elements.map(\.id) == elements.map(\.id).sorted().reversed())
     }
 }
 

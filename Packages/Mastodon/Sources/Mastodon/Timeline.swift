@@ -149,6 +149,7 @@ public struct Fetch<Element>: FetchProtocol where Element: Codable & Identifiabl
             // TODO: Log this.
             return Page(previous: nil, next: nil, elements: [])
         }
+        // TODO: This should be part of MastodonAPI not added here? Maybe?
         let response = PageResponse<Element> { url in
             let request = OverrideURLRequest(content: request, overrideURL: url)
             let fetch = Fetch(Element.self, service: service, request: request)
