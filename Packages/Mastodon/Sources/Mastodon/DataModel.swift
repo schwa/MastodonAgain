@@ -248,7 +248,7 @@ public protocol StatusProtocol: Sendable, Equatable {
     var repliesCount: Int { get }
     var reblogsCount: Int { get }
     var favouritesCount: Int { get }
-    var editedAt: Date? { get }
+    var edited: Date? { get }
     var content: HTML { get }
     var application: Application? { get }
     var account: Account { get }
@@ -262,6 +262,8 @@ public protocol StatusProtocol: Sendable, Equatable {
     var reblogged: Bool? { get }
     var muted: Bool? { get }
     var bookmarked: Bool? { get }
+    var pinned: Bool? { get }
+    var filtered: Bool? { get }
 }
 
 public struct Status: StatusProtocol, Identifiable, Codable, Sendable {
@@ -279,7 +281,7 @@ public struct Status: StatusProtocol, Identifiable, Codable, Sendable {
         case repliesCount = "replies_count"
         case reblogsCount = "reblogs_count"
         case favouritesCount = "favourites_count"
-        case editedAt = "edited_at"
+        case edited = "edited_at"
         case content
         case reblog
         case application
@@ -295,6 +297,8 @@ public struct Status: StatusProtocol, Identifiable, Codable, Sendable {
         case reblogged
         case muted
         case bookmarked
+        case pinned
+        case filtered
     }
 
     public enum Visibility: String, Codable, CaseIterable, Sendable {
@@ -317,7 +321,7 @@ public struct Status: StatusProtocol, Identifiable, Codable, Sendable {
     public let repliesCount: Int
     public let reblogsCount: Int
     public let favouritesCount: Int
-    public let editedAt: Date?
+    public let edited: Date?
     public let content: HTML
     public let reblog: ReblogStatus?
     public let application: Application?
@@ -334,6 +338,8 @@ public struct Status: StatusProtocol, Identifiable, Codable, Sendable {
     public let reblogged: Bool?
     public let muted: Bool?
     public let bookmarked: Bool?
+    public let pinned: Bool?
+    public let filtered: Bool?
 }
 
 public struct ReblogStatus: StatusProtocol, Identifiable, Codable, Sendable, Equatable {
@@ -351,7 +357,7 @@ public struct ReblogStatus: StatusProtocol, Identifiable, Codable, Sendable, Equ
         case repliesCount = "replies_count"
         case reblogsCount = "reblogs_count"
         case favouritesCount = "favourites_count"
-        case editedAt = "edited_at"
+        case edited = "edited_at"
         case content
         case reblog
         case application
@@ -366,6 +372,8 @@ public struct ReblogStatus: StatusProtocol, Identifiable, Codable, Sendable, Equ
         case reblogged
         case muted
         case bookmarked
+        case pinned
+        case filtered
     }
 
     public let id: Tagged<Status, String>
@@ -381,7 +389,7 @@ public struct ReblogStatus: StatusProtocol, Identifiable, Codable, Sendable, Equ
     public let repliesCount: Int
     public let reblogsCount: Int
     public let favouritesCount: Int
-    public let editedAt: Date?
+    public let edited: Date?
     public let content: HTML
     public let reblog: PlaceholderCodable?
     public let application: Application?
@@ -396,6 +404,8 @@ public struct ReblogStatus: StatusProtocol, Identifiable, Codable, Sendable, Equ
     public let reblogged: Bool?
     public let muted: Bool?
     public let bookmarked: Bool?
+    public let pinned: Bool?
+    public let filtered: Bool?
 }
 
 public struct Tag: Codable, Sendable, Equatable {

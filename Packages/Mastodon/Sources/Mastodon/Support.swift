@@ -367,7 +367,7 @@ public extension URLCache {
 
 func standardResponse<T>(_ type: T.Type) -> some ResultGenerator where T: Decodable {
     IfStatus(200) { data, response in
-        print("\(response.url?.path): X-RateLimit-Remaining: \(String(describing: response.value(forHTTPHeaderField: "X-RateLimit-Remaining")))")
+        print("\(response.url?.path ?? "<?>"): X-RateLimit-Remaining: \(String(describing: response.value(forHTTPHeaderField: "X-RateLimit-Remaining")))")
         return try JSONDecoder.mastodonDecoder.decode(T.self, from: data)
     }
 }

@@ -11,6 +11,7 @@ struct ContentView: View {
             if let signin = appModel.currentSignin {
                 MainView()
                     .environmentObject(appModel.instance(for: signin))
+                    .navigationTitle("\(signin.host)")
             }
             else {
                 SignInView { signin in
