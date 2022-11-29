@@ -19,9 +19,12 @@ class AppModel: ObservableObject {
 
     @AppStorage("useMarkdownContent")
     var useMarkdownContent = false
-
+    
+    @AppStorage("showAccountHandles")
+    var showAccountHandles = false
+    
     @AppStorage("statusRowMode")
-    var statusRowMode = StatusRow.Mode.large
+    var statusRowMode = StatusRow.Mode.alt
 
     @Published
     var signins: [SignIn] = [] {
@@ -37,6 +40,29 @@ class AppModel: ObservableObject {
 
     @AppStorage("currentSigninID")
     private var currentSigninID: SignIn.ID?
+
+    @AppStorage("relativeDateFormattingStyle")
+    private var _relativeDateFormattingStyle: RelativeDateTimeFormatter.UnitsStyle =  .short
+    private lazy var _relativeDateFormatter = updateRelativeDateFormatter()
+    private func updateRelativeDateFormatter() -> RelativeDateTimeFormatter {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = _relativeDateFormattingStyle
+        return formatter
+    }
+
+    /// Units style to use for relative dates.
+    /// Bind this property to UI.
+    var relativeDateFormattingStyle: RelativeDateTimeFormatter.UnitsStyle {
+        get { _relativeDateFormattingStyle }
+        set {
+            _relativeDateFormattingStyle = newValue
+            _relativeDateFormatter = updateRelativeDateFormatter()
+        }
+    }
+
+    func relativeDate(_ date: Date) -> String {
+        return _relativeDateFormatter.localizedString(for: date, relativeTo: .now)
+    }
 
     var currentSignin: SignIn? {
         get {

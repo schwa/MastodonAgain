@@ -92,11 +92,9 @@ struct Avatar: View {
             ValueView(Optional<URL>.none) { quicklookPreviewURL in
                 image
                     .resizable()
-                    .background(.ultraThinMaterial)
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 4).strokeBorder(lineWidth: 2).foregroundColor(Color.gray)
-                    }
+                .background(.ultraThinMaterial)
+                .clipShape(Circle())
+                .shadow(radius: 2.0)
                     .accessibilityLabel("Avatar icon for \(account.name)")
                     .conditional(quicklook) { view in
                         view.accessibilityAddTraits(.isButton)
@@ -129,7 +127,7 @@ struct Avatar: View {
             }
         }
         .contextMenu {
-            Text(account)
+            AccountLabel(account)
             Button("Info") {
                 stackModel.path.append(Page(id: .account, subject: account.id))
             }
@@ -542,17 +540,6 @@ extension Collection {
     }
 }
 
-extension Text {
-    init(_ account: Account) {
-        var text = Text("")
-        if !account.displayName.isEmpty {
-            // swiftlint:disable shorthand_operator
-            text = text + Text("\(account.displayName)").bold()
-        }
-        self = text + Text(" ") + Text("@\(account.acct)")
-            .foregroundColor(.secondary)
-    }
-}
 
 extension Collection<Text> {
     func joined(separator: Text) -> Text {
