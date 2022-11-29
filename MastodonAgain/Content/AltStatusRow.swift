@@ -88,9 +88,9 @@ struct AltStatusRow: View, Sendable {
     @ViewBuilder
     var content: some View {
         if let reblog = status.reblog {
-            StatusContent(status: reblog)
+            LargeStatusContent(status: reblog)
         } else {
-            StatusContent(status: status)
+            LargeStatusContent(status: status)
         }
     }
 
