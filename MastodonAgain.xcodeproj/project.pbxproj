@@ -12,6 +12,8 @@
 		4520200F290F87A200469569 /* MediaStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4520200E290F87A200469569 /* MediaStack.swift */; };
 		45202011290F8DC600469569 /* NewPostWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45202010290F8DC600469569 /* NewPostWindow.swift */; };
 		452020132910281300469569 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452020122910281300469569 /* MainView.swift */; };
+		4527DA7D2936FFC500857AFA /* AltSignup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4527DA7C2936FFC500857AFA /* AltSignup.swift */; };
+		4527DA7F2937242B00857AFA /* instances.json in Resources */ = {isa = PBXBuildFile; fileRef = 4527DA7E2937242B00857AFA /* instances.json */; };
 		4529E98229286D0300ABFA42 /* NotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4529E98129286D0300ABFA42 /* NotificationsView.swift */; };
 		453BB94A292720A800FAA259 /* SigninPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 453BB949292720A800FAA259 /* SigninPicker.swift */; };
 		454ED2FE2929D9CA0067B070 /* Blueprint in Frameworks */ = {isa = PBXBuildFile; productRef = 454ED2FD2929D9CA0067B070 /* Blueprint */; };
@@ -70,6 +72,8 @@
 		4520200E290F87A200469569 /* MediaStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaStack.swift; sourceTree = "<group>"; };
 		45202010290F8DC600469569 /* NewPostWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostWindow.swift; sourceTree = "<group>"; };
 		452020122910281300469569 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		4527DA7C2936FFC500857AFA /* AltSignup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AltSignup.swift; sourceTree = "<group>"; };
+		4527DA7E2937242B00857AFA /* instances.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = instances.json; sourceTree = "<group>"; };
 		4529E98129286D0300ABFA42 /* NotificationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsView.swift; sourceTree = "<group>"; };
 		453BB949292720A800FAA259 /* SigninPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigninPicker.swift; sourceTree = "<group>"; };
 		454ED2F92929D9A30067B070 /* Blueprint */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Blueprint; sourceTree = "<group>"; };
@@ -148,6 +152,8 @@
 				453BB949292720A800FAA259 /* SigninPicker.swift */,
 				A19FD1FA29295CAF00F6BE86 /* SignInViewModel.swift */,
 				4514349C29184E05004A9208 /* SigninsView.swift */,
+				4527DA7C2936FFC500857AFA /* AltSignup.swift */,
+				4527DA7E2937242B00857AFA /* instances.json */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -359,6 +365,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				455AC88A290D96F700137415 /* Preview Assets.xcassets in Resources */,
+				4527DA7F2937242B00857AFA /* instances.json in Resources */,
 				455AC886290D96F700137415 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -425,6 +432,7 @@
 				4514349D29184E05004A9208 /* SigninsView.swift in Sources */,
 				455E6D7E292D27E300ACACF8 /* NavigationSplitViewVisibility+RawRepresentable.swift in Sources */,
 				45F1A2B6290E0F4B0093A8AC /* Support.swift in Sources */,
+				4527DA7D2936FFC500857AFA /* AltSignup.swift in Sources */,
 				4529E98229286D0300ABFA42 /* NotificationsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -450,6 +458,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 45202002290F164800469569 /* MastodonAgain-Debug.xcconfig */;
 			buildSettings = {
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -457,6 +469,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 45202000290F164800469569 /* MastodonAgain-Release.xcconfig */;
 			buildSettings = {
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

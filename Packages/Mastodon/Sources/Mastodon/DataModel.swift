@@ -477,33 +477,112 @@ public struct Relationship: Codable, Identifiable, Sendable, Equatable {
     }
 }
 
-struct Instance: Codable {
-    struct Info: Codable {
-        var shortDescription, fullDescription: String
-        var topic: String?
-        var languages: [String]
-        var otherLanguagesAccepted: Bool
-        var federatesWith: String
-        var prohibitedContent, categories: [String]?
+public struct Instance: Decodable, Identifiable {
+    public struct Info: Decodable {
+        public var shortDescription: String?
+        public var fullDescription: String?
+        public var topic: String?
+        public var languages: [String]
+        public var otherLanguagesAccepted: Bool?
+        public var federatesWith: String?
+        public var prohibitedContent, categories: [String]?
+
+        enum CodingKeys: String, CodingKey {
+            case shortDescription = "short_description"
+            case fullDescription = "full_description"
+            case topic
+            case languages
+            case otherLanguagesAccepted = "other_languages_accepted"
+            case federatesWith = "federates_with"
+            case prohibitedContent = "prohbited_content"
+            case categories
+        }
+
+//        public init(from decoder: Decoder) throws {
+//            let container = try decoder.container(keyedBy: CodingKeys.self)
+//
+//
+//        }
     }
 
-    var id, name: String
-    var addedAt: Date?
-    var updatedAt, checkedAt: String
-    var uptime: Int
-    var up, dead: Bool
-    var version: String
-    var ipv6: Bool
-    var httpsScore: Int
-    var httpsRank: String
-    var obsScore: Int
-    var obsRank, users, statuses, connections: String
-    var openRegistrations: Bool
-    var info: Info
-    var thumbnail: String
-    var thumbnailProxy: String
-    var activeUsers: Int
-    var email, admin: String
+    public var id: String
+    public var name: String
+    public var addedAt: Date?
+    public var updatedAt: Date?
+    public var checkedAt: Date?
+    public var uptime: Int
+    public var up, dead: Bool
+    public var version: String
+    public var ipv6: Bool
+    public var httpsScore: Int?
+    public var httpsRank: String?
+    public var obsScore: Int?
+    public var obsRank: String?
+    public var users: Int
+    public var statuses: String
+    public var connections: String
+    public var openRegistrations: Bool?
+    public var info: Info?
+    public var thumbnail: String
+    public var thumbnailProxy: String?
+    public var activeUsers: Int?
+    public var email, admin: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case addedAt = "added_at"
+        case updatedAt = "updated_at"
+        case checkedAt = "checked_at"
+        case uptime
+        case up
+        case dead
+        case version
+        case ipv6
+        case httpsScore = "https_score"
+        case httpsRank = "https_rank"
+        case obsScore = "obs_score"
+        case obsRank = "obs_rank"
+        case users
+        case statuses
+        case connections
+        case openRegistrations = "open_registrations"
+        case info
+        case thumbnail
+        case thumbnailProxy = "thumnail_proxy"
+        case activeUsers = "active_users"
+        case email
+        case admin
+
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        addedAt = try container.decodeIfPresent(Date.self, forKey: .addedAt)
+        updatedAt = try container.decodeIfPresent(Date.self, forKey: .updatedAt)
+        checkedAt = try container.decodeIfPresent(Date.self, forKey: .checkedAt)
+        uptime = try container.decode(Int.self, forKey: .uptime)
+        up = try container.decode(Bool.self, forKey: .up)
+        dead = try container.decode(Bool.self, forKey: .dead)
+        version = try container.decode(String.self, forKey: .version)
+        ipv6 = try container.decode(Bool.self, forKey: .ipv6)
+        httpsScore = try container.decodeIfPresent(Int.self, forKey: .httpsScore)
+        httpsRank = try container.decodeIfPresent(String.self, forKey: .httpsRank)
+        obsScore = try container.decodeIfPresent(Int.self, forKey: .obsScore)
+        obsRank = try container.decodeIfPresent(String.self, forKey: .obsRank)
+        users = Int(try container.decode(String.self, forKey: .users))!
+        statuses = try container.decode(String.self, forKey: .statuses)
+        connections = try container.decode(String.self, forKey: .connections)
+        openRegistrations = try container.decodeIfPresent(Bool.self, forKey: .openRegistrations)
+        info = try container.decodeIfPresent(Info.self, forKey: .info)
+        thumbnail = try container.decode(String.self, forKey: .thumbnail)
+        thumbnailProxy = try container.decodeIfPresent(String.self, forKey: .thumbnailProxy)
+        activeUsers = -1 // try container.decodeIfPresent(String.self, forKey: .activeUsers).map { Int($0)! }
+        email = try container.decodeIfPresent(String.self, forKey: .email)
+        admin = try container.decodeIfPresent(String.self, forKey: .admin)
+    }
 }
 
 public struct List: Codable {

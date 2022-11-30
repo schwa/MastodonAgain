@@ -54,6 +54,7 @@ class SignInViewModel: NSObject, ObservableObject {
         ])
 
         let (application, _) = try await URLSession.shared.json(RegisteredApplication.self, for: request)
+        print(application)
 
         authorization = .registered(application)
     }

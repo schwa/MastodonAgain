@@ -34,8 +34,7 @@ let package = Package(
         ),
         .testTarget(
             name: "MastodonTests",
-            dependencies: ["Mastodon"],
-            resources: [.copy("page.json")]
+            dependencies: ["Mastodon"]
         ),
     ]
 )
