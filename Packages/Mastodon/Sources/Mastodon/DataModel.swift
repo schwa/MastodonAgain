@@ -263,7 +263,7 @@ public protocol StatusProtocol: Sendable, Equatable {
     var muted: Bool? { get }
     var bookmarked: Bool? { get }
     var pinned: Bool? { get }
-    var filtered: Bool? { get }
+//    var filtered: Bool? { get }
 }
 
 public struct Status: StatusProtocol, Identifiable, Codable, Sendable {
@@ -298,7 +298,7 @@ public struct Status: StatusProtocol, Identifiable, Codable, Sendable {
         case muted
         case bookmarked
         case pinned
-        case filtered
+//        case filtered
     }
 
     public enum Visibility: String, Codable, CaseIterable, Sendable {
@@ -339,7 +339,7 @@ public struct Status: StatusProtocol, Identifiable, Codable, Sendable {
     public let muted: Bool?
     public let bookmarked: Bool?
     public let pinned: Bool?
-    public let filtered: Bool?
+//    public let filtered: Bool?
 }
 
 public struct ReblogStatus: StatusProtocol, Identifiable, Codable, Sendable, Equatable {
@@ -373,7 +373,7 @@ public struct ReblogStatus: StatusProtocol, Identifiable, Codable, Sendable, Equ
         case muted
         case bookmarked
         case pinned
-        case filtered
+//        case filtered
     }
 
     public let id: Tagged<Status, String>
@@ -405,7 +405,7 @@ public struct ReblogStatus: StatusProtocol, Identifiable, Codable, Sendable, Equ
     public let muted: Bool?
     public let bookmarked: Bool?
     public let pinned: Bool?
-    public let filtered: Bool?
+//    public let filtered: Bool?
 }
 
 public struct Tag: Codable, Sendable, Equatable {
