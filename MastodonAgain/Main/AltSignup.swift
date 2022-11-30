@@ -13,9 +13,12 @@ struct AltSignup: View {
     var page: Page = .welcome
 
     var body: some View {
-        PagedView(page: $page) {
+        PageView(page: $page) {
             VStack {
                 Text("Welcome")
+                TagView("hello world")
+                    .accessibilityAddTraits(.isStaticText)
+                    .accessibilityLabel("hello world")
                 Button("Next") {
                     page = .registerApplication
                 }
@@ -91,21 +94,215 @@ func emoji_flag(_ code: String) -> String {
     return String(String.UnicodeScalarView(scalars))
 }
 
-struct CountryCodeTag: View {
+struct InstancePicker: View {
+    struct Filter: Equatable {
+        var openRegistrationsOnly = true
+        var noDeadInstances = true
+        var language: Locale.Language?
+        var maxUsers: Int?
+        var minUsers: Int?
+        var search: String?
+    }
+
+    @Binding
+    var page: AltSignup.Page
+
+    @State
+    var instances: [Instance] = []
+
+    @State
+    var filtered: [Instance] = []
+
+    @State
+    var selection: Instance.ID?
+
+    @State
+    var filter = Filter()
+
+    init(page: Binding<AltSignup.Page>) {
+        self._page = page
+    }
+
+    var body: some View {
+        VStack {
+            DebugDescriptionView(filter).lineLimit(5, reservesSpace: true)
+            List(filtered, selection: $selection) { instance in
+                LabeledContent {
+                    VStack(alignment: .leading) {
+                        HStack {
+                            Spacer()
+                            if let shortDescription = instance.info?.shortDescription {
+                                Text(shortDescription)
+                            }
+                            ForEach(instance.info?.languages ?? [], id: \.self) {
+                                LanguageCodeTagView($0)
+                            }
+                        }
+                        if selection == instance.id {
+                            if let fullDescription = instance.info?.fullDescription {
+                                Text(fullDescription)
+                            }
+                            DebugDescriptionView(instance)
+                        }
+                    }
+                } label: {
+                    LabeledContent(instance.name, value: "\(instance.users, format: .number) users")
+                        .labeledContentStyle(VerticalLabeledContentStyle())
+                }
+            }
+
+            Text("\(filtered.count, format: .number)/\(instances.count, format: .number)")
+            HStack {
+                Button("Back") {
+                    page = .registerApplication
+                }
+                ValueView(false) { isPresentingFilter in
+                    Button("Filter…") {
+                        isPresentingFilter.wrappedValue = true
+                    }
+                    .sheet(isPresented: isPresentingFilter) {
+                        let allLanguages = instances.reduce(into: Set<String>()) { result, instance in
+                            result.formUnion(instance.info?.languages ?? [])
+                        }
+                        InstanceFilterView(isPresenting: isPresentingFilter, filter: $filter, allLanguages: allLanguages)
+                    }
+                }
+
+                Button("Select") {
+
+                }
+            }
+        }
+        .padding()
+
+        .task {
+            print("TASK")
+            let url = Bundle.main.url(forResource: "instances", withExtension: "json")!
+            let data = try! Data(contentsOf: url)
+            struct Container: Decodable {
+                let instances: [Instance]
+            }
+            let decoder = JSONDecoder.mastodonDecoder
+            await MainActor.run {
+                instances = try! decoder.decode(Container.self, from: data).instances
+                    .sorted(by: \.users)
+                    .reversed()
+                filterInstances()
+            }
+        }
+        .onChange(of: filter) { _ in
+            filterInstances()
+        }
+        .searchable(text: $filter.search.unwrappingRebound(default: { "" }))
+    }
+
+    func filterInstances() {
+        filtered = instances.filter { instance in
+            if filter.openRegistrationsOnly && instance.openRegistrations == false {
+                return false
+            }
+            if filter.noDeadInstances && instance.dead == true {
+                return false
+            }
+            if let language = filter.language {
+                if (instance.info?.languages ?? []).contains(language.languageCode!.identifier) == false {
+                    return false
+                }
+            }
+            if let maxUsers = filter.maxUsers {
+                if instance.users > maxUsers {
+                    return false
+                }
+            }
+            if let minUsers = filter.minUsers {
+                if instance.users < minUsers {
+                    return false
+                }
+            }
+            if let search = filter.search?.trimmingCharacters(in: .whitespacesAndNewlines), !search.isEmpty {
+                if instance.name.localizedCaseInsensitiveContains(search) {
+                    return true
+                }
+                if instance.info?.shortDescription?.localizedCaseInsensitiveContains(search) ?? false {
+                    return true
+                }
+                if instance.info?.fullDescription?.localizedCaseInsensitiveContains(search) ?? false {
+                    return true
+                }
+                if instance.info?.languages.contains(where: { $0.localizedCaseInsensitiveContains(search) }) ?? false {
+                    return true
+                }
+                return false
+            }
+
+            return true
+        }
+    }
+}
+
+// MARK: -
+
+struct LanguageCodeTagView: View {
     let code: String
 
     init(_ code: String) {
         self.code = code
     }
 
+    var longLabel: String {
+        let localizedString = Locale.current.localizedString(forLanguageCode: code)
+        return localizedString ?? "Language code: \(code)"
+    }
+
     var body: some View {
-        Text(code.uppercased()).fixedSize().bold()
-            .foregroundColor(.white)
-            .padding([.top], 4)
-            .padding([.bottom], 3)
-            .padding([.leading, .trailing], 4)
-            .background(Color(web: "#6e6f6e").cornerRadius(4))
-            .monospaced()
+        TagView(code.uppercased())
+        .fixedSize()
+        .fontWeight(.semibold)
+        .accessibilityAddTraits(.isStaticText)
+        .accessibilityLabel(longLabel)
+        .help(longLabel)
+    }
+}
+
+struct VerticalLabeledContentStyle: LabeledContentStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        VStack(alignment: .leading) {
+            configuration.label
+            configuration.content.foregroundColor(.secondary)
+        }
+    }
+}
+
+struct TagView <Content>: View where Content: View {
+    @Environment(\.backgroundStyle)
+    var backgroundStyle
+
+    let content: Content
+
+    init(_ content: Content) {
+        self.content = content
+    }
+
+    var body: some View {
+        content.hidden()
+            .padding(2)
+            .background(backgroundStyle ?? AnyShapeStyle(.gray))
+            .mask {
+                content
+                    .padding(2)
+                    .foregroundColor(Color(white: 0))
+                    .background(Color(white: 1).cornerRadius(4))
+                    .background(Color(white: 0))
+                    .compositingGroup()
+                    .luminanceToAlpha()
+            }
+    }
+}
+
+extension TagView where Content == Text {
+    init(_ label: String) {
+        let content = Text(label)
+        self.init(content)
     }
 }
 
@@ -125,227 +322,69 @@ extension Color {
     }
 }
 
-struct InstancePicker: View {
-    @Binding
-    var page: AltSignup.Page
-
-    @State
-    var instances: [Instance] = []
-
-    @State
-    var filtered: [Instance] = []
-
-    init(page: Binding<AltSignup.Page>) {
-        self._page = page
+extension Locale.Language: Identifiable {
+    public var id: Locale.LanguageCode {
+        languageCode!
     }
+}
+
+extension Locale.Language {
+    static var all: [Locale.Language] {
+        Locale.availableIdentifiers.filter({ !$0.contains("_") }).map { Self(identifier: $0) }
+    }
+
+    var localizedName: String {
+        Locale.current.localizedString(forLanguageCode: languageCode!.identifier)!
+    }
+}
+
+struct InstanceFilterView: View {
+    @Binding
+    var isPresenting: Bool
+
+    @Binding
+    var filter: InstancePicker.Filter
+
+    let allLanguages: Set<String>
 
     var body: some View {
         VStack {
-            List(filtered) { instance in
-                LabeledContent {
-                    Text("\(instance.info?.shortDescription ?? "")")
+            Form {
+                Toggle("Open Registrations Only", isOn: $filter.openRegistrationsOnly)
+                Toggle("No Dead Instances", isOn: $filter.noDeadInstances)
 
-                    HStack {
-                        ForEach(instance.info?.languages ?? [], id: \.self) {
-                            CountryCodeTag($0)
-                        }
-//                        instance.info?.languages.map(emoji_flag)))")
+                Picker("Language", selection: $filter.language) {
+                    Text("Any").tag(Locale.Language?.none)
+                    Divider()
+                    ForEach(Locale.Language.all.filter({ allLanguages.contains($0.languageCode!.identifier) }).sorted(by: \.localizedName)) { language in
+                        Text("\(language.localizedName) (\(language.languageCode!.identifier))")
+                        .tag(Optional(language))
                     }
-                } label: {
-                    LabeledContent(instance.name, value: "\(instance.users, format: .number) users")
-                        .labeledContentStyle(VerticalLabeledContentStyle())
+                }
+
+                LabeledContent("# of Users") {
+                    TextField("Min", text: Binding(other: $filter.minUsers))
+                    TextField("Max", text: Binding(other: $filter.maxUsers))
                 }
             }
 
-            HStack {
-                Toggle("Open Registrations Only", isOn: .constant(true))
-                Toggle("No Dead Instances", isOn: .constant(false))
+            Button("OK") {
+                isPresenting = false
             }
+            .keyboardShortcut(.return)
 
-            Text("\(filtered.count, format: .number)/\(instances.count, format: .number)")
-            Button("Back") {
-                page = .registerApplication
-            }
         }
         .padding()
-
-        .task {
-            let url = Bundle.main.url(forResource: "instances", withExtension: "json")!
-            let data = try! Data(contentsOf: url)
-            struct Container: Decodable {
-                let instances: [Instance]
-            }
-            let decoder = JSONDecoder.mastodonDecoder
-            instances = try! decoder.decode(Container.self, from: data).instances
-                .sorted(by: \.users)
-                .reversed()
-
-            filtered = instances
-                .filter { $0.openRegistrations == true }
-                .filter { $0.dead == false }
-        }
     }
 }
 
-// MARK: -
-
-#if os(iOS)
-struct PagedView <Page, Content>: View where Page: Hashable, Content: View {
-    @Binding
-    var page: Page
-
-    @ViewBuilder
-    let content: () -> Content
-
-    init(page: Binding<Page>, @ViewBuilder content: @escaping () -> Content) {
-        // swiftlint:disable:next force_cast
-        self._page = page
-        self.content = content
+extension Binding where Value == String {
+    init(other: Binding<Int?>) {
+        self = .init(get: {
+            return other.wrappedValue.map { String($0) } ?? ""
+        }, set: { newValue in
+            other.wrappedValue = Int(newValue)
+        })
     }
 
-    var body: some View {
-        TabView(selection: $page, content: content)
-        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
-        .onChange(of: page) { newValue in
-            print(newValue)
-        }
-    }
 }
-
-extension View {
-    func page <Page>(_ value: Page) -> some View where Page: Hashable {
-        self.tag(value)
-    }
-}
-
-#elseif os(macOS)
-
-struct PagedView <Page, Content>: View where Page: Hashable, Content: View {
-    @Binding
-    var page: Page
-
-    @ViewBuilder
-    let content: () -> Content
-
-    init(page: Binding<Page>, @ViewBuilder content: @escaping () -> Content) {
-        // swiftlint:disable:next force_cast
-        self._page = page
-        self.content = content
-    }
-
-    var body: some View {
-        GeometryReader { geometry in
-            ScrollView(.horizontal, showsIndicators: false) {
-                HelperView(page: page, content: content)
-            }
-            .pagedSize(geometry.size)
-            .scrollDisabled(true)
-        }
-    }
-
-    struct HelperView: View {
-        let page: Page
-        let content: () -> Content
-
-        @Environment(\.pagedSize)
-        var pageSize
-
-        var body: some View {
-            ScrollViewReader { scroll in
-                HStack(spacing: 0) {
-                    content()
-//                        .border(Color.black)
-                }
-                .onChange(of: pageSize) { _ in
-                    scroll.scrollTo(page, anchor: UnitPoint(x: 0.5, y: 0.5))
-                }
-                .onChange(of: page) { page in
-                    withAnimation {
-                        scroll.scrollTo(page, anchor: UnitPoint(x: 0.5, y: 0.5))
-                    }
-                }
-                .onAppear {
-                    scroll.scrollTo(page, anchor: UnitPoint(x: 0.5, y: 0.5))
-                }
-            }
-        }
-    }
-}
-
-// MARK: -
-
-struct PagedItemKey: EnvironmentKey {
-    static var defaultValue: AnyHashable?
-}
-
-extension EnvironmentValues {
-    var page: AnyHashable? {
-        get {
-            self[PagedItemKey.self]
-        }
-        set {
-            self[PagedItemKey.self] = newValue
-        }
-    }
-}
-
-struct PagedItemModifier <Page>: ViewModifier where Page: Hashable {
-    let value: Page
-
-    @Environment(\.pagedSize)
-    var pagedSize
-
-    func body(content: Content) -> some View {
-        content.environment(\.page, value)
-        .id(value)
-        .frame(width: pagedSize!.width, height: pagedSize!.height)
-    }
-}
-
-extension View {
-    func page <Page>(_ value: Page) -> some View where Page: Hashable {
-        modifier(PagedItemModifier(value: value))
-    }
-}
-
-// MARK: -
-
-internal struct PagedSizeKey: EnvironmentKey {
-    static var defaultValue: CGSize?
-}
-
-internal extension EnvironmentValues {
-    var pagedSize: CGSize? {
-        get {
-            self[PagedSizeKey.self]
-        }
-        set {
-            self[PagedSizeKey.self] = newValue
-        }
-    }
-}
-
-internal struct PagedSizeModifier: ViewModifier {
-    let value: CGSize
-    func body(content: Content) -> some View {
-        content.environment(\.pagedSize, value)
-    }
-}
-
-internal extension View {
-    func pagedSize(_ value: CGSize) -> some View {
-        self.modifier(PagedSizeModifier(value: value))
-    }
-}
-
-#endif
-
-struct VerticalLabeledContentStyle: LabeledContentStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        VStack(alignment: .leading) {
-            configuration.label
-            configuration.content.foregroundColor(.secondary)
-        }
-    }
-}
-
