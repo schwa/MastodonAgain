@@ -1,3 +1,4 @@
+import Everything
 import Mastodon
 import SwiftUI
 

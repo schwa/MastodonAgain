@@ -1,5 +1,5 @@
 import AsyncAlgorithms
-@_implementationOnly import Everything
+import Everything
 import Foundation
 @_implementationOnly import os
 

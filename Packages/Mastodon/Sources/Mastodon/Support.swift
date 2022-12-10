@@ -96,12 +96,6 @@ public extension [String: String] {
     }
 }
 
-public extension CharacterSet {
-    static func + (lhs: CharacterSet, rhs: CharacterSet) -> CharacterSet {
-        lhs.union(rhs)
-    }
-}
-
 public extension URLRequest {
     @available(*, deprecated, message: "Use Blueprints")
     init(url: URL, formParameters form: [String: String]) {
@@ -309,22 +303,6 @@ public func jsonTidy(data: Data) throws -> String {
     return String(data: data, encoding: .utf8)!
 }
 
-public extension Optional where Wrapped: Collection {
-    func nilify() -> Wrapped? {
-        switch self {
-        case .some(let value):
-            if value.isEmpty {
-                return nil
-            }
-            else {
-                return value
-            }
-        case .none:
-            return nil
-        }
-    }
-}
-
 public struct PlaceholderCodable: Codable, Sendable, Equatable {
 }
 
@@ -376,38 +354,6 @@ public extension Locale {
 
     static var availableTopLevelIdentifiers: [String] {
         Locale.availableIdentifiers.filter({ !$0.contains("_") })
-    }
-}
-
-public extension Image {
-    init(data: Data) throws {
-        #if os(macOS)
-            guard let nsImage = NSImage(data: data) else {
-                throw MastodonError.generic("Could not load image")
-            }
-            self = Image(nsImage: nsImage)
-        #else
-            guard let uiImage = UIImage(data: data) else {
-                throw MastodonError.generic("Could not load image")
-            }
-            self = Image(uiImage: uiImage)
-        #endif
-    }
-}
-
-public extension Image {
-    init(url: URL) throws {
-#if os(macOS)
-        guard let nsImage = NSImage(contentsOf: url) else {
-            throw MastodonError.generic("Could not load image")
-        }
-        self = Image(nsImage: nsImage)
-#else
-        guard let uiImage = UIImage(contentsOfFile: url.path) else {
-            throw MastodonError.generic("Could not load image")
-        }
-        self = Image(uiImage: uiImage)
-#endif
     }
 }
 

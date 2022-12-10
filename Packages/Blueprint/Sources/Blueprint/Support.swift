@@ -10,35 +10,6 @@ public enum BlueprintError: Error {
     case failedToResolveName(String)
 }
 
-extension CharacterSet: ExpressibleByStringLiteral {
-    public init(stringLiteral value: String) {
-        self = CharacterSet(charactersIn: value)
-    }
-}
-
-extension CharacterSet {
-    static func + (lhs: CharacterSet, rhs: CharacterSet) -> CharacterSet {
-        lhs.union(rhs)
-    }
-}
-
-extension Character {
-    static func random(in set: String) -> Character {
-        set.randomElement()!
-    }
-}
-
-// MARK: -
-
-extension URL: ExpressibleByStringLiteral {
-    public init(stringLiteral value: String) {
-        self.init(string: value)!
-    }
-}
-
-extension URL: ExpressibleByStringInterpolation {
-}
-
 public struct URLPath: Hashable, Sendable {
     public let rawValue: String
 
