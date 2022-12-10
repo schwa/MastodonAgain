@@ -31,6 +31,21 @@ public struct Header: Hashable, Sendable {
 }
 
 extension Header: ExpressibleByStringLiteral {
+    /**
+     Header: ExpressibleByStringLiteral
+     A protocol extension that provides an initializer for creating a Header instance from a string literal. The string must be in the format name=value, where name is the name of the header and value is its value.
+     Example
+
+     Copy code
+     let header: Header = "Content-Type=application/json"
+     Requirements
+
+     The string must match the pattern ^(.+)=(.+)$
+     The name and value must be non-empty strings
+     Fatal Error
+
+     If the string does not match the required pattern, a fatal error is thrown.
+     */
     public init(stringLiteral value: String) {
         let regex = #/^(.+)=(.+)$/#
         guard let match = value.firstMatch(of: regex) else {
