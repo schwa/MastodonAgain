@@ -16,12 +16,11 @@ struct ImageDescription {
     }
 
     var descriptiveText: String {
-        get {
-            return terms.descriptiveText
-        }
+        terms.descriptiveText
     }
 
-//MARK: - Internal
+    // MARK: - Internal
+
     private var terms: AssociatedTerms
 
     private static func determineTerms(from image: CGImage) -> AssociatedTerms {
@@ -40,7 +39,7 @@ struct ImageDescription {
 
             terms.searchTerms = classifyObservations
                 .filter { $0.hasMinimumPrecision(0.01, forRecall: 0.7) }
-                .reduce(into: [String: VNConfidence]()) { (dict, observation) in dict[observation.identifier] = observation.confidence }
+                .reduce(into: [String: VNConfidence]()) { dict, observation in dict[observation.identifier] = observation.confidence }
         }
 
         // Text found in image
@@ -51,23 +50,24 @@ struct ImageDescription {
         return terms
     }
 
-    //MARK: - AssociatedTerms holds the various categories, search keywords, text, etc
+    // MARK: - AssociatedTerms holds the various categories, search keywords, text, etc
+
     private struct AssociatedTerms {
-        var foundText: String? = nil
-        var categories = [String:VNConfidence]()
-        var searchTerms = [String:VNConfidence]()
+        var foundText: String?
+        var categories = [String: VNConfidence]()
+        var searchTerms = [String: VNConfidence]()
 
         var descriptiveText: String {
             // Start with the top three categories...
             var contentsText = categories
-                .sorted(by: {$0.value > $1.value} )
+                .sorted(by: { $0.value > $1.value })
                 .prefix(3)
                 .compactMap { formatted(term: $0.0) }
                 .joined(separator: ", ")
             // ... failing that we'll try using the search terms...
             if contentsText.isEmpty {
                 contentsText = searchTerms
-                    .sorted(by: {$0.value > $1.value} )
+                    .sorted(by: { $0.value > $1.value })
                     .prefix(3)
                     .compactMap { formatted(term: $0.0) }
                     .joined(separator: ", ")

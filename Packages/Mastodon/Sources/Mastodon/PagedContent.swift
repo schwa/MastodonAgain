@@ -44,7 +44,7 @@ public struct Page<Fetch>: Identifiable, Sendable where Fetch: FetchProtocol {
         self.next = next
         self.elements = elements
         // ISSUE: https://github.com/schwa/MastodonAgain/issues/46 - make sure elements are in order and unique?
-        //assert(elements.map(\.id) == elements.map(\.id).sorted().reversed())
+        // assert(elements.map(\.id) == elements.map(\.id).sorted().reversed())
     }
 }
 

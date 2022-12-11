@@ -12,7 +12,7 @@ struct MediaStack: View {
     var quicklookSelection: URL?
 
     var urls: [URL] {
-        attachments.map { $0.url }
+        attachments.map(\.url)
     }
 
     var body: some View {

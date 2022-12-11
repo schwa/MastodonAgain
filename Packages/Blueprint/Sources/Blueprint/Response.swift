@@ -19,7 +19,7 @@ extension Never: Response {
 
     public var response: Never {
         // swiftlint:disable:next implicit_return
-        return uncallable() // Return is necessary alas to short circule the @resultBuilder
+        return uncallable() // NOTE: Return is necessary alas to short circule the @resultBuilder
     }
 }
 

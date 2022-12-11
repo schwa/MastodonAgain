@@ -2,7 +2,6 @@ import Mastodon
 import SwiftUI
 
 struct BookmarksView: View {
-
     @EnvironmentObject
     var instanceModel: InstanceModel
 

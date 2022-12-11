@@ -22,27 +22,27 @@ struct MainView: View {
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility, sidebar: { sidebar }, detail: { detail })
-        .toolbar {
-            Toggle("Debug", isOn: $appModel.showDebuggingInfo)
-                .toggleStyle(ImageToggleStyle())
-        }
-        .overlay(alignment: .bottomTrailing) {
-            VStack(spacing: 2) {
-                // swiftlint:disable force_cast
-                Link(destination: "https://github.com/schwa/MastodonAgain/issues/new") {
-                    VStack {
-                        Label("File a bug…", systemImage: "ladybug")
-                        Text("(Build #\(Bundle.main.infoDictionary!["CFBundleVersion"] as! String))")
+            .toolbar {
+                Toggle("Debug", isOn: $appModel.showDebuggingInfo)
+                    .toggleStyle(ImageToggleStyle())
+            }
+            .overlay(alignment: .bottomTrailing) {
+                VStack(spacing: 2) {
+                    // swiftlint:disable force_cast
+                    Link(destination: "https://github.com/schwa/MastodonAgain/issues/new") {
+                        VStack {
+                            Label("File a bug…", systemImage: "ladybug")
+                            Text("(Build #\(Bundle.main.infoDictionary!["CFBundleVersion"] as! String))")
+                        }
                     }
                 }
+                .padding(4)
+                .background(Color.orange.opacity(0.75).cornerRadius(8))
+                .padding()
             }
-            .padding(4)
-            .background(Color.orange.opacity(0.75).cornerRadius(8))
-            .padding()
-        }
-        .onAppear {
-            selection = router.root.first
-        }
+            .onAppear {
+                selection = router.root.first
+            }
     }
 
     @ViewBuilder
@@ -96,11 +96,11 @@ struct NavStack: View {
 
 protocol PageProtocol: Identifiable, Hashable {
     associatedtype Subject
-    var id: PageID { get}
-    var subject: Subject { get}
+    var id: PageID { get }
+    var subject: Subject { get }
 }
 
-struct Page <Subject>: PageProtocol {
+struct Page<Subject>: PageProtocol {
     let id: PageID
     let subject: Subject
 
@@ -121,9 +121,9 @@ struct Page <Subject>: PageProtocol {
 typealias AnyPage = Page<Any>
 
 extension Page where Subject == Any {
-    init<Base>(_ base: Base) where Base: PageProtocol {
-        self.id = base.id
-        self.subject = base.subject
+    init(_ base: some PageProtocol) {
+        id = base.id
+        subject = base.subject
     }
 }
 
@@ -143,7 +143,7 @@ enum PageID: CaseIterable {
     case account
     case status
     #if os(macOS)
-    case log
+        case log
     #endif
     case bookmarks
 }
@@ -159,7 +159,7 @@ struct Router {
         Page(id: .notifications, subject: ()),
         Page(id: .relationships, subject: ()),
         Page(id: .account, subject: Account.ID?.none as Any),
-        Page(id: .bookmarks, subject: ())
+        Page(id: .bookmarks, subject: ()),
     ]
 
     init() {
@@ -182,10 +182,10 @@ struct Router {
             Label("Account", systemImage: "gear")
         case .status:
             Label("Status", systemImage: "gear")
-#if os(macOS)
-        case .log:
-            Label("Log", systemImage: "gear")
-#endif
+        #if os(macOS)
+            case .log:
+                Label("Log", systemImage: "gear")
+        #endif
         case .bookmarks:
             Label("Bookmarks", systemImage: "gear")
         }
@@ -207,10 +207,10 @@ struct Router {
         case .status:
             let id = page.subject as! Status.ID
             StatusInfoView(id)
-#if os(macOS)
-        case .log:
-            ConsoleLogView()
-#endif
+        #if os(macOS)
+            case .log:
+                ConsoleLogView()
+        #endif
         case .bookmarks:
             BookmarksView()
         }

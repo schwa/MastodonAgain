@@ -22,7 +22,7 @@ class InstanceModel: ObservableObject {
 
     init(signin: SignIn) {
         self.signin = signin
-        self.baseURL = URL("https://\(signin.host)")
+        baseURL = URL("https://\(signin.host)")
 
         // swiftlint:disable:next force_try
         service = try! Service(host: signin.host, authorization: signin.authorization)

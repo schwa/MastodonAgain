@@ -21,7 +21,7 @@ struct AccountInfoView: View {
     var instanceModel: InstanceModel
 
     init(_ id: Account.ID?) {
-        self._id = State(initialValue: id)
+        _id = State(initialValue: id)
     }
 
     var body: some View {
@@ -101,28 +101,28 @@ struct ConcreteAccountInfoView: View {
             }
             .background {
                 Color.white
-                .overlay(alignment: .top) {
-                    CachedAsyncImage(url: account.headerStatic, urlCache: .imageCache) { image in
-                        ValueView(Optional<URL>.none) { quicklookURL in
-                            image
-                                .resizable()
-                                .scaledToFill()
-                                .accessibilityLabel("Background image for \(account.name)")
-                                .accessibilityAddTraits(.isButton)
-                                .onTapGesture {
-                                    quicklookURL.wrappedValue = account.headerStatic
-                                }
-                                .quickLookPreview(quicklookURL)
+                    .overlay(alignment: .top) {
+                        CachedAsyncImage(url: account.headerStatic, urlCache: .imageCache) { image in
+                            ValueView(URL?.none) { quicklookURL in
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                                    .accessibilityLabel("Background image for \(account.name)")
+                                    .accessibilityAddTraits(.isButton)
+                                    .onTapGesture {
+                                        quicklookURL.wrappedValue = account.headerStatic
+                                    }
+                                    .quickLookPreview(quicklookURL)
+                            }
+                        } placeholder: {
+                            Color.clear
                         }
-                    } placeholder: {
-                        Color.clear
+                        .background {
+                            LinearGradient(colors: [.cyan, .purple], startPoint: .topLeading, endPoint: .bottomTrailing)
+                        }
+                        .frame(maxHeight: 160)
+                        .clipped()
                     }
-                    .background {
-                        LinearGradient(colors: [.cyan, .purple], startPoint: .topLeading, endPoint: .bottomTrailing)
-                    }
-                    .frame(maxHeight: 160)
-                    .clipped()
-                }
             }
         }
         .scrollContentBackground(.hidden)
@@ -209,7 +209,7 @@ struct FetchableValueView<Value, Content>: View where Value: Sendable, Content: 
     var errorHandler
 
     init(value: Binding<Value?>, canRefresh: Bool = false, fetch: @escaping @Sendable () async throws -> Value?, @ViewBuilder content: @escaping () -> Content) {
-        self._value = value
+        _value = value
         self.canRefresh = canRefresh
         self.fetch = fetch
         self.content = content
@@ -250,7 +250,7 @@ struct FetchableValueView<Value, Content>: View where Value: Sendable, Content: 
     }
 }
 
-struct Tag <Content>: View where Content: View {
+struct Tag<Content>: View where Content: View {
     let content: () -> Content
 
     @Environment(\.backgroundStyle)
@@ -262,8 +262,8 @@ struct Tag <Content>: View where Content: View {
 
     var body: some View {
         content()
-        .padding(EdgeInsets(top: 2, leading: 8, bottom: 2, trailing: 8))
-        .background(Capsule().fill(backgroundStyle ?? .init(Color.cyan)))
+            .padding(EdgeInsets(top: 2, leading: 8, bottom: 2, trailing: 8))
+            .background(Capsule().fill(backgroundStyle ?? .init(Color.cyan)))
     }
 }
 

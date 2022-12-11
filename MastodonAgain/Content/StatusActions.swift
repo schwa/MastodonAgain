@@ -153,7 +153,7 @@ struct StatusActions: View {
     @ViewBuilder
     var moreButton: some View {
         Button(systemImage: "ellipsis", action: {})
-        .accessibilityLabel("More")
+            .accessibilityLabel("More")
     }
 
     @ViewBuilder
@@ -161,7 +161,7 @@ struct StatusActions: View {
         let status: any StatusProtocol = status.reblog ?? status
         if let url = status.url {
             ShareLink(item: url, label: { Image(systemName: "square.and.arrow.up") })
-            .accessibilityLabel("Share")
+                .accessibilityLabel("Share")
         }
     }
 

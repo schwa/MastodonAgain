@@ -2,8 +2,8 @@ import CachedAsyncImage
 import Everything
 import Foundation
 import Mastodon
-import RegexBuilder
 import QuickLook
+import RegexBuilder
 import SwiftUI
 import UniformTypeIdentifiers
 import WebKit
@@ -36,7 +36,7 @@ struct Avatar: View {
 
     var body: some View {
         CachedAsyncImage(url: account.avatar, urlCache: .imageCache) { image in
-            ValueView(Optional<URL>.none) { quicklookPreviewURL in
+            ValueView(URL?.none) { quicklookPreviewURL in
                 image
                     .resizable()
                     .background(.ultraThinMaterial)
@@ -47,12 +47,12 @@ struct Avatar: View {
                     .accessibilityLabel("Avatar icon for \(account.name)")
                     .conditional(quicklook) { view in
                         view.accessibilityAddTraits(.isButton)
-                        .onTapGesture {
-                            if quicklook {
-                                quicklookPreviewURL.wrappedValue = account.avatar
+                            .onTapGesture {
+                                if quicklook {
+                                    quicklookPreviewURL.wrappedValue = account.avatar
+                                }
                             }
-                        }
-                        .quickLookPreview(quicklookPreviewURL)
+                            .quickLookPreview(quicklookPreviewURL)
                     }
             }
         } placeholder: {
@@ -304,13 +304,13 @@ struct ImageToggleStyle: ToggleStyle {
     func makeBody(configuration: Configuration) -> some View {
         Button { configuration.isOn.toggle() }
         label: {
-            if configuration.isOn {
-                Image(systemName: "ladybug").foregroundColor(.red).symbolVariant(.circle)
+                if configuration.isOn {
+                    Image(systemName: "ladybug").foregroundColor(.red).symbolVariant(.circle)
+                }
+                else {
+                    Image(systemName: "ladybug")
+                }
             }
-            else {
-                Image(systemName: "ladybug")
-            }
-        }
     }
 }
 

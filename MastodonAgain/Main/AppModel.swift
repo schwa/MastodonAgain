@@ -78,7 +78,7 @@ class AppModel: ObservableObject {
             let path = try FSPath.specialDirectory(.applicationSupportDirectory) / filename
             storage = try Storage(path: path.path) { registration in
                 registration.registerJSON(type: [SignIn].self)
-            }        // TODO: this can contain sensitive info ("tokens")
+            } // TODO: this can contain sensitive info ("tokens")
             Task {
                 // TODO: Force try
                 // swiftlint:disable:next force_try

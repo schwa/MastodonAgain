@@ -16,7 +16,7 @@ public extension URLRequest {
 
 public extension URLSession {
     // TODO: This should take a request and response - and not a resultGenerator
-    func perform<R1, R2>(request: R1, resultGenerator: R2) async throws -> R2.Result where R1: Request, R2: ResultGenerator {
+    func perform<R2>(request: some Request, resultGenerator: R2) async throws -> R2.Result where R2: ResultGenerator {
         var partialRequest = PartialRequest()
         try request.apply(request: &partialRequest)
         let urlRequest = try URLRequest(partialRequest)

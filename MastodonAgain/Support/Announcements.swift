@@ -46,37 +46,37 @@ struct AnnouncerModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-        .overlay(alignment: .top) {
-            currentAnnouncement.map {
-                AnnouncementView(announcement: $0)
-                    .padding()
+            .overlay(alignment: .top) {
+                currentAnnouncement.map {
+                    AnnouncementView(announcement: $0)
+                        .padding()
+                }
             }
-        }
-        .task {
-            do {
-                for await announcement in await announcer.announcements {
-                    await MainActor.run {
-                        withAnimation {
-                            self.currentAnnouncement = announcement
+            .task {
+                do {
+                    for await announcement in await announcer.announcements {
+                        await MainActor.run {
+                            withAnimation {
+                                self.currentAnnouncement = announcement
+                            }
                         }
-                    }
-                    try await Task.sleep(for: .seconds(10))
-                    await MainActor.run {
-                        withAnimation {
-                            self.currentAnnouncement = nil
+                        try await Task.sleep(for: .seconds(10))
+                        await MainActor.run {
+                            withAnimation {
+                                self.currentAnnouncement = nil
+                            }
                         }
                     }
                 }
+                catch {
+                }
             }
-            catch {
-            }
-        }
     }
 }
 
 extension View {
     func announcer() -> some View {
-        self.modifier(AnnouncerModifier())
+        modifier(AnnouncerModifier())
     }
 }
 
@@ -142,9 +142,9 @@ struct SillyAnnouncementStyle: AnnouncementStyle {
 struct CircleButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-        .padding(4)
-        .background(Circle().fill(Color.white))
-        .labelStyle(_Label())
+            .padding(4)
+            .background(Circle().fill(Color.white))
+            .labelStyle(_Label())
     }
 
     // TODO: Make IconOnlyLabelStyle

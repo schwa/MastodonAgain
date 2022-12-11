@@ -153,8 +153,8 @@ public extension MastodonAPI {
 //                baseURL
 //                URLPath("/api/v1/accounts/update_credentials")
 //                Header(name: "Authorization", value: "Bearer \(token.accessToken)")
-////                Form {
-////                }
+        ////                Form {
+        ////                }
 //                unimplemented() // TODO: TODO
 //            }
 //
@@ -994,14 +994,14 @@ public extension MastodonAPI {
     enum Bookmarks {
         public struct View: Request, Response {
             public typealias Result = [Status] // TODO: Make Page<Status>
-            
+
             let baseURL: URL
             let token: Token
             let maxID: Status.ID?
             let sinceID: Status.ID?
             let minID: Status.ID?
             let limit: Int?
-            
+
             public init(baseURL: URL, token: Token, local: Bool? = nil, remote: Bool? = nil, onlyMedia: Bool? = nil, maxID: Status.ID? = nil, sinceID: Status.ID? = nil, minID: Status.ID? = nil, limit: Int? = nil) {
                 self.baseURL = baseURL
                 self.token = token
@@ -1010,7 +1010,7 @@ public extension MastodonAPI {
                 self.minID = minID
                 self.limit = limit
             }
-            
+
             public var request: some Request {
                 Method.get
                 baseURL
@@ -1021,7 +1021,7 @@ public extension MastodonAPI {
                 limit.map { URLQueryItem(name: "limit", value: String($0)) }
                 Header(name: "Authorization", value: "Bearer \(token.accessToken)")
             }
-            
+
             public var response: some Response {
                 standardResponse(Status.self)
             }

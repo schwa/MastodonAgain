@@ -362,7 +362,7 @@ extension Image: @unchecked Sendable {
 }
 
 public extension URLCache {
-    static let imageCache = URLCache(memoryCapacity: 512*1000*1000, diskCapacity: 10*1000*1000*1000)
+    static let imageCache = URLCache(memoryCapacity: 512 * 1000 * 1000, diskCapacity: 10 * 1000 * 1000 * 1000)
 }
 
 func standardResponse<T>(_ type: T.Type) -> some ResultGenerator where T: Decodable {
