@@ -203,6 +203,18 @@ public extension MastodonAPI {
             let excludeReblogs: Bool?
             let tagged: Bool? // TODO: ?
 
+            public init(baseURL: URL, token: Token, id: Account.ID, maxID: Account.ID? = nil, sinceID: Account.ID? = nil, limit: Int? = nil, minID: Account.ID? = nil, excludeReblogs: Bool? = nil, tagged: Bool? = nil) {
+                self.baseURL = baseURL
+                self.token = token
+                self.id = id
+                self.maxID = maxID
+                self.sinceID = sinceID
+                self.limit = limit
+                self.minID = minID
+                self.excludeReblogs = excludeReblogs
+                self.tagged = tagged
+            }
+
             public var request: some Request {
                 Method.get
                 baseURL
@@ -988,7 +1000,7 @@ public extension MastodonAPI {
     }
 }
 
-// https://docs.joinmastodon.org/methods/timelines/
+// https://docs.joinmastodon.org/methods/bookmarks/
 
 public extension MastodonAPI {
     enum Bookmarks {

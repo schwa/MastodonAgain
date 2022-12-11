@@ -41,6 +41,8 @@ struct MainView: View {
                 .padding()
             }
             .onAppear {
+                router.appModel = appModel
+                router.instanceModel = instanceModel
                 selection = router.root.first
             }
     }
@@ -146,11 +148,13 @@ enum PageID: CaseIterable {
         case log
     #endif
     case bookmarks
+    case statuses
 }
 
 // MARK: -
 
-struct Router {
+@MainActor
+class Router {
     var root: [AnyPage] = [
         Page(id: .homeTimeline, subject: Timeline.home),
         Page(id: .localTimeline, subject: Timeline.local),
@@ -160,7 +164,11 @@ struct Router {
         Page(id: .relationships, subject: ()),
         Page(id: .account, subject: Account.ID?.none as Any),
         Page(id: .bookmarks, subject: ()),
+        Page(id: .statuses, subject: ()),
     ]
+
+    var appModel: AppModel?
+    var instanceModel: InstanceModel?
 
     init() {
 //        #if os(macOS)
@@ -188,6 +196,8 @@ struct Router {
         #endif
         case .bookmarks:
             Label("Bookmarks", systemImage: "gear")
+        case .statuses:
+            Label("Stasuses", systemImage: "gear")
         }
     }
 
@@ -213,6 +223,8 @@ struct Router {
         #endif
         case .bookmarks:
             BookmarksView()
+        case .statuses:
+            StasusesView(id: instanceModel!.signin.account.id)
         }
     }
 }

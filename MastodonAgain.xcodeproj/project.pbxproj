@@ -18,6 +18,8 @@
 		454ED3002929D9CA0067B070 /* Mastodon in Frameworks */ = {isa = PBXBuildFile; productRef = 454ED2FF2929D9CA0067B070 /* Mastodon */; };
 		454ED3022929D9CA0067B070 /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = 454ED3012929D9CA0067B070 /* Storage */; };
 		454ED3042929D9CA0067B070 /* Support in Frameworks */ = {isa = PBXBuildFile; productRef = 454ED3032929D9CA0067B070 /* Support */; };
+		4550D6972932999E00A876BC /* StatusesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4550D6962932999E00A876BC /* StatusesView.swift */; };
+		4550D69929329C8000A876BC /* Avatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4550D69829329C8000A876BC /* Avatar.swift */; };
 		455AC882290D96F600137415 /* MastodonAgainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455AC881290D96F600137415 /* MastodonAgainApp.swift */; };
 		455AC884290D96F600137415 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455AC883290D96F600137415 /* ContentView.swift */; };
 		455AC886290D96F700137415 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 455AC885290D96F700137415 /* Assets.xcassets */; };
@@ -74,6 +76,8 @@
 		454ED2FA2929D9B70067B070 /* Mastodon */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Mastodon; sourceTree = "<group>"; };
 		454ED2FB2929D9B70067B070 /* Storage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Storage; sourceTree = "<group>"; };
 		454ED2FC2929D9B70067B070 /* Support */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Support; sourceTree = "<group>"; };
+		4550D6962932999E00A876BC /* StatusesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusesView.swift; sourceTree = "<group>"; };
+		4550D69829329C8000A876BC /* Avatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Avatar.swift; sourceTree = "<group>"; };
 		455AC87E290D96F600137415 /* MastodonAgain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MastodonAgain.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		455AC881290D96F600137415 /* MastodonAgainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonAgainApp.swift; sourceTree = "<group>"; };
 		455AC883290D96F600137415 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -166,6 +170,8 @@
 				4529E98129286D0300ABFA42 /* NotificationsView.swift */,
 				45A3C25A292EB6E7009A3243 /* RelationshipsView.swift */,
 				4592A5572931A27900B4C7BF /* BookmarksView.swift */,
+				4550D6962932999E00A876BC /* StatusesView.swift */,
+				4550D69829329C8000A876BC /* Avatar.swift */,
 			);
 			path = Content;
 			sourceTree = "<group>";
@@ -404,6 +410,8 @@
 				45FDAF822916EE5A0073E8E0 /* MiniStatusRow.swift in Sources */,
 				45202011290F8DC600469569 /* NewPostWindow.swift in Sources */,
 				451434982918386E004A9208 /* InstanceModel.swift in Sources */,
+				4550D69929329C8000A876BC /* Avatar.swift in Sources */,
+				4550D6972932999E00A876BC /* StatusesView.swift in Sources */,
 				45F1A2C1290E4FEE0093A8AC /* AppModel.swift in Sources */,
 				45F1A2BD290E31360093A8AC /* Minikeychain.swift in Sources */,
 				455AC882290D96F600137415 /* MastodonAgainApp.swift in Sources */,

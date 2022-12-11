@@ -57,6 +57,9 @@ struct ConcreteAccountInfoView: View {
     @Binding
     var account: Account
 
+    @EnvironmentObject
+    var instanceModel: InstanceModel
+
     enum TabSelection {
         case posts
         case following
