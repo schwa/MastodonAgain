@@ -1,6 +1,8 @@
 # MastodonAgain
 
-I did a bad thing.
+~~I did a bad thing.~~
+
+A SwiftUI macOS only(-ish - also somewhat useful on iPad) Swift Concurrency based Mastodon Client.
 
 ## Requirements
 
