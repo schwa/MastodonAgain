@@ -5,23 +5,26 @@ struct StatusRow: View {
     enum Mode: String, RawRepresentable, CaseIterable, Sendable {
         case mini
         case large
+        case alt
     }
-
+    
     @Binding
     var status: Status
-
+    
     let mode: Mode
-
+    
     var body: some View {
         switch mode {
-        case .mini:
-            MiniStatusRow(status: _status)
-        case .large:
-            #if os(iOS)
+            case .mini:
+                MiniStatusRow(status: _status)
+            case .large:
+#if os(iOS)
                 NarrowStatusRow(status: _status)
-            #else
+#else
                 LargeStatusRow(status: _status)
-            #endif
+#endif
+            case .alt:
+                AltStatusRow(status: _status)
         }
     }
 }
@@ -30,7 +33,7 @@ struct StatusRow: View {
 
 struct SensitiveContentModifier: ViewModifier {
     let sensitive: Bool
-
+    
     func body(content: Content) -> some View {
         if sensitive {
             content

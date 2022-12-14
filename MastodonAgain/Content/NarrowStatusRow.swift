@@ -62,7 +62,7 @@ struct NarrowStatusRow: View, Sendable {
     var content: some View {
         if let reblog = status.reblog {
             VStack(alignment: .leading) {
-                Text(reblog.account)
+                AccountLabel(reblog.account)
                 LargeStatusContent(status: reblog)
             }
             .padding(4)
