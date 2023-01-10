@@ -45,7 +45,7 @@ struct LargeStatusRow: View, Sendable {
                 Button {
                     openURL(url)
                 } label: {
-                    Text(status.created, style: .relative).foregroundColor(.secondary)
+                    Text(appModel.relativeDate(status.created)).foregroundColor(.secondary)
                 }
                 #if os(macOS)
                 .buttonStyle(.link)
